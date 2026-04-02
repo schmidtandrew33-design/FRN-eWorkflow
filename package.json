@@ -6,9 +6,13 @@
   "scripts": {
     "start": "http-server . -p 3000 -o",
     "bundle:powerapps": "node scripts/build-powerapps-bundle.js",
+    "config:personal": "node scripts/use-power-config.js personal",
+    "config:gcc": "node scripts/use-power-config.js gcc",
     "powerapps:run": "npx power-apps run --local-app-url http://127.0.0.1:3000",
     "build": "npm run bundle:powerapps",
-    "push": "npm run bundle:powerapps && npx power-apps push"
+    "push": "npm run bundle:powerapps && npx power-apps push",
+    "push:personal": "npm run config:personal && npm run push",
+    "push:gcc": "npm run config:gcc && npm run push"
   },
   "powerApps": {
     "appEntry": "index.html"

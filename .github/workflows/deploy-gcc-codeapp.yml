@@ -1,0 +1,50 @@
+name: Deploy GCC Code App
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-gcc:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Write GCC power config
+        shell: pwsh
+        run: |
+          @'
+          {
+            "appDisplayName": "EPA FRN Approval System",
+            "description": "EPA Federal Register Notice (FRN) Approval Workflow",
+            "environmentId": "${{ secrets.POWERAPPS_GCC_ENVIRONMENT_ID }}",
+            "region": "prod",
+            "buildPath": "./dist",
+            "buildEntryPoint": "index.html",
+            "localAppUrl": "http://127.0.0.1:3000",
+            "appId": "${{ secrets.POWERAPPS_GCC_APP_ID }}",
+            "version": "1.0"
+          }
+          '@ | Set-Content -Path power.config.json
+
+      - name: Build code app bundle
+        run: npm run bundle:powerapps
+
+      - name: Power Apps auth
+        env:
+          POWERAPPS_USERNAME: ${{ secrets.POWERAPPS_USERNAME }}
+          POWERAPPS_PASSWORD: ${{ secrets.POWERAPPS_PASSWORD }}
+        run: |
+          npx power-apps auth create --username "$env:POWERAPPS_USERNAME" --password "$env:POWERAPPS_PASSWORD"
+
+      - name: Push to GCC
+        run: npx power-apps push --non-interactive
