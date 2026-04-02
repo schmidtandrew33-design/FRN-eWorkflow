@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team - EPA FRN Approval System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/shared.css">
+    <script src="src/frn-data.js"></script>
+    <style>
+        :root {
+            --navy: #002147;
+            --gold: #b8860b;
+            --burgundy: #800020;
+            --cream: #faf8f3;
+            --parchment: #f4f1e8;
+            --light-gray: #e0e0e0;
+            --gray: #666;
+            --approved-green: #2e7d32;
+            --pending-amber: #f57c00;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Source Serif 4', serif; background: var(--cream); color: var(--navy); overflow-x: hidden; }
+
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+            margin-left: 285px;
+            width: calc(100vw - 285px);
+            min-height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .main-content {
+            flex: 1;
+            min-height: 100vh;
+            padding: 0 0.25rem;
+        }
+
+        .container {
+            margin: 0;
+            max-width: none;
+            padding: 0.3rem 1rem 2rem;
+        }
+
+        header {
+            background: white;
+            border: 3px solid var(--navy);
+            border-top: 8px solid var(--gold);
+            padding: 1.2rem 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .header-seal {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 4px solid var(--gold);
+            background: linear-gradient(135deg, var(--navy), var(--burgundy));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            flex-shrink: 0;
+        }
+
+        .department {
+            font-size: 1.3rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2.35rem;
+            color: var(--navy);
+            margin-bottom: 0.35rem;
+        }
+
+        .tagline {
+            font-size: 1.05rem;
+            color: var(--burgundy);
+            font-weight: 800;
+        }
+
+        .team-kpis {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .kpi-card {
+            background: white;
+            border: 2px solid var(--navy);
+            border-top: 5px solid var(--gold);
+            padding: 1rem 1.1rem;
+        }
+
+        .kpi-title {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--gray);
+            margin-bottom: 0.55rem;
+            font-weight: 700;
+        }
+
+        .kpi-value {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            color: var(--navy);
+            margin-bottom: 0.35rem;
+        }
+
+        .kpi-note {
+            font-size: 0.88rem;
+            color: var(--burgundy);
+            line-height: 1.35;
+            font-weight: 600;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .panel {
+            background: white;
+            border: 2px solid var(--navy);
+            border-left: 6px solid var(--gold);
+            padding: 1.1rem 1.2rem 1.2rem;
+        }
+
+        .panel h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.3rem;
+            color: var(--navy);
+            margin-bottom: 0.85rem;
+        }
+
+        .panel-intro {
+            font-size: 0.92rem;
+            color: var(--gray);
+            line-height: 1.55;
+            margin-bottom: 1rem;
+        }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.9rem 1rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .field label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--gray);
+            font-weight: 700;
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            padding: 0.72rem 0.8rem;
+            border: 2px solid var(--navy);
+            background: white;
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.92rem;
+            color: var(--navy);
+        }
+
+        .field textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.2rem;
+            border: 2px solid var(--navy);
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.84rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--navy);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--navy);
+        }
+
+        .btn-primary:hover,
+        .btn-secondary:hover {
+            background: var(--gold);
+            color: var(--navy);
+        }
+
+        .group-list,
+        .assignment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .group-card,
+        .assignment-card {
+            background: var(--parchment);
+            border: 2px solid var(--navy);
+            padding: 0.9rem 1rem;
+        }
+
+        .group-header,
+        .assignment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.45rem;
+        }
+
+        .group-name,
+        .assignment-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .group-badge,
+        .assignment-badge {
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+            background: rgba(184, 134, 11, 0.14);
+            color: var(--burgundy);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            white-space: nowrap;
+        }
+
+        .group-meta,
+        .assignment-meta {
+            font-size: 0.86rem;
+            color: var(--gray);
+            line-height: 1.55;
+        }
+
+        .member-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            margin-top: 0.7rem;
+        }
+
+        .member-tag {
+            padding: 0.35rem 0.65rem;
+            border: 1px solid var(--navy);
+            background: white;
+            color: var(--navy);
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .team-table-panel {
+            background: white;
+            border: 2px solid var(--navy);
+            border-left: 6px solid var(--gold);
+            padding: 1.1rem 1.2rem 1.2rem;
+        }
+
+        .team-table-panel h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.3rem;
+            color: var(--navy);
+            margin-bottom: 0.85rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid rgba(0, 33, 71, 0.18);
+            padding: 0.8rem 0.75rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--parchment);
+            color: var(--navy);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        td {
+            background: white;
+            color: var(--navy);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="left-sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-seal">
+                <img src="Images/EPA Seal.png" alt="EPA Seal" style="width:100%; height:100%; object-fit:cover; object-position:0% center; border-radius:50%;">
+            </div>
+            <div class="logo-text">Environmental<br>Protection<br>Agency</div>
+        </div>
+
+        <div class="nav-sections-wrapper">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item">Dashboard</a>
+                <a href="new-notice.html" class="nav-item">New Notice</a>
+                <a href="DocumentLibrary.html" class="nav-item">Document Library</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Workflow</div>
+                <a href="my-tasks.html" class="nav-item">My Tasks</a>
+                <a href="Active-Reviews.html" class="nav-item">Active Reviews</a>
+                <a href="pending-approvals.html" class="nav-item">Pending Approvals</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Views</div>
+                <a href="calendar.html" class="nav-item">Calendar</a>
+                <a href="team.html" class="nav-item active">Team</a>
+                <a href="analytics.html" class="nav-item">Analytics</a>
+                <a href="leaderboards.html" class="nav-item">Leaderboards</a>
+                <a href="reports.html" class="nav-item">Reports</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="settings.html" class="nav-item">Settings</a>
+                <a href="help.html" class="nav-item">Help</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content-wrapper">
+        <div class="main-content">
+            <div class="container">
+                <header>
+                    <div class="header-seal">👥</div>
+                    <div>
+                        <div class="department">Environmental Protection Agency</div>
+                        <h1>Federal Register Notice (FRN) Approval Workflow</h1>
+                        <div class="tagline">Team Builder & Approval Group Management</div>
+                    </div>
+                </header>
+
+                <div class="team-kpis">
+                    <div class="kpi-card">
+                        <div class="kpi-title">Active Team Groups</div>
+                        <div class="kpi-value" id="kpi-active-groups">0</div>
+                        <div class="kpi-note">Reusable approver groups available for workflow assignment.</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">Named Team Members</div>
+                        <div class="kpi-value" id="kpi-named-members">0</div>
+                        <div class="kpi-note">Individuals currently represented across stage groups.</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">Stage Assignments</div>
+                        <div class="kpi-value" id="kpi-stage-assignments">0</div>
+                        <div class="kpi-note">Configured approver groups tied to the current workflow stages.</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">Unassigned Groups</div>
+                        <div class="kpi-value" id="kpi-unassigned-groups">0</div>
+                        <div class="kpi-note">Groups ready to be used for backup or alternate approval routing.</div>
+                    </div>
+                </div>
+
+                <div class="team-grid">
+                    <section class="panel">
+                        <h2>Team Builder</h2>
+                        <div class="panel-intro">Create a reusable group of individuals, define its purpose, and then use that group when assigning stage approvers in the workflow.</div>
+                        <div class="field-grid">
+                            <div class="field">
+                                <label>Group Name</label>
+                                <input type="text" id="group-name" value="Stage 3 Technical Core Reviewers">
+                            </div>
+                            <div class="field">
+                                <label>Group Type</label>
+                                <select id="group-type">
+                                    <option selected>Primary Approver Group</option>
+                                    <option>Backup Approver Group</option>
+                                    <option>Alternate Approver Group</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label>Default Stage Usage</label>
+                                <select id="group-stage">
+                                    <option>Stage 1 Approver</option>
+                                    <option>Stage 2 Approver</option>
+                                    <option selected>Stage 3 Approver</option>
+                                    <option>Stage 4 Approver</option>
+                                    <option>Stage 5 Approver</option>
+                                    <option>Stage 6 Approver</option>
+                                    <option>Stage 7 Approver</option>
+                                </select>
+                            </div>
+                            <div class="field full-width">
+                                <label>Group Members</label>
+                                <textarea id="group-members">Dr. Sarah Chen
+Dr. Robert Martinez
+Emily Thompson
+Marcus Johnson</textarea>
+                            </div>
+                            <div class="field full-width">
+                                <label>Group Notes</label>
+                                <textarea id="group-notes">Primary technical review pool for chemical safety notices requiring scientific assessment and policy handoff readiness.</textarea>
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <button class="btn btn-primary" type="button" id="save-team-group">Save Team Group</button>
+                        </div>
+                    </section>
+
+                    <section class="panel">
+                        <h2>Stage Approver Group Assignments</h2>
+                        <div class="panel-intro">Assign each workflow stage to a reusable group rather than a single individual position.</div>
+                        <div class="assignment-list" id="stage-assignment-list"></div>
+                        <div class="actions">
+                            <button class="btn btn-secondary" type="button">Load Group Template</button>
+                            <button class="btn btn-primary" type="button">Update Stage Assignments</button>
+                        </div>
+                    </section>
+                </div>
+
+                <section class="team-table-panel">
+                    <h2>Configured Approval Groups</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Group Name</th>
+                                <th>Purpose</th>
+                                <th>Members</th>
+                                <th>Assigned Stage Approver</th>
+                            </tr>
+                        </thead>
+                        <tbody id="configured-groups-body"></tbody>
+                    </table>
+                </section>
+            </div>
+        </div>
+    </div>
+    <script>
+        const TEAM_GROUPS_STORAGE_KEY = 'frn_team_groups';
+        const defaultConfiguredGroups = ((window.FRN_DATA && window.FRN_DATA.teamGroups) || []).map(group => ({
+            ...group,
+            members: [...(group.members || [])]
+        }));
+        const configuredGroups = loadConfiguredGroups();
+
+        function loadConfiguredGroups() {
+            try {
+                const stored = window.localStorage.getItem(TEAM_GROUPS_STORAGE_KEY);
+                if (stored) {
+                    return JSON.parse(stored);
+                }
+            } catch (error) {
+                console.warn('Unable to load saved team groups.', error);
+            }
+            return defaultConfiguredGroups;
+        }
+
+        function persistConfiguredGroups() {
+            try {
+                window.localStorage.setItem(TEAM_GROUPS_STORAGE_KEY, JSON.stringify(configuredGroups));
+            } catch (error) {
+                console.warn('Unable to persist team groups.', error);
+            }
+        }
+
+        function renderConfiguredGroups() {
+            const body = document.getElementById('configured-groups-body');
+            if (!body) return;
+
+            body.innerHTML = configuredGroups.map(group => `
+                <tr>
+                    <td>
+                        <div class="group-name">${group.name}</div>
+                        <div class="group-meta">${group.summary}</div>
+                    </td>
+                    <td>${group.purpose}</td>
+                    <td>
+                        <div class="member-tags">
+                            ${group.members.map(member => `<span class="member-tag">${member}</span>`).join('')}
+                        </div>
+                    </td>
+                    <td>${group.assignedStage || 'Unassigned'}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderTeamKpis() {
+            const uniqueMembers = new Set(configuredGroups.flatMap(group => group.members));
+            const stageAssignments = configuredGroups.filter(group => group.assignedStage).length;
+            const unassignedGroups = configuredGroups.filter(group => !group.assignedStage).length;
+
+            const activeGroupsEl = document.getElementById('kpi-active-groups');
+            const membersEl = document.getElementById('kpi-named-members');
+            const assignmentsEl = document.getElementById('kpi-stage-assignments');
+            const unassignedEl = document.getElementById('kpi-unassigned-groups');
+
+            if (activeGroupsEl) activeGroupsEl.textContent = configuredGroups.length;
+            if (membersEl) membersEl.textContent = uniqueMembers.size;
+            if (assignmentsEl) assignmentsEl.textContent = stageAssignments;
+            if (unassignedEl) unassignedEl.textContent = unassignedGroups;
+        }
+
+        function renderStageAssignments() {
+            const list = document.getElementById('stage-assignment-list');
+            if (!list) return;
+
+            const stages = ((window.FRN_DATA && window.FRN_DATA.processSettings && window.FRN_DATA.processSettings.stages) || [])
+                .map(stage => stage.approver);
+
+            list.innerHTML = stages.map(stageApprover => {
+                const assignedGroups = configuredGroups.filter(group => group.assignedStage === stageApprover);
+                const primaryGroup = assignedGroups[0];
+                const backupGroup = assignedGroups[1];
+
+                return `
+                    <div class="assignment-card">
+                        <div class="assignment-header">
+                            <div class="assignment-title">${stageApprover}</div>
+                            <div class="assignment-badge">${primaryGroup ? primaryGroup.type.replace(' Group', '') : 'Unassigned'}</div>
+                        </div>
+                        <div class="assignment-meta">Assigned Group: ${primaryGroup ? primaryGroup.name : 'Not Assigned'}</div>
+                        <div class="assignment-meta">Backup Group: ${backupGroup ? backupGroup.name : 'Not Assigned'}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function resetTeamBuilder() {
+            document.getElementById('group-name').value = '';
+            document.getElementById('group-type').value = 'Primary Approver Group';
+            document.getElementById('group-stage').value = 'Stage 1 Approver';
+            document.getElementById('group-members').value = '';
+            document.getElementById('group-notes').value = '';
+        }
+
+        function saveTeamGroup() {
+            const name = document.getElementById('group-name').value.trim();
+            const type = document.getElementById('group-type').value;
+            const assignedStage = document.getElementById('group-stage').value;
+            const notes = document.getElementById('group-notes').value.trim();
+            const members = document.getElementById('group-members').value
+                .split(/\r?\n/)
+                .map(member => member.trim())
+                .filter(Boolean);
+
+            if (!name || !members.length) {
+                return;
+            }
+
+            configuredGroups.push({
+                name,
+                type,
+                summary: `${type} for ${assignedStage.toLowerCase()}.`,
+                purpose: notes || `Configured group assigned to ${assignedStage}.`,
+                members,
+                assignedStage
+            });
+
+            persistConfiguredGroups();
+            renderConfiguredGroups();
+            renderTeamKpis();
+            renderStageAssignments();
+            resetTeamBuilder();
+        }
+
+        document.getElementById('save-team-group').addEventListener('click', saveTeamGroup);
+        renderConfiguredGroups();
+        renderTeamKpis();
+        renderStageAssignments();
+    </script>
+</body>
+</html>

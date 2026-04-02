@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPA FRN Approval System</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+
+    <!-- Shared nav + layout styles -->
+    <link rel="stylesheet" href="src/shared.css">
+
+    <!-- Page-specific styles injected here dynamically by app.js -->
+    <style id="page-styles"></style>
+</head>
+<body>
+
+    <!-- ── Loading bar ── -->
+    <div id="app-loading"></div>
+
+    <!-- ══════════════════════════════════════════
+         SHARED NAV SIDEBAR
+         Rendered once. Router handles active states.
+         ══════════════════════════════════════════ -->
+    <nav class="left-sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-seal">
+                <img src="Images/EPA Seal.png" alt="EPA Seal"
+                     style="width:100%; height:100%; object-fit:cover;
+                            object-position:0% center; border-radius:50%;"
+                     onerror="this.style.display='none'; this.parentElement.textContent='🏛️'; this.parentElement.style.fontSize='2.5rem';" />
+            </div>
+            <div class="logo-text">Environmental<br>Protection<br>Agency</div>
+        </div>
+
+        <div class="nav-sections-wrapper">
+            <!-- Main -->
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a class="nav-item" data-route="dashboard">Dashboard</a>
+                <a class="nav-item" data-route="new-notice">New Notice</a>
+                <a class="nav-item" data-route="document-library">Document Library</a>
+            </div>
+
+            <!-- Workflow -->
+            <div class="nav-section">
+                <div class="nav-section-title">Workflow</div>
+                <a class="nav-item" data-route="my-tasks">My Tasks</a>
+                <a class="nav-item" data-route="active-reviews">Active Reviews</a>
+                <a class="nav-item" data-route="pending-approvals">Pending Approvals</a>
+            </div>
+
+            <!-- Views -->
+            <div class="nav-section">
+                <div class="nav-section-title">Views</div>
+                <a class="nav-item" data-route="calendar">Calendar</a>
+                <a class="nav-item" data-route="leaderboards">Leaderboards</a>
+                <a class="nav-item" data-route="reports">Reports</a>
+            </div>
+
+            <!-- System -->
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a class="nav-item" data-route="team">Team</a>
+                <a class="nav-item" data-route="settings">Settings</a>
+                <a class="nav-item" data-route="help">Help</a>
+            </div>
+        </div>
+
+        <!-- Logged-in user block.
+             The shell markup lives here in index.html.
+             src/app.js fills in the name and avatar/initials at runtime
+             from the Power Apps host user context. -->
+        <div class="sidebar-user-profile" id="sidebar-user-profile" aria-label="Logged in user">
+            <div class="sidebar-user-avatar" id="sidebar-user-avatar">
+                <img id="sidebar-user-avatar-img" alt="Logged in user photo" />
+                <span id="sidebar-user-avatar-fallback">EA</span>
+            </div>
+            <div class="sidebar-user-name" id="sidebar-user-name">EPA User</div>
+        </div>
+    </nav>
+
+    <!-- ══════════════════════════════════════════
+         PAGE CONTENT AREA
+         Router fetches each page and injects here.
+         ══════════════════════════════════════════ -->
+    <div id="app"></div>
+
+    <script src="src/frn-data.js"></script>
+    <script src="src/page-manifest.js"></script>
+    <!-- Router -->
+    <script src="src/app.js"></script>
+
+</body>
+</html>

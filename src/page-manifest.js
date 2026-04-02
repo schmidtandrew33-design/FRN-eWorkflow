@@ -1,0 +1,1 @@
+window.FRN_PAGE_MANIFEST = window.FRN_PAGE_MANIFEST || {};

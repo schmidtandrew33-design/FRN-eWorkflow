@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Library - EPA FRN Approval System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/shared.css">
+    <script src="src/frn-data.js"></script>
+    
+    <style>
+        /* === COPY ALL CSS FROM Active Reviews.html === */
+        /* This ensures exact same styling */
+        
+        :root {
+            --navy: #002147;
+            --gold: #b8860b;
+            --burgundy: #800020;
+            --cream: #faf8f3;
+            --parchment: #f4f1e8;
+            --light-gray: #e0e0e0;
+            --gray: #666;
+            --approved-green: #2e7d32;
+            --pending-amber: #f57c00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Serif 4', serif;
+            background: var(--cream);
+            color: var(--navy);
+            overflow: hidden;
+        }
+
+        /* Sidebar layout is provided by src/shared.css so it matches dashboard exactly. */
+
+        /* Content Wrapper */
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+            margin-left: 285px;
+            margin-right: 315px;
+            width: calc(100vw - 285px - 315px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            height: 100vh;
+            scrollbar-width: none; /* hide scrollbar (Firefox) */
+        }
+
+        .content-wrapper::-webkit-scrollbar {
+            display: none; /* hide scrollbar (WebKit) */
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            min-height: 100vh;
+            padding: 0 0.25rem;
+            margin-bottom: 0.25rem;
+            flex: 1 1 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .container {
+            margin: 0 auto;
+            width: 1260px;
+            max-width: 1260px;
+            padding-left: 0;
+            padding-right: 0;
+            padding-top: 0.3rem;
+            padding-bottom: 3rem;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            border: 3px solid var(--navy);
+            border-top: 8px solid var(--gold);
+            padding: 1.2rem 1rem;
+            margin-bottom: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 1.2rem;
+        }
+
+        .header-seal {
+            width: 110px;
+            height: 110px;
+            background: linear-gradient(135deg, var(--navy), var(--burgundy));
+            border-radius: 50%;
+            border: 4px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.1rem;
+            font-weight: 800;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .header-content {
+            margin-left: 0;
+            flex: 1;
+        }
+        .department {
+            font-size: 1.458rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2.4rem;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .tagline {
+            font-size: 1.15rem;
+            color: var(--burgundy);
+            font-weight: 800;
+        }
+/* Disclaimer Pane - EXACT COPY */
+        .disclaimer-pane {
+            background: var(--navy);
+            border-top: 8px solid var(--gold);
+            margin: 0;
+            margin-top: 3rem;
+            padding: 0;
+        }
+
+        .disclaimer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            gap: 1.8rem;
+        }
+
+        .disclaimer-text {
+            flex: 1;
+            text-align: center;
+        }
+
+        .disclaimer-title {
+            font-size: 1.32rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin: 0 0 0.45rem 0;
+            letter-spacing: 0.15em;
+        }
+
+        .disclaimer-body {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--cream);
+            margin: 0 0 0.6rem 0;
+        }
+
+        .disclaimer-links {
+            margin-bottom: 0.75rem;
+        }
+
+        .disclaimer-link {
+            font-size: 0.96rem;
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 0.96rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .disclaimer-link:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .disclaimer-separator {
+            color: var(--gold);
+            margin: 0 0.45rem;
+        }
+
+        .disclaimer-version {
+            font-size: 0.84rem;
+            color: var(--gray);
+            margin: 0;
+        }
+
+        .disclaimer-stamp {
+            flex-shrink: 0;
+        }
+
+        .pmtarp-stamp {
+            background: transparent;
+            color: #c92a2a;
+            width: 108px;
+            height: 108px;
+            font-family: 'Libre Baskerville', serif;
+            border: 5px solid #c92a2a;
+            border-radius: 50%;
+            text-align: center;
+            transform: rotate(-12deg);
+            box-shadow: 
+                0 0 0 2px #c92a2a,
+                inset 0 0 12px rgba(201, 42, 42, 0.1);
+            opacity: 0.88;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .pmtarp-stamp::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            background: 
+                radial-gradient(circle at 20% 30%, transparent 40%, rgba(201, 42, 42, 0.05) 41%),
+                radial-gradient(circle at 70% 60%, transparent 35%, rgba(201, 42, 42, 0.05) 36%),
+                radial-gradient(circle at 40% 80%, transparent 30%, rgba(201, 42, 42, 0.05) 31%);
+            pointer-events: none;
+        }
+
+        .stamp-text {
+            padding: 0.3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stamp-top {
+            font-size: 0.36rem;
+            letter-spacing: 0.25em;
+            font-weight: 700;
+            margin-bottom: 0.24rem;
+            text-transform: uppercase;
+            font-style: italic;
+        }
+
+        .stamp-main {
+            font-size: 1.08rem;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            margin-bottom: 0.18rem;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 0px rgba(201, 42, 42, 0.3);
+        }
+
+        .stamp-subtitle {
+            font-size: 0.3rem;
+            letter-spacing: 0.08em;
+            line-height: 1.4;
+            margin-bottom: 0.24rem;
+            font-weight: 600;
+            font-style: normal;
+        }
+
+        .stamp-bottom {
+            font-size: 0.36rem;
+            letter-spacing: 0.25em;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-style: italic;
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            width: 315px;
+            background: var(--parchment);
+            padding: 2rem 1.5rem;
+            border-left: 3px solid var(--navy);
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .right-sidebar-content {
+            height: 100%;
+            overflow-y: auto;
+            padding-right: 0.25rem;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-section h3 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.32rem;
+            color: var(--navy);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 0.5rem;
+        }
+
+        /* ADD PAGE-SPECIFIC STYLES BELOW THIS LINE */
+        /* ========================================= */
+        
+        .search-bar {
+            background: white;
+            border: 2px solid var(--navy);
+            border-left: 6px solid var(--gold);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.65rem 0.9rem;
+            border: 2px solid var(--navy);
+            background: var(--cream);
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.9rem;
+            color: var(--navy);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.2);
+        }
+
+        .search-btn {
+            padding: 0.65rem 1.7rem;
+            background: var(--navy);
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: var(--gold);
+            color: var(--navy);
+        }
+
+        .filters-bar {
+            background: var(--parchment);
+            border: 2px solid var(--navy);
+            border-left: 4px solid var(--gold);
+            padding: 1.1rem;
+            margin-bottom: 1.75rem;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr) auto;
+            gap: 0.85rem;
+            align-items: end;
+        }
+
+        .filters-search {
+            grid-column: 1 / span 4;
+            display: flex;
+            gap: 0.65rem;
+            align-items: end;
+        }
+
+        .sort-icon-wrap {
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+        }
+
+        .sort-icon-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--navy);
+            background: white;
+            color: var(--navy);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .sort-icon-btn:hover,
+        .sort-icon-btn:focus {
+            outline: none;
+            border-color: var(--gold);
+            color: var(--gold);
+            background: var(--navy);
+        }
+
+        .sort-icon-btn[data-sort-order="newest"]::after {
+            content: '↓';
+            position: absolute;
+            right: 5px;
+            bottom: 3px;
+            font-size: 0.68rem;
+            font-weight: 700;
+        }
+
+        .sort-icon-btn[data-sort-order="oldest"]::after {
+            content: '↑';
+            position: absolute;
+            right: 5px;
+            bottom: 3px;
+            font-size: 0.68rem;
+            font-weight: 700;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .filter-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--navy);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .filter-select {
+            padding: 0.52rem 0.6rem;
+            border: 2px solid var(--navy);
+            background: white;
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.76rem;
+            color: var(--navy);
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .document-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .doc-card {
+            background: white;
+            border: 2px solid var(--navy);
+            border-left: 6px solid var(--gold);
+            transition: all 0.3s ease;
+        }
+
+        .doc-card:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .doc-main {
+            padding: 0.8rem 0.9rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.7rem;
+        }
+
+        .doc-info {
+            flex: 1;
+        }
+
+        .doc-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.35rem;
+            padding-bottom: 0.35rem;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .doc-id {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .doc-status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 98px;
+            min-height: 30px;
+            padding: 0.3rem 0.7rem;
+            border-radius: 3px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .status-active { background: #f57c00; color: white; }
+        .status-completed { background: #2e7d32; color: white; }
+        .status-pending { background: #e0e0e0; color: #666; }
+
+        .doc-title {
+            font-size: 0.96rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 0.4rem;
+            line-height: 1.2;
+        }
+
+        .doc-meta {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.55rem;
+            font-size: 0.71rem;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.1rem;
+        }
+
+        .meta-label {
+            color: var(--gray);
+            text-transform: uppercase;
+            font-size: 0.6rem;
+            letter-spacing: 0.05em;
+        }
+
+        .meta-value {
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        .expand-btn {
+            background: var(--navy);
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            padding: 0.3rem 0.7rem;
+            min-width: 98px;
+            min-height: 30px;
+            margin-left: 0.45rem;
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .expand-btn:hover {
+            background: var(--gold);
+            color: var(--navy);
+        }
+
+        .expand-btn.expanded::after {
+            content: ' ▲';
+        }
+
+        .expand-btn:not(.expanded)::after {
+            content: ' ▼';
+        }
+
+        .doc-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            background: var(--parchment);
+            border-top: 2px solid var(--gold);
+        }
+
+        .doc-details.expanded {
+            max-height: 420px;
+        }
+
+        .details-content {
+            padding: 1.5rem;
+        }
+
+        .details-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .details-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .details-actions {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .review-doc-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 164px;
+            min-height: 38px;
+            padding: 0.5rem 1rem;
+            background: var(--navy);
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .review-doc-btn:hover {
+            background: var(--gold);
+            color: var(--navy);
+        }
+
+        .details-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1rem;
+            color: var(--navy);
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.6rem 1.5rem;
+        }
+
+        .detail-record {
+            padding: 0;
+            min-height: 0;
+        }
+
+        .detail-label {
+            font-size: 0.7rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.15rem;
+            font-weight: 700;
+        }
+
+        .detail-value {
+            font-size: 0.92rem;
+            color: var(--navy);
+            font-weight: 600;
+            line-height: 1.35;
+            word-break: break-word;
+        }
+
+        .summary-panel {
+            padding: 0;
+            line-height: 1.6;
+            color: var(--navy);
+        }
+
+        .routing-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.6rem 1.5rem;
+        }
+
+        .routing-item {
+            padding: 0;
+        }
+
+        .routing-stage {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.2rem;
+        }
+
+        .routing-meta {
+            font-size: 0.78rem;
+            color: var(--gray);
+            line-height: 1.45;
+        }
+
+        .version-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .version-item {
+            background: white;
+            border: 2px solid var(--navy);
+            border-left: 4px solid var(--burgundy);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .version-item:hover {
+            transform: translateX(5px);
+        }
+
+        .version-item.current {
+            border-left-color: var(--gold);
+            background: rgba(184, 134, 11, 0.05);
+        }
+
+        .version-info {
+            flex: 1;
+        }
+
+        .version-number {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.25rem;
+        }
+
+        .version-meta {
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+
+        .version-badge {
+            padding: 0.25rem 0.6rem;
+            background: var(--gold);
+            color: var(--navy);
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-radius: 3px;
+            margin-left: 0.5rem;
+        }
+
+        .attachment-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        .attachment-item {
+            background: white;
+            border: 2px solid var(--navy);
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .attachment-item:hover {
+            background: var(--cream);
+            border-color: var(--gold);
+        }
+
+        .attachment-icon {
+            font-size: 1.5rem;
+        }
+
+        .attachment-info {
+            flex: 1;
+        }
+
+        .attachment-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 0.25rem;
+        }
+
+        .attachment-size {
+            font-size: 0.7rem;
+            color: var(--gray);
+        }
+
+        .quick-stat {
+            background: white;
+            border: 2px solid var(--navy);
+            border-left: 4px solid var(--gold);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .quick-stat .stat-value {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            color: var(--burgundy);
+            font-weight: 700;
+        }
+
+        .quick-stat .stat-label {
+            font-size: 0.8rem;
+            color: var(--navy);
+            margin-top: 0.5rem;
+            line-height: 1.3;
+        }
+        
+    </style>
+</head>
+<body>
+        <!-- Left Navigation Sidebar -->
+    <nav class="left-sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-seal" style="overflow: hidden; width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid var(--gold); background: white;">
+                <img src="Images/EPA Seal.png" alt="EPA Logo" style="width: 100%; height: 100%; object-fit: cover; object-position: 0% center; border-radius: 50%;" />
+            </div>
+            <div class="logo-text">Environmental<br>Protection<br>Agency</div>
+        </div>
+        <div class="nav-sections-wrapper">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item">Dashboard</a>
+                <a href="new-notice.html" class="nav-item">New Notice</a>
+                <a href="DocumentLibrary.html" class="nav-item active">Document Library</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Workflow</div>
+                <a href="my-tasks.html" class="nav-item">My Tasks</a>
+                <a href="Active-Reviews.html" class="nav-item">Active Reviews</a>
+                <a href="pending-approvals.html" class="nav-item">Pending Approvals</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Views</div>
+                <a href="calendar.html" class="nav-item">Calendar</a>
+                <a href="team.html" class="nav-item">Team</a>
+                <a href="analytics.html" class="nav-item">Analytics</a>
+                <a href="reports.html" class="nav-item">Reports</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="settings.html" class="nav-item">Settings</a>
+                <a href="help.html" class="nav-item">Help</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Scrollable Content Wrapper (Main + Right Sidebar) -->
+    <div class="content-wrapper">
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <div class="container">
+                <!-- Official Header -->
+                <header>
+                    <div class="header-seal">📜</div>
+                    <div class="header-content">
+                        <div class="department">Environmental Protection Agency</div>
+                        <h1>Federal Register Notice (FRN) Approval Workflow</h1>
+                        <div class="tagline">Document Library Page</div>
+                    </div>
+                </header>
+
+                <!-- ====================================== -->
+                <!-- PAGE CONTENT GOES HERE -->
+                <!-- ====================================== -->
+                
+                <!-- Filters -->
+                <div class="filters-bar">
+                    <div class="filter-group">
+                        <label class="filter-label">Status</label>
+                        <select class="filter-select" id="library-status-filter">
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="completed">Published</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Document Type</label>
+                        <select class="filter-select" id="library-type-filter">
+                            <option value="all">All Types</option>
+                            <option value="rule">Proposed Rule</option>
+                            <option value="final">Final Rule</option>
+                            <option value="notice">Notice</option>
+                            <option value="guidance">Guidance</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Office</label>
+                        <select class="filter-select" id="library-office-filter">
+                            <option value="all">All Offices</option>
+                            <option value="oppt">Chemical Safety</option>
+                            <option value="ow">Water</option>
+                            <option value="oar">Air & Radiation</option>
+                            <option value="olem">Land & Emergency</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Date Range</label>
+                        <select class="filter-select" id="library-date-filter">
+                            <option value="all">All Time</option>
+                            <option value="week">Past Week</option>
+                            <option value="month">Past Month</option>
+                            <option value="quarter">Past Quarter</option>
+                            <option value="year">Past Year</option>
+                        </select>
+                    </div>
+                    <div class="sort-icon-wrap">
+                        <button class="sort-icon-btn" id="library-sort-filter" type="button" data-sort-order="newest" aria-label="Sort documents newest first" title="Sort: Newest First">
+                            <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                                <path d="M3 4.5h7a.5.5 0 0 0 0-1H3a.5.5 0 0 0 0 1Zm0 4h5a.5.5 0 0 0 0-1H3a.5.5 0 0 0 0 1Zm0 4h3a.5.5 0 0 0 0-1H3a.5.5 0 0 0 0 1Zm9.146-8.354a.5.5 0 0 1 .708 0l1.5 1.5a.5.5 0 0 1-.708.708L13 5.707V12.5a.5.5 0 0 1-1 0V5.707l-.646.647a.5.5 0 1 1-.708-.708l1.5-1.5Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="filters-search">
+                        <input type="text" class="search-input" id="library-search" placeholder="Search by Document ID, Title, or Keywords...">
+                        <button class="search-btn" id="library-search-btn">Search</button>
+                    </div>
+                </div>
+
+                <!-- Document List -->
+                <div class="document-list" id="document-library-list"></div>
+                
+            </div>
+
+            <script>
+                const libraryDocuments = (window.FRN_DATA && window.FRN_DATA.documents) || [];
+                const librarySearch = document.getElementById('library-search');
+                const librarySearchBtn = document.getElementById('library-search-btn');
+                const libraryStatusFilter = document.getElementById('library-status-filter');
+                const libraryTypeFilter = document.getElementById('library-type-filter');
+                const libraryOfficeFilter = document.getElementById('library-office-filter');
+                const libraryDateFilter = document.getElementById('library-date-filter');
+                const librarySortFilter = document.getElementById('library-sort-filter');
+                const libraryList = document.getElementById('document-library-list');
+
+                function parseLibraryDate(value) {
+                    const date = new Date(value + 'T00:00:00');
+                    date.setHours(0, 0, 0, 0);
+                    return date;
+                }
+
+                function formatLibraryDate(value) {
+                    return parseLibraryDate(value).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                }
+
+                function matchesDateRange(doc, range) {
+                    if (range === 'all') return true;
+                    const now = new Date();
+                    now.setHours(0, 0, 0, 0);
+                    const ageDays = Math.round((now - parseLibraryDate(doc.lastUpdated)) / 86400000);
+                    if (range === 'week') return ageDays <= 7;
+                    if (range === 'month') return ageDays <= 31;
+                    if (range === 'quarter') return ageDays <= 93;
+                    if (range === 'year') return ageDays <= 366;
+                    return true;
+                }
+
+                function renderLibraryStats() {
+                    const sidebar = document.getElementById('library-sidebar-stats');
+                    const published = libraryDocuments.filter(doc => doc.status === 'completed').length;
+                    const active = libraryDocuments.filter(doc => doc.status === 'active').length;
+                    const pending = libraryDocuments.filter(doc => doc.status === 'pending').length;
+
+                    sidebar.innerHTML = `
+                        <h3>Library Statistics</h3>
+                        <div class="quick-stat">
+                            <div class="stat-value">${libraryDocuments.length}</div>
+                            <div class="stat-label">Total Documents</div>
+                        </div>
+                        <div class="quick-stat">
+                            <div class="stat-value">${active}</div>
+                            <div class="stat-label">Active Reviews</div>
+                        </div>
+                        <div class="quick-stat">
+                            <div class="stat-value">${published}</div>
+                            <div class="stat-label">Published</div>
+                        </div>
+                        <div class="quick-stat">
+                            <div class="stat-value">${pending}</div>
+                            <div class="stat-label">Pending Approval</div>
+                        </div>
+                    `;
+                }
+
+                function renderDetailRecord(label, value) {
+                    return `
+                        <div class="detail-record">
+                            <div class="detail-label">${label}</div>
+                            <div class="detail-value">${value || 'Not Provided'}</div>
+                        </div>
+                    `;
+                }
+
+                function renderLibraryDocuments() {
+                    const query = librarySearch.value.trim().toLowerCase();
+                    const status = libraryStatusFilter.value;
+                    const type = libraryTypeFilter.value;
+                    const office = libraryOfficeFilter.value;
+                    const dateRange = libraryDateFilter.value;
+                    const sortOrder = librarySortFilter.dataset.sortOrder || 'newest';
+
+                    const filtered = libraryDocuments.filter(doc => {
+                        const matchesQuery = !query || [
+                            doc.id,
+                            doc.title,
+                            doc.currentStage,
+                            doc.assignee,
+                            doc.submittedBy,
+                            doc.office,
+                            doc.typeLabel
+                        ].join(' ').toLowerCase().includes(query);
+                        const matchesStatus = status === 'all' || doc.status === status;
+                        const matchesType = type === 'all' || doc.type === type;
+                        const matchesOffice = office === 'all' || doc.officeCode === office;
+                        return matchesQuery && matchesStatus && matchesType && matchesOffice && matchesDateRange(doc, dateRange);
+                    }).sort((a, b) => {
+                        const aTime = parseLibraryDate(a.lastUpdated).getTime();
+                        const bTime = parseLibraryDate(b.lastUpdated).getTime();
+                        return sortOrder === 'oldest' ? aTime - bTime : bTime - aTime;
+                    });
+
+                    libraryList.innerHTML = filtered.length ? filtered.map((doc, index) => `
+                        <div class="doc-card">
+                            <div class="doc-main" data-doc-id="${doc.id}">
+                                <div class="doc-info">
+                                    <div class="doc-header-row">
+                                        <div class="doc-id">${doc.id}</div>
+                                        <div class="doc-status ${doc.status === 'completed' ? 'status-completed' : doc.status === 'pending' ? 'status-pending' : 'status-active'}">${doc.statusLabel}</div>
+                                    </div>
+                                    <div class="doc-title">${doc.title}</div>
+                                    <div class="doc-meta">
+                                        <div class="meta-item">
+                                            <div class="meta-label">Current Version</div>
+                                            <div class="meta-value">${doc.currentVersion}</div>
+                                        </div>
+                                        <div class="meta-item">
+                                            <div class="meta-label">Current Stage</div>
+                                            <div class="meta-value">${doc.currentStage}</div>
+                                        </div>
+                                        <div class="meta-item">
+                                            <div class="meta-label">Last Updated</div>
+                                            <div class="meta-value">${formatLibraryDate(doc.lastUpdated)}</div>
+                                        </div>
+                                        <div class="meta-item">
+                                            <div class="meta-label">Submitted By</div>
+                                            <div class="meta-value">${doc.submittedBy}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="expand-btn" id="btn-doc-${index}" type="button" onclick="window.toggleStandaloneDocumentLibraryDetails(event, '${index}')">Details</button>
+                            </div>
+                            <div class="doc-details" id="details-doc-${index}">
+                                <div class="details-content">
+                                    <div class="details-section">
+                                        <div class="details-title">General Information</div>
+                                        <div class="details-grid">
+                                            ${renderDetailRecord('Document Type', doc.typeLabel)}
+                                            ${renderDetailRecord('Originating Office', doc.originatingOffice)}
+                                            ${renderDetailRecord('Current Stage', doc.currentStage)}
+                                            ${renderDetailRecord('Stage Owner', doc.stageOwner)}
+                                            ${renderDetailRecord('Submitted Date', formatLibraryDate(doc.submittedDate))}
+                                            ${renderDetailRecord('Due Date', formatLibraryDate(doc.dueDate))}
+                                            ${renderDetailRecord('Last Updated', formatLibraryDate(doc.lastUpdated))}
+                                            ${renderDetailRecord('Submitted By', doc.submittedBy)}
+                                            ${renderDetailRecord('Current Version', doc.currentVersion)}
+                                            ${renderDetailRecord('Status', doc.statusLabel)}
+                                        </div>
+                                    </div>
+                                    <div class="details-section">
+                                        <div class="details-title">Summary</div>
+                                        <div class="summary-panel">${doc.summary}</div>
+                                    </div>
+                                    <div class="details-actions">
+                                        <a class="review-doc-btn" href="#active-reviews" onclick="window.openStandaloneDocumentReview(event, '${encodeURIComponent(doc.id)}')">Review Document</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('') : '<div class="doc-card"><div class="doc-main"><div class="doc-info"><div class="doc-title">No documents match the current filters.</div></div></div></div>';
+
+                    renderLibraryStats();
+                }
+
+                function toggleDetails(docIndex) {
+                    const details = document.getElementById('details-doc-' + docIndex);
+                    const btn = document.getElementById('btn-doc-' + docIndex);
+                    if (!details || !btn) return;
+
+                    const willExpand = !details.classList.contains('expanded');
+                    details.classList.toggle('expanded', willExpand);
+                    btn.classList.toggle('expanded', willExpand);
+                    details.style.maxHeight = willExpand ? `${details.scrollHeight || 420}px` : '0px';
+                }
+
+                window.toggleStandaloneDocumentLibraryDetails = (event, docIndex) => {
+                    if (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    toggleDetails(docIndex);
+                };
+
+                window.openStandaloneDocumentReview = (event, encodedDocId) => {
+                    if (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    const targetHref = `Active-Reviews.html?doc=${encodedDocId}`;
+                    if (typeof window.navigateFRN === 'function') {
+                        window.navigateFRN('active-reviews', targetHref);
+                    } else {
+                        window.location.href = targetHref;
+                    }
+                };
+
+                function initLibraryPage() {
+                    [libraryStatusFilter, libraryTypeFilter, libraryOfficeFilter, libraryDateFilter].forEach(filter => {
+                        filter.addEventListener('change', renderLibraryDocuments);
+                    });
+                    librarySortFilter.addEventListener('click', () => {
+                        const nextOrder = librarySortFilter.dataset.sortOrder === 'oldest' ? 'newest' : 'oldest';
+                        librarySortFilter.dataset.sortOrder = nextOrder;
+                        librarySortFilter.title = nextOrder === 'oldest' ? 'Sort: Oldest First' : 'Sort: Newest First';
+                        librarySortFilter.setAttribute('aria-label', nextOrder === 'oldest' ? 'Sort documents oldest first' : 'Sort documents newest first');
+                        renderLibraryDocuments();
+                    });
+                    librarySearch.addEventListener('input', renderLibraryDocuments);
+                    librarySearchBtn.addEventListener('click', renderLibraryDocuments);
+                    renderLibraryDocuments();
+                }
+
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', initLibraryPage, { once: true });
+                } else {
+                    initLibraryPage();
+                }
+            </script>
+            
+
+            <!-- Disclaimer Pane - EXACT COPY FROM 7-STAGE APPROVAL -->
+            <div class="disclaimer-pane">
+                <div class="disclaimer-content">
+                    <div class="disclaimer-text">
+                        <p class="disclaimer-title">DISCLAIMER</p>
+                        <p class="disclaimer-body">Official EPA PMTaRP product. Authorized personnel only. Subject to federal recordkeeping requirements (44 U.S.C. § 31, EPA Records Schedule 0155). Unauthorized access subject to 18 U.S.C. § 1030.</p>
+                        <div class="disclaimer-links">
+                            <a href="#" class="disclaimer-link">Contact Us</a>
+                            <span class="disclaimer-separator">|</span>
+                            <a href="#" class="disclaimer-link">Support</a>
+                            <span class="disclaimer-separator">|</span>
+                            <a href="#" class="disclaimer-link">Privacy Policy</a>
+                            <span class="disclaimer-separator">|</span>
+                            <a href="#" class="disclaimer-link">Terms of Use</a>
+                        </div>
+                        <p class="disclaimer-version">Version 2.12.1 | Official Use Only</p>
+                    </div>
+                    <div class="disclaimer-stamp">
+                        <div class="pmtarp-stamp">
+                            <div class="stamp-text">
+                                <div class="stamp-top">OFFICIAL</div>
+                                <div class="stamp-main">PMTaRP</div>
+                                <div class="stamp-subtitle">Project Management<br>Tracking & Reporting Tool</div>
+                                <div class="stamp-bottom">PRODUCT</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar (Quick Stats Pane) -->
+        <aside class="right-sidebar">
+            <div class="right-sidebar-content">
+                <!-- ====================================== -->
+                <!-- RIGHT SIDEBAR CONTENT GOES HERE -->
+                <!-- ====================================== -->
+                
+                <div class="sidebar-section" id="library-sidebar-stats"></div>
+            </div>
+        </aside>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,11 @@
+{
+  "appDisplayName": "EPA FRN Approval System",
+  "description": "EPA Federal Register Notice (FRN) Approval Workflow",
+  "environmentId": "327b4bdb-2d11-e9d8-bd50-67b13cf7871b",
+  "region": "prod",
+  "buildPath": "./dist",
+  "buildEntryPoint": "index.html",
+  "localAppUrl": "http://127.0.0.1:3000",
+  "appId": "6af6b98c-ca0c-4489-8144-22ee9fce2d3a",
+  "version": "1.0"
+}

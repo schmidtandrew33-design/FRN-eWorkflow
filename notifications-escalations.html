@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications and Escalations - EPA FRN Approval System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/shared.css">
+    <style>
+        :root {
+            --navy: #002147;
+            --gold: #b8860b;
+            --burgundy: #800020;
+            --cream: #faf8f3;
+            --parchment: #f4f1e8;
+            --light-gray: #e0e0e0;
+            --gray: #666;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Source Serif 4', serif; background: var(--cream); color: var(--navy); overflow-x: hidden; }
+
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+            margin-left: 285px;
+            width: calc(100vw - 285px);
+            min-height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .main-content {
+            flex: 1;
+            min-height: 100vh;
+            padding: 0 0.25rem;
+            background: var(--cream);
+        }
+
+        .container {
+            margin: 0;
+            max-width: none;
+            padding: 0.3rem 1rem 2.5rem;
+        }
+
+        header {
+            background: white;
+            border: 3px solid var(--navy);
+            border-top: 8px solid var(--gold);
+            padding: 1.2rem 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .header-seal {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 4px solid var(--gold);
+            background: linear-gradient(135deg, var(--navy), var(--burgundy));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            flex-shrink: 0;
+        }
+
+        .department {
+            font-size: 1.3rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2.35rem;
+            color: var(--navy);
+            margin-bottom: 0.35rem;
+        }
+
+        .tagline {
+            font-size: 1.05rem;
+            color: var(--burgundy);
+            font-weight: 800;
+        }
+
+        .section {
+            background: white;
+            border: 2px solid var(--navy);
+            border-left: 6px solid var(--gold);
+            margin-bottom: 1rem;
+            padding: 1.15rem 1.2rem 1.25rem;
+        }
+
+        .section h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.35rem;
+            color: var(--navy);
+            margin-bottom: 1rem;
+        }
+
+        .section-intro {
+            font-size: 0.95rem;
+            color: var(--gray);
+            line-height: 1.55;
+            margin-bottom: 1rem;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .settings-card {
+            background: var(--parchment);
+            border: 2px solid var(--navy);
+            padding: 1rem;
+        }
+
+        .settings-card h3 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1rem;
+            margin-bottom: 0.85rem;
+            color: var(--navy);
+        }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.85rem 1rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .field label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--gray);
+            font-weight: 700;
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            padding: 0.72rem 0.8rem;
+            border: 2px solid var(--navy);
+            background: white;
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.92rem;
+            color: var(--navy);
+        }
+
+        .field textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .toggle-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .toggle-row {
+            padding-bottom: 0.85rem;
+            border-bottom: 1px solid rgba(0, 33, 71, 0.15);
+        }
+
+        .toggle-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .toggle-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .toggle-copy { flex: 1; }
+
+        .toggle-title {
+            font-size: 0.96rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.25rem;
+        }
+
+        .toggle-description {
+            font-size: 0.85rem;
+            color: var(--gray);
+            line-height: 1.45;
+        }
+
+        .toggle-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .toggle-expand-btn {
+            width: 34px;
+            height: 34px;
+            border: 2px solid var(--navy);
+            background: white;
+            color: var(--navy);
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .toggle-expand-btn:hover {
+            background: var(--parchment);
+            border-color: var(--gold);
+        }
+
+        .toggle-expand-btn[aria-expanded="true"] {
+            background: var(--navy);
+            color: var(--gold);
+        }
+
+        .channel-editor {
+            display: none;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(0, 33, 71, 0.12);
+        }
+
+        .channel-editor.is-open {
+            display: block;
+        }
+
+        .channel-editor label {
+            display: block;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--gray);
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+
+        .channel-editor textarea {
+            width: 100%;
+            min-height: 110px;
+            padding: 0.72rem 0.8rem;
+            border: 2px solid var(--navy);
+            background: white;
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.92rem;
+            color: var(--navy);
+            resize: vertical;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 56px;
+            height: 30px;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            inset: 0;
+            background: #c3c8d0;
+            border: 2px solid var(--navy);
+            transition: 0.25s ease;
+            cursor: pointer;
+            border-radius: 999px;
+        }
+
+        .slider::before {
+            content: "";
+            position: absolute;
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            top: 4px;
+            background: white;
+            border: 2px solid var(--navy);
+            transition: 0.25s ease;
+            border-radius: 999px;
+        }
+
+        .toggle-switch input:checked + .slider {
+            background: var(--gold);
+        }
+
+        .toggle-switch input:checked + .slider::before {
+            transform: translateX(24px);
+        }
+
+        .table-container {
+            border: 2px solid var(--navy);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th,
+        td {
+            padding: 0.8rem 0.85rem;
+            border-bottom: 1px solid rgba(0, 33, 71, 0.15);
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: var(--navy);
+            color: var(--gold);
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.85rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.2rem;
+            border: 2px solid var(--navy);
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.25s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--navy);
+        }
+
+        .btn-secondary:hover {
+            background: var(--parchment);
+        }
+
+        .btn-primary {
+            background: var(--navy);
+            color: var(--gold);
+            border-color: var(--gold);
+        }
+
+        .btn-primary:hover {
+            background: var(--gold);
+            color: var(--navy);
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 0.28rem 0.6rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border: 1px solid var(--navy);
+            background: white;
+        }
+
+        .pill.live {
+            background: rgba(184, 134, 11, 0.16);
+            color: var(--navy);
+        }
+
+        .disclaimer-pane {
+            background: var(--navy);
+            border-top: 8px solid var(--gold);
+            margin-top: 1rem;
+            padding: 0;
+        }
+
+        .disclaimer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            gap: 1.8rem;
+        }
+
+        .disclaimer-text {
+            flex: 1;
+            text-align: center;
+            color: var(--cream);
+        }
+
+        .disclaimer-title {
+            font-size: 1.32rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 0.45rem;
+            letter-spacing: 0.15em;
+        }
+
+        .disclaimer-body {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 0.6rem;
+        }
+
+        .disclaimer-links {
+            margin-bottom: 0.75rem;
+        }
+
+        .disclaimer-link {
+            font-size: 0.96rem;
+            color: var(--gold);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .disclaimer-link:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .disclaimer-separator {
+            color: var(--gold);
+            margin: 0 0.45rem;
+        }
+
+        .disclaimer-version {
+            font-size: 0.84rem;
+            color: var(--cream);
+            margin: 0 0 0.2rem 0;
+        }
+
+        .pmtarp-stamp {
+            background: transparent;
+            color: #c92a2a;
+            width: 108px;
+            height: 108px;
+            font-family: 'Libre Baskerville', serif;
+            border: 5px solid #c92a2a;
+            border-radius: 50%;
+            text-align: center;
+            transform: rotate(-12deg);
+            box-shadow: 0 0 0 2px #c92a2a, inset 0 0 12px rgba(201,42,42,0.1);
+            opacity: 0.88;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .stamp-top,
+        .stamp-main,
+        .stamp-subtitle,
+        .stamp-bottom {
+            color: #c92a2a;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .stamp-main { font-size: 1.2rem; }
+        .stamp-subtitle { font-size: 0.5rem; line-height: 1.2; }
+
+        @media (max-width: 1080px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="left-sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-seal">
+                <img src="Images/EPA Seal.png" alt="EPA Seal" style="width:100%; height:100%; object-fit:cover; object-position:0% center; border-radius:50%;">
+            </div>
+            <div class="logo-text">Environmental<br>Protection<br>Agency</div>
+        </div>
+
+        <div class="nav-sections-wrapper">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item">Dashboard</a>
+                <a href="new-notice.html" class="nav-item">New Notice</a>
+                <a href="DocumentLibrary.html" class="nav-item">Document Library</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Workflow</div>
+                <a href="my-tasks.html" class="nav-item">My Tasks</a>
+                <a href="Active-Reviews.html" class="nav-item">Active Reviews</a>
+                <a href="pending-approvals.html" class="nav-item">Pending Approvals</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Views</div>
+                <a href="calendar.html" class="nav-item">Calendar</a>
+                <a href="team.html" class="nav-item">Team</a>
+                <a href="analytics.html" class="nav-item">Analytics</a>
+                <a href="leaderboards.html" class="nav-item">Leaderboards</a>
+                <a href="reports.html" class="nav-item">Reports</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="settings.html" class="nav-item active">Settings</a>
+                <a href="help.html" class="nav-item">Help</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content-wrapper">
+        <div class="main-content">
+            <div class="container">
+                <header>
+                    <div class="header-seal">🔔</div>
+                    <div class="header-content">
+                        <div class="department">Environmental Protection Agency</div>
+                        <h1>Federal Register Notice (FRN) Approval Workflow</h1>
+                        <div class="tagline">Notifications and Escalations</div>
+                    </div>
+                </header>
+
+                <section class="section">
+                    <h2>Notification Routing</h2>
+                    <div class="section-intro">Manage delivery channels, recipient defaults, and timing behavior for workflow messages generated by the FRN approval system.</div>
+                    <div class="settings-grid">
+                        <div class="settings-card">
+                            <h3>Delivery Channels</h3>
+                            <div class="toggle-list">
+                                <div class="toggle-row">
+                                    <div class="toggle-header">
+                                        <div class="toggle-copy">
+                                            <div class="toggle-title">Stage Start Notification</div>
+                                            <div class="toggle-description">Notify the assigned reviewer when a document enters a new stage and is ready for work to begin.</div>
+                                        </div>
+                                        <div class="toggle-actions">
+                                            <button class="toggle-expand-btn" type="button" aria-expanded="false" aria-controls="channel-editor-stage-start">+</button>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="channel-editor" id="channel-editor-stage-start">
+                                        <label for="channel-body-stage-start">Email Body</label>
+                                        <textarea id="channel-body-stage-start">A document has entered a new review stage and is now assigned to you. Please open the FRN workflow system, review the package materials, and begin your stage review.</textarea>
+                                    </div>
+                                </div>
+                                <div class="toggle-row">
+                                    <div class="toggle-header">
+                                        <div class="toggle-copy">
+                                            <div class="toggle-title">Ready for Approval Notification</div>
+                                            <div class="toggle-description">Alert the next approver when a document has finished review and is ready for approval action.</div>
+                                        </div>
+                                        <div class="toggle-actions">
+                                            <button class="toggle-expand-btn" type="button" aria-expanded="false" aria-controls="channel-editor-ready-approval">+</button>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="channel-editor" id="channel-editor-ready-approval">
+                                        <label for="channel-body-ready-approval">Email Body</label>
+                                        <textarea id="channel-body-ready-approval">This FRN document has completed its current review work and is ready for your approval action. Please review the package, comments, and attachments, then approve or reject the document as appropriate.</textarea>
+                                    </div>
+                                </div>
+                                <div class="toggle-row">
+                                    <div class="toggle-header">
+                                        <div class="toggle-copy">
+                                            <div class="toggle-title">Document Approved Notification</div>
+                                            <div class="toggle-description">Send confirmation when a document is approved and advanced to the next stage of the workflow.</div>
+                                        </div>
+                                        <div class="toggle-actions">
+                                            <button class="toggle-expand-btn" type="button" aria-expanded="false" aria-controls="channel-editor-approved">+</button>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="channel-editor" id="channel-editor-approved">
+                                        <label for="channel-body-approved">Email Body</label>
+                                        <textarea id="channel-body-approved">Your FRN document has been approved and advanced to the next stage of the workflow. Please review the updated stage assignment and any follow-on actions that may now be required.</textarea>
+                                    </div>
+                                </div>
+                                <div class="toggle-row">
+                                    <div class="toggle-header">
+                                        <div class="toggle-copy">
+                                            <div class="toggle-title">Document Rejected Notification</div>
+                                            <div class="toggle-description">Notify document owners and current stage reviewers when a document is rejected and returned for correction.</div>
+                                        </div>
+                                        <div class="toggle-actions">
+                                            <button class="toggle-expand-btn" type="button" aria-expanded="false" aria-controls="channel-editor-rejected">+</button>
+                                            <label class="toggle-switch">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="channel-editor" id="channel-editor-rejected">
+                                        <label for="channel-body-rejected">Email Body</label>
+                                        <textarea id="channel-body-rejected">This FRN document has been rejected and returned for correction. Please review the rejection notes, update the document package, and resubmit it when the required changes have been completed.</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <h3>Default Timing Rules</h3>
+                            <div class="field-grid">
+                                <div class="field">
+                                    <label>Daily Digest Time</label>
+                                    <select>
+                                        <option>7:00 AM ET</option>
+                                        <option selected>8:00 AM ET</option>
+                                        <option>9:00 AM ET</option>
+                                    </select>
+                                </div>
+                                <div class="field">
+                                    <label>Reminder Lead Time</label>
+                                    <select>
+                                        <option>4 Hours</option>
+                                        <option selected>1 Business Day</option>
+                                        <option>2 Business Days</option>
+                                    </select>
+                                </div>
+                                <div class="field">
+                                    <label>Quiet Hours Start</label>
+                                    <select>
+                                        <option>6:00 PM ET</option>
+                                        <option selected>7:00 PM ET</option>
+                                        <option>8:00 PM ET</option>
+                                    </select>
+                                </div>
+                                <div class="field">
+                                    <label>Quiet Hours End</label>
+                                    <select>
+                                        <option>5:00 AM ET</option>
+                                        <option selected>6:00 AM ET</option>
+                                        <option>7:00 AM ET</option>
+                                    </select>
+                                </div>
+                                <div class="field full-width">
+                                    <label>Default Notification Note</label>
+                                    <textarea>Use immediate delivery for escalations and signer-related workflow events. All other operational reminders may follow the morning digest schedule.</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2>Escalation Rules</h2>
+                    <div class="section-intro">Define when stage owners, managers, and executive reviewers should be notified that work is overdue or blocked.</div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Escalation Trigger</th>
+                                    <th>Escalates After</th>
+                                    <th>Recipients</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Stage Due Date Missed</td>
+                                    <td>Immediately</td>
+                                    <td>Stage Owner, Supervisor</td>
+                                    <td><span class="pill live">Live</span></td>
+                                </tr>
+                                <tr>
+                                    <td>No Reviewer Activity</td>
+                                    <td>2 Business Days</td>
+                                    <td>Stage Owner, Workflow Coordinator</td>
+                                    <td><span class="pill live">Live</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Signer Packet Delayed</td>
+                                    <td>1 Business Day</td>
+                                    <td>Official Signer, Program Lead</td>
+                                    <td><span class="pill live">Live</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Publication Date At Risk</td>
+                                    <td>3 Business Days Before Target</td>
+                                    <td>Policy Lead, Publication Team</td>
+                                    <td><span class="pill live">Live</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2>Message Templates</h2>
+                    <div class="section-intro">Customize the standard wording used for escalations and notifications sent during notice review and approval.</div>
+                    <div class="settings-grid">
+                        <div class="settings-card">
+                            <h3>Escalation Message</h3>
+                            <div class="field-grid">
+                                <div class="field full-width">
+                                    <label>Template Body</label>
+                                    <textarea>This FRN package has exceeded the expected review window for its current stage. Please review the outstanding items, add any necessary comments, and take action to keep the package on schedule.</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <h3>Reminder Message</h3>
+                            <div class="field-grid">
+                                <div class="field full-width">
+                                    <label>Template Body</label>
+                                    <textarea>This is a reminder that the selected FRN package is approaching its current stage deadline. Please complete your review, update comments, or reassign the package if additional time is needed.</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <a class="btn btn-secondary" href="settings.html">Back to Settings</a>
+                        <button class="btn btn-primary" type="button">Save Notification Rules</button>
+                    </div>
+                </section>
+
+                <div class="disclaimer-pane">
+                    <div class="disclaimer-content">
+                        <div class="disclaimer-text">
+                            <p class="disclaimer-title">DISCLAIMER</p>
+                            <p class="disclaimer-body">Official EPA PMTaRP product. Authorized personnel only. Subject to federal recordkeeping requirements (44 U.S.C. § 31, EPA Records Schedule 0155). Unauthorized access subject to 18 U.S.C. § 1030.</p>
+                            <div class="disclaimer-links">
+                                <a href="#" class="disclaimer-link">Contact Us</a>
+                                <span class="disclaimer-separator">|</span>
+                                <a href="#" class="disclaimer-link">Support</a>
+                                <span class="disclaimer-separator">|</span>
+                                <a href="#" class="disclaimer-link">Privacy Policy</a>
+                                <span class="disclaimer-separator">|</span>
+                                <a href="#" class="disclaimer-link">Terms of Use</a>
+                            </div>
+                            <p class="disclaimer-version">Version 2.12.1 | Official Use Only</p>
+                        </div>
+                        <div class="disclaimer-stamp">
+                            <div class="pmtarp-stamp">
+                                <div>
+                                    <div class="stamp-top">Official</div>
+                                    <div class="stamp-main">PMTaRP</div>
+                                    <div class="stamp-subtitle">Project Management<br>Tracking & Reporting Tool</div>
+                                    <div class="stamp-bottom">Product</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function () {
+            document.querySelectorAll('.toggle-expand-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.getAttribute('aria-controls');
+                    const editor = targetId ? document.getElementById(targetId) : null;
+                    if (!editor) return;
+                    const isOpen = editor.classList.toggle('is-open');
+                    button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                    button.textContent = isOpen ? '−' : '+';
+                });
+            });
+        })();
+    </script>
+</body>
+</html>

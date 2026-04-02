@@ -1,0 +1,11 @@
+{
+  "appDisplayName": "FRN Smoke Test",
+  "description": "Minimal Power Apps code app smoke test",
+  "environmentId": "327b4bdb-2d11-e9d8-bd50-67b13cf7871b",
+  "region": "prod",
+  "buildPath": "./dist",
+  "buildEntryPoint": "index.html",
+  "localAppUrl": "http://127.0.0.1:3000",
+  "appId": "da957550-5a2d-4c2a-ba1d-0eb61ee164a7",
+  "version": "1.0"
+}

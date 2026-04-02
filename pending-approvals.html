@@ -1,0 +1,3616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Approvals - EPA FRN Approval System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="src/shared.css">
+    <script src="src/frn-data.js"></script>
+    <style>
+        /* === COPY ALL CSS FROM Active Reviews.html === */
+        /* This ensures exact same styling */
+        
+        :root {
+            --navy: #002147;
+            --gold: #b8860b;
+            --burgundy: #800020;
+            --cream: #faf8f3;
+            --parchment: #f4f1e8;
+            --light-gray: #e0e0e0;
+            --gray: #666;
+            --approved-green: #2e7d32;
+            --pending-amber: #f57c00;
+            --success-green: #2e7d32;
+            --completed-green: #00A86B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Serif 4', serif;
+            background: var(--cream);
+            color: var(--navy);
+            overflow: hidden;
+        }
+
+        /* Sidebar layout is provided by src/shared.css so it matches dashboard exactly. */
+
+        /* Content Wrapper */
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+            margin-left: 285px;
+            width: calc(100vw - 285px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            height: 100vh;
+        }
+
+        .content-wrapper::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .content-wrapper::-webkit-scrollbar-track {
+            background: var(--light-gray);
+        }
+
+        .content-wrapper::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 4px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            min-height: 100vh;
+            padding: 0 0.25rem;
+            margin-bottom: 0.25rem;
+            flex: 1 1 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .container {
+            margin: 0;
+            width: 100%;
+            max-width: none;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            padding-top: 0.3rem;
+            padding-bottom: 3rem;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            border: 3px solid var(--navy);
+            border-top: 8px solid var(--gold);
+            padding: 1.2rem 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 1.2rem;
+        }
+
+        .header-seal {
+            width: 110px;
+            height: 110px;
+            background: linear-gradient(135deg, var(--navy), var(--burgundy));
+            border-radius: 50%;
+            border: 4px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.1rem;
+            font-weight: 800;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .header-content {
+            margin-left: 0;
+            flex: 1;
+        }
+
+        .department {
+            font-size: 1.458rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2.4rem;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .tagline {
+            font-size: 1.15rem;
+            color: var(--burgundy);
+            font-weight: 800;
+        }
+
+        /* Disclaimer Pane - EXACT COPY */
+        .disclaimer-pane {
+            background: var(--navy);
+            border-top: 8px solid var(--gold);
+            margin: 0;
+            margin-top: 3rem;
+            padding: 0;
+        }
+
+        .disclaimer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            gap: 1.8rem;
+        }
+
+        .disclaimer-text {
+            flex: 1;
+            text-align: center;
+        }
+
+        .disclaimer-title {
+            font-size: 1.32rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin: 0 0 0.45rem 0;
+            letter-spacing: 0.15em;
+        }
+
+        .disclaimer-body {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--cream);
+            margin: 0 0 0.6rem 0;
+        }
+
+        .disclaimer-links {
+            margin-bottom: 0.75rem;
+        }
+
+        .disclaimer-link {
+            font-size: 0.96rem;
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 0.96rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .disclaimer-link:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .disclaimer-separator {
+            color: var(--gold);
+            margin: 0 0.45rem;
+        }
+
+        .disclaimer-version {
+            font-size: 0.84rem;
+            color: var(--gray);
+            margin: 0;
+            margin-bottom: 1.2rem;
+            padding: 0 0.1rem 0.3rem;
+        }
+        .disclaimer-stamp {
+            flex-shrink: 0;
+        }
+
+        .pmtarp-stamp {
+            background: transparent;
+            color: #c92a2a;
+            width: 108px;
+            height: 108px;
+            font-family: 'Libre Baskerville', serif;
+            border: 5px solid #c92a2a;
+            border-radius: 50%;
+            text-align: center;
+            transform: rotate(-12deg);
+            box-shadow: 
+                0 0 0 2px #c92a2a,
+                inset 0 0 12px rgba(201, 42, 42, 0.1);
+            opacity: 0.88;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .pmtarp-stamp::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            background: 
+                radial-gradient(circle at 20% 30%, transparent 40%, rgba(201, 42, 42, 0.05) 41%),
+                radial-gradient(circle at 70% 60%, transparent 35%, rgba(201, 42, 42, 0.05) 36%),
+                radial-gradient(circle at 40% 80%, transparent 30%, rgba(201, 42, 42, 0.05) 31%);
+            pointer-events: none;
+        }
+
+        .stamp-text {
+            padding: 0.3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stamp-top {
+            font-size: 0.36rem;
+            letter-spacing: 0.25em;
+            font-weight: 700;
+            margin-bottom: 0.24rem;
+            text-transform: uppercase;
+            font-style: italic;
+        }
+
+        .stamp-main {
+            font-size: 1.08rem;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            margin-bottom: 0.18rem;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 0px rgba(201, 42, 42, 0.3);
+        }
+
+        .stamp-subtitle {
+            font-size: 0.3rem;
+            letter-spacing: 0.08em;
+            line-height: 1.4;
+            margin-bottom: 0.24rem;
+            font-weight: 600;
+            font-style: normal;
+        }
+
+        .stamp-bottom {
+            font-size: 0.36rem;
+            letter-spacing: 0.25em;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-style: italic;
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            width: 315px;
+            background: var(--parchment);
+            padding: 2rem 1.5rem;
+            border-left: 3px solid var(--navy);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            overflow: hidden;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-section h3 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.32rem;
+            color: var(--navy);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--gold);
+            border-top: 2px solid var(--gold);
+            padding: 0.5rem 0;
+            text-align: center;
+        }
+
+        .right-sidebar-content {
+            overflow-y: auto;
+            padding-right: 0.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            flex: 1;
+            scrollbar-width: none; /* hide scrollbar (Firefox) */
+        }
+
+        .right-sidebar-content::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+
+        /* ADD PAGE-SPECIFIC STYLES BELOW THIS LINE */
+        /* ========================================= */
+        .document-info,
+        .workflow-timeline,
+        .stage-details {
+            background: white;
+            border: 3px solid var(--navy);
+            border-top: 8px solid var(--gold);
+            padding: 2rem 1rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Slightly tighter workflow timeline to reduce height by ~25% */
+        .workflow-timeline {
+            padding: 1rem 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .document-info h2,
+        .workflow-timeline h2,
+        .stage-details h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2.25rem;
+            margin-bottom: 0.8rem;
+            color: var(--navy);
+            text-align: center;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 0.4rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.6rem 1.2rem;
+        }
+
+        .info-item {
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--gray);
+            font-weight: 700;
+            margin-bottom: 0;
+            min-width: 40%;
+            text-align: left;
+        }
+
+        .info-value {
+            font-size: 1.05rem;
+            color: var(--navy);
+            font-weight: 700;
+            flex: 1;
+            padding-left: 0.4rem;
+        }
+
+        /* Workflow Timeline */
+        .timeline-container {
+            position: relative;
+            padding: 1.6rem 0; /* 80% of previous height */
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 4.5rem;
+            left: 5%;
+            right: 5%;
+            height: 3px;
+            background: var(--light-gray);
+            z-index: 0;
+        }
+
+        .timeline-stages {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 0.4rem;
+            min-height: 210px;
+        }
+
+        .stage-circle {
+            width: 110px;
+            height: 82px;
+            border-radius: 0;
+            border: none;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            clip-path: polygon(0% 0%, 70% 0%, 100% 50%, 70% 100%, 0% 100%, 20% 50%);
+            position: relative;
+            overflow: visible;
+            color: var(--navy);
+        }
+
+        .stage-circle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(0, 33, 71, 0.25);
+        }
+
+        .stage-number {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .stage-icon {
+            font-size: 1.6rem;
+        }
+
+        .stage-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--navy);
+        }
+
+        .stage-role {
+            font-size: 0.8rem;
+            color: var(--gray);
+            font-style: italic;
+        }
+
+        .stage-status {
+            font-size: 0.75rem;
+            padding: 0.35rem 0.8rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            margin-top: auto;
+        }
+
+        .stage.completed .stage-circle {
+            background: var(--completed-green);
+            color: var(--navy);
+        }
+
+        .stage.completed .stage-number {
+            color: var(--navy);
+        }
+
+        .stage.completed .stage-status {
+            background: var(--completed-green);
+            color: var(--navy);
+        }
+
+        .stage.active .stage-circle {
+            background: var(--gold);
+            box-shadow: 0 0 0 6px rgba(184, 134, 11, 0.2);
+            color: var(--navy);
+        }
+
+        .stage.active .stage-number {
+            color: var(--navy);
+        }
+
+        .stage.active .stage-status {
+            background: var(--pending-amber);
+            color: white;
+        }
+
+        .stage.pending .stage-circle {
+            background: white;
+            border-color: var(--light-gray);
+        }
+
+        .stage.pending .stage-number,
+        .stage.pending .stage-icon {
+            color: var(--gray);
+        }
+
+        .stage.pending .stage-status {
+            background: var(--light-gray);
+            color: var(--gray);
+        }
+
+        .stage-circle::before,
+        .stage-circle::after {
+            content: "";
+            position: absolute;
+            clip-path: inherit;
+            pointer-events: none;
+        }
+
+        /* Border layer */
+        .stage-circle::before {
+            inset: 0;
+            background: var(--navy);
+            z-index: 1;
+        }
+
+        /* Fill layer inset to create visible border */
+        .stage-circle::after {
+            inset: 0;
+            background: inherit;
+            z-index: 2;
+            transform: scale(0.88);
+            transform-origin: center;
+        }
+
+        .stage-circle > * {
+            position: relative;
+            z-index: 3;
+        }
+
+        .stage.signer .stage-title {
+            color: var(--burgundy);
+        }
+
+        /* Stage Details */
+        .stage-details h2 {
+            margin-bottom: 2rem;
+        }
+
+        .workflow-timeline {
+            padding: 0.75rem 0.65rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .workflow-timeline h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.55rem;
+            padding-bottom: 0.3rem;
+        }
+
+        .timeline-meta-inline {
+            gap: 0.6rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .timeline-container {
+            padding: 1rem 0 0.8rem;
+        }
+
+        .timeline-line {
+            top: 3.8rem;
+        }
+
+        .timeline-stages {
+            gap: 0.75rem;
+        }
+
+        .stage {
+            min-height: 158px;
+            gap: 0.28rem;
+        }
+
+        .stage-circle {
+            width: 92px;
+            height: 68px;
+        }
+
+        .stage-number {
+            font-size: 1.15rem;
+        }
+
+        .stage-icon {
+            font-size: 1.3rem;
+        }
+
+        .stage-title {
+            font-size: 0.78rem;
+        }
+
+        .stage-role {
+            font-size: 0.72rem;
+        }
+
+        .stage-status {
+            font-size: 0.66rem;
+            padding: 0.25rem 0.55rem;
+        }
+
+        .document-info.compact-75 {
+            padding: 1.35rem 0.85rem;
+            margin-bottom: 2rem;
+        }
+
+        .document-info.compact-75 h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.55rem;
+            padding-bottom: 0.3rem;
+        }
+
+        .document-info.compact-75 .info-grid {
+            gap: 0.4rem 0.9rem;
+        }
+
+        .document-info.compact-75 .info-item {
+            padding: 0.25rem 0;
+        }
+
+        .document-info.compact-75 .info-label {
+            font-size: 0.74rem;
+        }
+
+        .document-info.compact-75 .info-value {
+            font-size: 0.92rem;
+        }
+
+        .stage-details.current-status.compact-60 {
+            padding: 0.85rem 0.75rem;
+            margin-bottom: 1.4rem;
+        }
+
+        .stage-details.current-status.compact-60 h2 {
+            font-size: 1.45rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .stage-details.current-status.compact-60 .detail-subsection {
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .stage-details.current-status.compact-60 .detail-subsection h3 {
+            font-size: 0.92rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stage-details.current-status.compact-60 .version-grid {
+            gap: 0.75rem;
+        }
+
+        .stage-details.current-status.compact-60 .version-card {
+            padding: 0.85rem;
+        }
+
+        .stage-details.current-status.compact-60 .version-label {
+            font-size: 0.68rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .stage-details.current-status.compact-60 .version-number {
+            font-size: 1.2rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .stage-details.current-status.compact-60 .version-date,
+        .stage-details.current-status.compact-60 .version-submitter,
+        .stage-details.current-status.compact-60 .version-changes {
+            font-size: 0.72rem;
+            margin-bottom: 0.22rem;
+        }
+
+        .stage-details.current-status.compact-60 .version-history-toggle {
+            margin-top: 0.75rem;
+        }
+
+        .stage-details.contacts-responsibilities.compact-75,
+        .stage-details.details-timeline.compact-75,
+        .stage-details.attachments-section.compact-75 {
+            padding: 1.35rem 0.95rem;
+            margin-bottom: 2rem;
+        }
+
+        .stage-details.contacts-responsibilities.compact-75 h2,
+        .stage-details.details-timeline.compact-75 h2,
+        .stage-details.attachments-section.compact-75 h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .stage-details.contacts-responsibilities.compact-75 .detail-subsection,
+        .stage-details.details-timeline.compact-75 .detail-subsection,
+        .stage-details.attachments-section.compact-75 .detail-subsection {
+            margin-bottom: 1.2rem;
+            padding-bottom: 1rem;
+        }
+
+        .stage-details.contacts-responsibilities.compact-75 .parties-grid,
+        .stage-details.details-timeline.compact-75 .timeline-detail-grid {
+            gap: 0.75rem;
+        }
+
+        .stage-details.contacts-responsibilities.compact-75 .party-card,
+        .stage-details.details-timeline.compact-75 .timeline-item,
+        .stage-details.attachments-section.compact-75 .attachment-item {
+            padding: 0.85rem;
+        }
+
+        .stage-details.attachments-section.compact-75 .attachments-list {
+            gap: 0.65rem;
+        }
+
+        .stage-details.details-timeline.compact-75 {
+            padding: 0.6rem 0.7rem;
+            margin-bottom: 1rem;
+        }
+
+        .stage-details.details-timeline.compact-75 h2 {
+            font-size: 1.28rem;
+            margin-bottom: 0.45rem;
+        }
+
+        .stage-details.details-timeline.compact-75 .detail-subsection {
+            margin-bottom: 0.4rem;
+            padding-bottom: 0.4rem;
+        }
+
+        .stage-details.details-timeline.compact-75 .timeline-detail-grid {
+            gap: 0.4rem 0.55rem;
+        }
+
+        .stage-details.details-timeline.compact-75 .timeline-item {
+            padding: 0.45rem 0.55rem;
+        }
+
+        .stage-details.details-timeline.compact-75 .timeline-label {
+            font-size: 0.62rem;
+            margin-bottom: 0.14rem;
+        }
+
+        .stage-details.details-timeline.compact-75 .timeline-value {
+            font-size: 0.74rem;
+            line-height: 1.3;
+        }
+
+        .stage-details.attachments-section,
+        .stage-details.comments-section {
+            padding: 0.8rem 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .stage-details.attachments-section h2,
+        .stage-details.comments-section h2 {
+            font-size: 1.35rem;
+            margin-bottom: 0.55rem;
+        }
+
+        .stage-details.attachments-section .detail-subsection,
+        .stage-details.comments-section .detail-subsection {
+            margin-bottom: 0.6rem;
+            padding-bottom: 0.55rem;
+        }
+
+        .stage-details.attachments-section .subsection-header-with-button,
+        .stage-details.comments-section .subsection-header-with-button {
+            margin-bottom: 0.6rem;
+        }
+
+        .stage-details.attachments-section .upload-btn,
+        .stage-details.comments-section .upload-btn {
+            padding: 0.38rem 0.85rem;
+            font-size: 0.72rem;
+        }
+
+        .stage-details.attachments-section .attachments-list {
+            gap: 0.45rem;
+        }
+
+        .stage-details.attachments-section .attachment-item {
+            padding: 0.45rem 0.55rem;
+            gap: 0.55rem;
+        }
+
+        .stage-details.attachments-section .attachment-icon {
+            width: 28px;
+            height: 28px;
+            font-size: 0.8rem;
+        }
+
+        .stage-details.attachments-section .attachment-name {
+            font-size: 0.82rem;
+        }
+
+        .stage-details.attachments-section .attachment-meta {
+            font-size: 0.72rem;
+        }
+
+        .stage-details.comments-section .comment-filters {
+            padding: 0.75rem 0.85rem;
+        }
+
+        .stage-details.comments-section .filter-controls {
+            gap: 0.75rem;
+        }
+
+        .stage-details.comments-section .filter-group {
+            gap: 0.3rem;
+        }
+
+        .stage-details.comments-section .filter-group label,
+        .stage-details.comments-section .filter-title {
+            font-size: 0.68rem;
+        }
+
+        .stage-details.comments-section .filter-select {
+            padding: 0.42rem 0.5rem;
+            font-size: 0.76rem;
+        }
+
+        .stage-details.comments-section .comments-conversation {
+            gap: 0.45rem;
+        }
+
+        .stage-details.comments-section .version-divider {
+            margin: 0.75rem 0 0.2rem;
+            padding: 0.25rem 0;
+            font-size: 0.72rem;
+        }
+
+        .stage-details.comments-section .comment-bubble {
+            padding: 0.6rem 0.7rem;
+            width: 58%;
+            max-width: 58%;
+            min-width: 58%;
+        }
+
+        .stage-details.comments-section .comment-header {
+            margin-bottom: 0.18rem;
+        }
+
+        .stage-details.comments-section .comment-author,
+        .stage-details.comments-section .comment-time {
+            font-size: 0.7rem;
+        }
+
+        .stage-details.comments-section .comment-text {
+            font-size: 0.76rem;
+            line-height: 1.35;
+        }
+
+        .stage-details.comments-section .comment-input-section {
+            margin-top: 0.8rem;
+            border-top: 1px solid var(--gold);
+            padding-top: 0.7rem;
+        }
+
+        .stage-details.comments-section .comment-input-section h4 {
+            font-size: 0.85rem;
+            margin-bottom: 0.45rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--navy);
+        }
+
+        .stage-details.comments-section .comment-input-box {
+            border: 1px solid var(--light-gray);
+            background: var(--parchment);
+            padding: 0.55rem;
+        }
+
+        .stage-details.comments-section .comment-textarea {
+            width: 100%;
+            min-height: 72px;
+            resize: vertical;
+            padding: 0.55rem;
+            border: 1px solid var(--light-gray);
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.8rem;
+            background: white;
+        }
+
+        .stage-details.comments-section .comment-input-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.55rem;
+            margin-top: 0.45rem;
+        }
+
+        .stage-details.comments-section .comment-submit-btn,
+        .stage-details.comments-section .comment-cancel-btn {
+            padding: 0.38rem 0.8rem;
+            font-size: 0.72rem;
+            font-weight: 800;
+            border: 2px solid var(--navy);
+            cursor: pointer;
+        }
+
+        .stage-details.comments-section .comment-submit-btn {
+            background: var(--navy);
+            color: var(--gold);
+        }
+
+        .stage-details.comments-section .comment-cancel-btn {
+            background: white;
+            color: var(--navy);
+        }
+
+        .detail-subsection {
+            margin-bottom: 2.25rem;
+            padding-bottom: 1.75rem;
+            border-bottom: 2px solid var(--light-gray);
+        }
+
+        .detail-subsection:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .detail-subsection h3 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.2rem;
+            color: var(--navy);
+            margin-bottom: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        /* Version control */
+        .version-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .version-card {
+            background: var(--parchment);
+            border: 2px solid var(--navy);
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .version-card.current {
+            border-color: var(--gold);
+            box-shadow: 0 6px 20px rgba(184, 134, 11, 0.2);
+            background: white;
+        }
+
+        .version-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 33, 71, 0.15);
+        }
+
+        .flat-detail-list {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.6rem 0.8rem;
+        }
+
+        .flat-detail-item {
+            padding: 0.1rem 0 0.45rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .flat-detail-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .flat-detail-heading {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--gray);
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .flat-detail-title {
+            font-size: 0.92rem;
+            color: var(--navy);
+            font-weight: 700;
+            margin-bottom: 0.14rem;
+        }
+
+        .flat-detail-text {
+            font-size: 0.76rem;
+            line-height: 1.4;
+            color: var(--navy);
+            margin-bottom: 0.08rem;
+        }
+
+        @media (max-width: 1200px) {
+            .flat-detail-list {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 760px) {
+            .flat-detail-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .version-label {
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--gray);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .version-number {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.25rem;
+        }
+
+        .version-date,
+        .version-submitter,
+        .version-changes {
+            font-size: 0.95rem;
+            color: var(--navy);
+            margin-bottom: 0.35rem;
+        }
+
+        .version-submitter {
+            color: var(--burgundy);
+            font-weight: 700;
+        }
+
+        .version-history-toggle {
+            text-align: center;
+            margin-top: 1.25rem;
+        }
+
+        .toggle-btn {
+            background: var(--navy);
+            color: var(--gold);
+            border: 2px solid var(--gold);
+            padding: 0.6rem 1.2rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: var(--gold);
+            color: var(--navy);
+        }
+
+        .version-history-container {
+            margin-top: 1rem;
+        }
+
+        .version-history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .version-history-table th,
+        .version-history-table td {
+            border: 1px solid var(--light-gray);
+            padding: 0.65rem;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .version-history-table th {
+            background: var(--parchment);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 800;
+        }
+
+        .version-controls {
+            margin: 1rem 0 1.5rem;
+            background: var(--parchment);
+            border: 1px solid var(--light-gray);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .version-display {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            min-width: 180px;
+        }
+
+        .version-display .version-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--gray);
+            font-weight: 700;
+        }
+
+        .version-display .version-current {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--navy);
+            letter-spacing: 0.08em;
+        }
+
+        .version-display .version-hint {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+
+/* Contacts */
+.parties-grid {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+}
+
+.party-card {
+    background: var(--parchment);
+    border: 2px solid var(--navy);
+            padding: 1rem;
+            min-width: 240px;
+}
+
+        .party-role {
+            font-size: 0.85rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.3rem;
+        }
+
+        .party-name {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--navy);
+        }
+
+        .party-title,
+        .party-dept,
+        .party-contact {
+            font-size: 0.95rem;
+            color: var(--navy);
+            margin-top: 0.2rem;
+        }
+
+        /* Timeline detail grid */
+        .timeline-detail-grid,
+        .metadata-grid,
+        .comment-filters .filter-controls,
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .timeline-item,
+        .metadata-item,
+        .checklist-item {
+            background: var(--parchment);
+            border: 1px solid var(--light-gray);
+            padding: 1rem;
+        }
+
+        .timeline-label,
+        .metadata-label,
+        .checklist-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--gray);
+            letter-spacing: 0.08em;
+            margin-bottom: 0.35rem;
+            font-weight: 700;
+        }
+
+        .timeline-value,
+        .metadata-value {
+            font-size: 1rem;
+            color: var(--navy);
+            font-weight: 700;
+        }
+
+        .timeline-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin: -0.25rem 0 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .timeline-meta-item {
+            min-width: 45%;
+        }
+
+        .timeline-meta-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--gray);
+            font-weight: 700;
+        }
+
+        .timeline-meta-value {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--navy);
+        }
+
+        .timeline-meta-inline {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            margin: -0.25rem 0 0.75rem;
+        }
+
+        .timeline-meta-inline .meta-pair {
+            display: flex;
+            align-items: baseline;
+            gap: 0.35rem;
+            min-width: 0;
+        }
+
+        .timeline-meta-inline .meta-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--gray);
+            font-weight: 700;
+        }
+
+        .timeline-meta-inline .meta-value {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--navy);
+            min-width: 0;
+        }
+
+        /* Timeline list style (match Document Information) */
+        .timeline-detail-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.6rem 1.2rem;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+            padding: 0.4rem 0;
+            border: 0;
+            border-bottom: 1px solid var(--light-gray);
+            background: transparent;
+        }
+
+        .timeline-item .timeline-label {
+            min-width: 40%;
+            text-align: left;
+            margin-bottom: 0;
+        }
+
+        .timeline-item .timeline-value {
+            flex: 1;
+            padding-left: 0.4rem;
+        }
+
+        /* Comments (match 7-stage page) */
+        .comment-filters {
+            background: var(--navy);
+            border: 3px solid var(--navy);
+            border-top: 8px solid var(--gold);
+            padding: 1.5rem;
+            margin-bottom: 0;
+        }
+
+        .filter-header {
+            margin-bottom: 1rem;
+        }
+
+        .filter-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .filter-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0;
+        }
+
+        .filter-select {
+            padding: 0.65rem;
+            border: 2px solid var(--gold);
+            background: white;
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.85rem;
+            color: var(--navy);
+            cursor: pointer;
+            font-weight: 600;
+        }
+        /* Ensure document dropdowns are wide enough for full values */
+        #docTitleSelect,
+        #frnSelect {
+            width: 320px;
+            max-width: 100%;
+        }
+
+        .comments-conversation {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .version-divider {
+            position: relative;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 900;
+            color: var(--burgundy);
+            margin: 1.5rem 0 0.5rem;
+            padding: 0.5rem 0;
+        }
+        .version-divider::before,
+        .version-divider::after {
+            content: "";
+            position: absolute;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: var(--gold);
+        }
+        .version-divider::before { top: 0; }
+        .version-divider::after { bottom: 0; }
+
+        .comment-bubble {
+            padding: 1rem;
+            border-radius: 8px;
+            border: 2px solid var(--navy);
+            background: white;
+            width: 65%;
+            max-width: 65%;
+            min-width: 65%;
+            color: var(--navy);
+        }
+
+        .comment-bubble.left {
+            margin-right: auto;
+            border-left-width: 6px;
+            border-left-color: var(--gold);
+        }
+
+        .comment-bubble.right {
+            margin-left: auto;
+            border-right-width: 6px;
+            border-right-color: var(--navy);
+        }
+
+        .comment-bubble.torres {
+            background: #dbeafe; /* pastel blue */
+            border-color: #90caf9;
+            color: var(--navy);
+        }
+
+        .comment-bubble.torres .comment-time { color: var(--gray); }
+
+        .comment-bubble.chen {
+            background: #ffe3ed; /* pastel pink */
+            border-color: #f48fb1;
+            color: var(--navy);
+        }
+
+        .comment-bubble.chen .comment-time { color: var(--gray); }
+
+        .comment-bubble.martinez {
+            background: #e3f8e5; /* pastel green */
+            border-color: #a5d6a7;
+            color: var(--navy);
+        }
+        .comment-bubble.martinez .comment-time { color: var(--gray); }
+
+        .comment-bubble.johnson {
+            background: #f1f8e9; /* pastel olive */
+            border-color: #c5e1a5;
+            color: var(--navy);
+        }
+        .comment-bubble.johnson .comment-time { color: var(--gray); }
+
+        .comment-bubble.default {
+            background: #f5f1e8;
+            border-color: var(--gold);
+            color: var(--navy);
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.35rem;
+            font-weight: 800;
+        }
+
+        .comment-time {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .comment-form {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            background: var(--parchment);
+            border: 1px solid var(--light-gray);
+            padding: 0.75rem;
+            border-radius: 6px;
+        }
+
+        .comment-form label {
+            font-weight: 800;
+            color: var(--navy);
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            min-height: 90px;
+            padding: 0.75rem;
+            border: 1px solid var(--light-gray);
+            resize: vertical;
+            font-family: 'Source Serif 4', serif;
+        }
+
+        .comment-form-bubble {
+            background: var(--parchment);
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            padding: 0.5rem;
+        }
+
+        .comment-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .comment-submit {
+            background: var(--navy);
+            color: var(--gold);
+            border: 2px solid var(--navy);
+            padding: 0.5rem 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .comment-submit:hover {
+            background: var(--gold);
+            color: var(--navy);
+        }
+
+        /* Attachments */
+        .attachments-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        .attachment-item {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            border: 1px solid var(--light-gray);
+            padding: 0.75rem;
+            background: var(--parchment);
+        }
+
+        .attachment-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: var(--navy);
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+        }
+
+        .attachment-name {
+            font-weight: 800;
+            color: var(--navy);
+        }
+
+        .attachment-meta {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Sign off */
+        .signoff-grid,
+        .tools-grid,
+        .meeting-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .signoff-card,
+        .tool-card,
+        .meeting-item {
+            border: 2px solid var(--navy);
+            padding: 1rem;
+            background: white;
+        }
+
+        .signoff-status {
+            display: inline-block;
+            padding: 0.4rem 0.7rem;
+            border-radius: 4px;
+            font-weight: 800;
+        }
+
+        .status-complete {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .status-active {
+            background: var(--pending-amber);
+            color: white;
+        }
+
+        .status-pending {
+            background: var(--light-gray);
+            color: var(--navy);
+        }
+
+        /* Sidebar calendar and stats */
+        .calendar {
+            background: white;
+            border: 2px solid var(--navy);
+            padding: 0.6rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .calendar-header,
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 0.2rem;
+            width: 100%;
+        }
+
+        .calendar-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .cal-nav {
+            background: transparent;
+            border: none;
+            color: var(--navy);
+            width: 24px;
+            height: 24px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cal-nav:hover {
+            color: var(--gold);
+        }
+
+        #calendar-title {
+            flex: 1;
+            text-align: center;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .day-label {
+            text-align: center;
+            font-weight: 800;
+            color: var(--navy);
+        }
+
+        .calendar-day {
+            text-align: center;
+            padding: 0.45rem 0.25rem;
+            background: var(--parchment);
+            border-radius: 4px;
+            border: 1px solid var(--light-gray);
+            font-weight: 700;
+            color: var(--navy);
+            box-sizing: border-box;
+        }
+
+        .calendar-day.empty {
+            background: transparent;
+            border: 0;
+        }
+
+        .calendar-day.today {
+            background: #2196f3;
+            border-color: #0d47a1;
+            color: white;
+            box-shadow: 0 0 0 4px rgba(13, 71, 161, 0.3);
+            font-weight: 900;
+        }
+
+        .calendar-day.deadline {
+            background: #ef5350;
+            border-color: #c62828;
+            color: white;
+        }
+        .calendar-day.deadline.completed {
+            background: #66bb6a;
+            border-color: #2e7d32;
+            color: #0b3d16;
+        }
+
+        .calendar-legend {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-top: 0.4rem;
+            flex-wrap: nowrap;
+        }
+
+        .legend-item-cal {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.2rem;
+            font-size: 0.85rem;
+            min-width: 0;
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+
+        .legend-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            border: 1px solid var(--navy);
+            display: inline-block;
+            flex: 0 0 auto;
+        }
+
+        .legend-box.today { background: #64b5f6; border-color: #1e88e5; }
+        .legend-box.deadline { background: #ef5350; border-color: #c62828; }
+        .legend-box.deadline.completed { background: #66bb6a; border-color: #2e7d32; }
+
+        .quick-stat {
+            background: white;
+            border: 2px solid var(--navy);
+            padding: 0.75rem;
+            margin-bottom: 0.6rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.1rem;
+            font-weight: 800;
+            color: var(--navy);
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .activity-item {
+            border-left: 4px solid var(--gold);
+            padding-left: 0.75rem;
+        }
+
+        .activity-time {
+            font-weight: 800;
+            color: var(--navy);
+        }
+
+        .activity-text {
+            color: var(--gray);
+        }
+
+        .reviewer-card {
+            border: 1px solid var(--light-gray);
+            padding: 0.75rem;
+            background: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .reviewer-name {
+            font-weight: 800;
+            color: var(--navy);
+        }
+
+        .reviewer-role {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .reviewer-status {
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-weight: 800;
+        }
+
+        .reviewer-status.completed { background: var(--success-green); color: white; }
+        .reviewer-status.active { background: var(--pending-amber); color: white; }
+        .reviewer-status.pending { background: var(--light-gray); color: var(--navy); }
+
+        .subsection-header-with-button {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .document-info-toggle-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 0.85rem;
+        }
+
+        .document-info-expanded {
+            display: none;
+            margin-top: 0.85rem;
+            padding-top: 0.85rem;
+            border-top: 1px solid var(--gold);
+        }
+
+        .document-info-expanded.is-open {
+            display: block;
+        }
+
+        .upload-btn {
+            background: var(--navy);
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            padding: 0.5rem 1.2rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .upload-btn:hover {
+            background: var(--gold);
+            color: var(--navy);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .document-info .timeline-meta-inline {
+            margin-top: 0.65rem;
+            margin-bottom: 1rem;
+        }
+
+        .approval-actions-panel {
+            margin: 1rem 0 1.1rem;
+            background: white;
+            border: 2px solid var(--navy);
+            padding: 1rem 1.1rem;
+        }
+
+        .approval-actions-panel h2 {
+            margin-bottom: 0.35rem;
+        }
+
+        .approval-actions-note {
+            color: var(--gray);
+            font-size: 0.95rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .approval-notes-label {
+            display: block;
+            font-weight: 800;
+            color: var(--navy);
+            margin-bottom: 0.45rem;
+        }
+
+        .approval-notes-input {
+            width: 100%;
+            min-height: 84px;
+            border: 1px solid var(--light-gray);
+            padding: 0.7rem 0.8rem;
+            resize: vertical;
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.98rem;
+            color: var(--navy);
+            background: var(--cream);
+        }
+
+        .approval-actions-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.9rem;
+            flex-wrap: wrap;
+            margin-top: 0.95rem;
+        }
+
+        .approval-action-btn {
+            min-width: 148px;
+            padding: 0.75rem 1.35rem;
+            border: 2px solid transparent;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+
+        .approval-action-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .approval-action-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .approval-action-btn.accept {
+            background: var(--approved-green);
+            border-color: #1b5e20;
+            color: white;
+        }
+
+        .approval-action-btn.reject {
+            background: #c62828;
+            border-color: #8e0000;
+            color: white;
+        }
+
+        .approval-action-btn.sign {
+            background: #1565c0;
+            border-color: #0d47a1;
+            color: white;
+        }
+
+        .approval-action-status {
+            margin-top: 0.8rem;
+            text-align: center;
+            font-weight: 700;
+            min-height: 1.3rem;
+            color: var(--navy);
+        }
+
+        .approval-action-status.error {
+            color: #b71c1c;
+        }
+
+        .approval-action-status.success {
+            color: #1b5e20;
+        }
+
+        .signoff-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .activity-user {
+            font-weight: 800;
+            color: var(--navy);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Sidebar (inlined from nav.html) -->
+    <nav class="left-sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-seal" style="overflow: hidden; width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid var(--gold); background: white;">
+                <img src="Images/EPA Seal.png" alt="EPA Logo" style="width: 100%; height: 100%; object-fit: cover; object-position: 0% center; border-radius: 50%;" />
+            </div>
+            <div class="logo-text">Environmental<br>Protection<br>Agency</div>
+        </div>
+        <div class="nav-sections-wrapper">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item">Dashboard</a>
+                <a href="new-notice.html" class="nav-item">New Notice</a>
+                <a href="DocumentLibrary.html" class="nav-item">Document Library</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Workflow</div>
+                <a href="my-tasks.html" class="nav-item">My Tasks</a>
+                <a href="Active-Reviews.html" class="nav-item">Active Reviews</a>
+                <a href="pending-approvals.html" class="nav-item active">Pending Approvals</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Views</div>
+                <a href="calendar.html" class="nav-item">Calendar</a>
+                <a href="team.html" class="nav-item">Team</a>
+                <a href="analytics.html" class="nav-item">Analytics</a>
+                <a href="reports.html" class="nav-item">Reports</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="settings.html" class="nav-item">Settings</a>
+                <a href="help.html" class="nav-item">Help</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Scrollable Content Wrapper (Main + Right Sidebar) -->
+    <div class="content-wrapper">
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <div class="container">
+                <!-- Official Header -->
+                <header>
+                    <div class="header-seal">📜</div>
+                    <div class="header-content">
+                        <div class="department">Environmental Protection Agency</div>
+                        <h1>Federal Register Notice (FRN) Approval Workflow</h1>
+                        <div class="tagline">Pending Approvals</div>
+                    </div>
+                </header>
+
+                <!-- Document Information -->
+                <section class="document-info compact-75">
+                    <h2>Document Information</h2>
+                    <div class="timeline-meta-inline">
+                        <div class="meta-pair">
+                            <div class="meta-label">Document Title:</div>
+                            <div class="meta-value">
+                                <select id="docTitleSelect" class="filter-select"></select>
+                            </div>
+                        </div>
+                        <div class="meta-pair">
+                            <div class="meta-label">FRN ID:</div>
+                            <div class="meta-value">
+                                <select id="frnSelect" class="filter-select"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="document-info-toggle-row">
+                        <button id="document-info-toggle" class="toggle-btn" type="button">
+                            <span class="toggle-icon">&#x25bc;</span> Show Full Document Information
+                        </button>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Document Title</div>
+                            <div class="info-value" id="info-doc-title">Chemical Safety Review - Q4 2025</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">FRN ID</div>
+                            <div class="info-value" id="info-frn">EPA-HQ-OPPT-2025-0123</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Current Stage</div>
+                            <div class="info-value" id="info-current-stage">Stage 3 - Technical Review</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Stage Owner</div>
+                            <div class="info-value" id="info-owner">Dr. Sarah Chen</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Next Reviewer</div>
+                            <div class="info-value" id="info-next">Marcus Johnson (Policy)</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Stage Deadline</div>
+                            <div class="info-value" id="info-deadline">Dec 5, 2025 at 5:00 PM</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Document Classification</div>
+                            <div class="info-value" id="info-classification">Type II - Significant Action</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Regulatory Category</div>
+                            <div class="info-value">Chemical Safety Assessment</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Priority Level</div>
+                            <div class="info-value">High Priority</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Originating Office</div>
+                            <div class="info-value">Office of Chemical Safety & Pollution Prevention</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Public Comment Period</div>
+                            <div class="info-value">60 Days (Required)</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Federal Register Target</div>
+                            <div class="info-value">December 20, 2025</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Related Dockets</div>
+                            <div class="info-value">EPA-HQ-OPPT-2025-0123, EPA-HQ-OPPT-2025-0089</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Statutory Authority</div>
+                            <div class="info-value">TSCA Section 6(a)</div>
+                        </div>
+                    </div>
+                    <div id="document-info-expanded" class="document-info-expanded">
+                        <div class="detail-subsection">
+                            <h3>Stage Details &amp; Timeline</h3>
+                            <div class="timeline-detail-grid">
+                                <div class="timeline-item">
+                                    <div class="timeline-label">Stage Started</div>
+                                    <div class="timeline-value">December 1, 2025 at 9:30 AM</div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-label">SLA Due Date</div>
+                                    <div class="timeline-value">December 5, 2025 at 5:00 PM</div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-label">Estimated Completion</div>
+                                    <div class="timeline-value">December 4, 2025 (1 day early)</div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-label">Time in Stage</div>
+                                    <div class="timeline-value">2 days, 5 hours</div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-label">Time Remaining</div>
+                                    <div class="timeline-value">1 day, 14 hours</div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-label">Review Progress</div>
+                                    <div class="timeline-value">65% Complete</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-subsection">
+                            <h3>Technical Review - Current Status</h3>
+                            <div class="detail-subsection">
+                                <h3>Stage Contacts &amp; Responsibilities</h3>
+                                <div class="flat-detail-list">
+                                    <div class="flat-detail-item">
+                                        <div class="flat-detail-heading">Primary Reviewer</div>
+                                        <div class="flat-detail-title">Dr. Sarah Chen</div>
+                                        <div class="flat-detail-text">Senior Technical Analyst</div>
+                                        <div class="flat-detail-text">Technical Assessment Division</div>
+                                        <div class="flat-detail-text">sarah.chen@epa.gov | Ext. 4521</div>
+                                    </div>
+                                    <div class="flat-detail-item">
+                                        <div class="flat-detail-heading">Technical Advisor</div>
+                                        <div class="flat-detail-title">Dr. Robert Martinez</div>
+                                        <div class="flat-detail-text">Chief Scientist, Chemical Safety</div>
+                                        <div class="flat-detail-text">Office of Chemical Safety</div>
+                                        <div class="flat-detail-text">robert.martinez@epa.gov | Ext. 4189</div>
+                                    </div>
+                                    <div class="flat-detail-item">
+                                        <div class="flat-detail-heading">Stage Coordinator</div>
+                                        <div class="flat-detail-title">Emily Thompson</div>
+                                        <div class="flat-detail-text">Workflow Manager</div>
+                                        <div class="flat-detail-text">Document Processing Unit</div>
+                                        <div class="flat-detail-text">emily.thompson@epa.gov | Ext. 4002</div>
+                                    </div>
+                                    <div class="flat-detail-item">
+                                        <div class="flat-detail-heading">Next Stage Reviewer</div>
+                                        <div class="flat-detail-title">Marcus Johnson</div>
+                                        <div class="flat-detail-text">Senior Policy Analyst</div>
+                                        <div class="flat-detail-text">Policy & Strategy Division</div>
+                                        <div class="flat-detail-text">marcus.johnson@epa.gov | Ext. 4756</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="detail-subsection">
+                                <h3>Document Version Control</h3>
+                                <div class="flat-detail-list">
+                                    <div class="flat-detail-item">
+                                        <div class="flat-detail-heading">Version In</div>
+                                        <div class="flat-detail-title" id="versionInNumber">2.1</div>
+                                        <div class="flat-detail-text" id="versionInDate">Received: Dec 1, 2025 at 9:15 AM</div>
+                                        <div class="flat-detail-text" id="versionInFrom">From: David Park (Legal Review)</div>
+                                        <div class="flat-detail-text" id="versionInChanges">Changes: Legal language updated, 3 sections revised</div>
+                                    </div>
+                                    <div class="flat-detail-item">
+                                        <div class="flat-detail-heading">Current Working Version</div>
+                                        <div class="flat-detail-title" id="versionCurrentNumber">2.1 (Draft)</div>
+                                        <div class="flat-detail-text" id="versionCurDate">Last Modified: Dec 3, 2025 at 2:30 PM</div>
+                                        <div class="flat-detail-text" id="versionCurBy">By: Dr. Sarah Chen</div>
+                                        <div class="flat-detail-text" id="versionCurChanges">Changes: 7 technical comments added, 2 questions raised</div>
+                                    </div>
+                                    <div class="flat-detail-item">
+                                        <div class="flat-detail-heading">Version Out</div>
+                                        <div class="flat-detail-title" id="versionOutNumber">2.2 (Pending)</div>
+                                        <div class="flat-detail-text" id="versionOutDate">Expected: Dec 4, 2025</div>
+                                        <div class="flat-detail-text" id="versionOutTo">To: Marcus Johnson (Policy Review)</div>
+                                        <div class="flat-detail-text" id="versionOutChanges">Pending: Technical validation completion</div>
+                                    </div>
+                                </div>
+                                <div class="version-history-toggle">
+                                    <button class="toggle-btn" type="button">
+                                        <span class="toggle-icon">&#x25bc;</span> View Complete Version History
+                                    </button>
+                                </div>
+                                <div class="version-history-container" id="versionHistory" style="display: none;">
+                                    <table class="version-history-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Version</th>
+                                                <th>Date</th>
+                                                <th>Submitted By</th>
+                                                <th>Changes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tbody id="versionHistoryBody"></tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="stage-details comments-section compact-75">
+                    <h2>Review Questions &amp; Comments</h2>
+
+                <div class="detail-subsection">
+                    
+                    <!-- Comment Filters -->
+                    <div class="comment-filters">
+                        <div class="filter-header">
+                            <span class="filter-title">Filter Comments:</span>
+                        </div>
+                        <div class="filter-controls">
+                            <div class="filter-group">
+                                <label>Version</label>
+                                <select class="filter-select" id="versionFilter">
+                                    <option value="all">All Versions</option>
+                                    <option value="2.1" selected>Version 2.1 (Current)</option>
+                                    <option value="2.0">Version 2.0</option>
+                                    <option value="1.3">Version 1.3</option>
+                                    <option value="1.2">Version 1.2</option>
+                                    <option value="1.1">Version 1.1</option>
+                                    <option value="1.0">Version 1.0</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label>Person</label>
+                                <select class="filter-select" id="personFilter">
+                                    <option value="all">All People</option>
+                                    <option value="chen">Dr. Sarah Chen</option>
+                                    <option value="torres">Michael Torres</option>
+                                    <option value="martinez">Dr. Robert Martinez</option>
+                                    <option value="thompson">Emily Thompson</option>
+                                    <option value="park">David Park</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label>Sort By</label>
+                                <select class="filter-select" id="sortFilter">
+                                    <option value="newest">Newest First</option>
+                                    <option value="oldest">Oldest First</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comments-conversation">
+                        <!-- Version 2.1 Comments -->
+                        <div class="version-divider" data-version="2.1">
+                            <span>Version 2.1 - Current Working Version</span>
+                        </div>
+
+                        <!-- Comment from Dr. Sarah Chen -->
+                        <div class="comment-bubble left chen" data-version="2.1" data-person="chen" data-timestamp="2025-12-03T10:45">
+                            <div class="comment-header">
+                                <span class="comment-author">Dr. Sarah Chen</span>
+                                <span class="comment-time">Dec 3, 2025 at 10:45 AM</span>
+                            </div>
+                            <div class="comment-text">
+                                In Section 4.2, the exposure assessment methodology needs clarification. Can you provide more detail on the sampling protocol used for environmental monitoring?
+                            </div>
+                        </div>
+
+                        <!-- Response from Michael Torres -->
+                        <div class="comment-bubble right torres" data-version="2.1" data-person="torres" data-timestamp="2025-12-03T14:15">
+                            <div class="comment-header">
+                                <span class="comment-author">Michael Torres</span>
+                                <span class="comment-time">Dec 3, 2025 at 2:15 PM</span>
+                            </div>
+                            <div class="comment-text">
+                                Good question. The sampling protocol follows EPA Method 8270D. I'll add a reference to the methodology appendix in the next revision.
+                            </div>
+                        </div>
+
+                        <!-- Comment from Dr. Sarah Chen -->
+                        <div class="comment-bubble left chen" data-version="2.1" data-person="chen" data-timestamp="2025-12-03T15:20">
+                            <div class="comment-header">
+                                <span class="comment-author">Dr. Sarah Chen</span>
+                                <span class="comment-time">Dec 3, 2025 at 3:20 PM</span>
+                            </div>
+                            <div class="comment-text">
+                                The risk characterization in Table 7 shows uncertainty factors, but the confidence intervals seem narrow given the data variability. Can you explain the statistical approach?
+                            </div>
+                        </div>
+
+                        <!-- Comment from Dr. Robert Martinez -->
+                        <div class="comment-bubble left martinez" data-version="2.1" data-person="martinez" data-timestamp="2025-12-03T16:05">
+                            <div class="comment-header">
+                                <span class="comment-author">Dr. Robert Martinez</span>
+                                <span class="comment-time">Dec 3, 2025 at 4:05 PM</span>
+                            </div>
+                            <div class="comment-text">
+                                I agree with Dr. Chen's concern. Additionally, the bioaccumulation factors in Section 5.3 need verification against the updated 2025 EPA guidance document.
+                            </div>
+                        </div>
+
+                        <!-- Response from Michael Torres -->
+                        <div class="comment-bubble right torres" data-version="2.1" data-person="torres" data-timestamp="2025-12-03T17:30">
+                            <div class="comment-header">
+                                <span class="comment-author">Michael Torres</span>
+                                <span class="comment-time">Dec 3, 2025 at 5:30 PM</span>
+                            </div>
+                            <div class="comment-text">
+                                We used Monte Carlo simulation with 10,000 iterations. I'll expand the statistical methods section and cross-reference with the 2025 guidance. Will have this updated by tomorrow morning.
+                            </div>
+                        </div>
+
+                        <!-- Comment from Dr. Sarah Chen -->
+                        <div class="comment-bubble left chen" data-version="2.1" data-person="chen" data-timestamp="2025-12-04T09:00">
+                            <div class="comment-header">
+                                <span class="comment-author">Dr. Sarah Chen</span>
+                                <span class="comment-time">Dec 4, 2025 at 9:00 AM</span>
+                            </div>
+                            <div class="comment-text">
+                                Section 6.1 references outdated toxicity data from 2022. Please update with the most recent IRIS assessment published in August 2025.
+                            </div>
+                        </div>
+
+                        <!-- Comment from Dr. Sarah Chen -->
+                        <div class="comment-bubble left chen" data-version="2.1" data-person="chen" data-timestamp="2025-12-04T11:30">
+                            <div class="comment-header">
+                                <span class="comment-author">Dr. Sarah Chen</span>
+                                <span class="comment-time">Dec 4, 2025 at 11:30 AM</span>
+                            </div>
+                            <div class="comment-text">
+                                Question about the sensitivity analysis: Were ecosystem services impacts considered in the economic valuation model?
+                            </div>
+                        </div>
+
+                        <!-- Response from Michael Torres -->
+                        <div class="comment-bubble right torres" data-version="2.1" data-person="torres" data-timestamp="2025-12-04T13:45">
+                            <div class="comment-header">
+                                <span class="comment-author">Michael Torres</span>
+                                <span class="comment-time">Dec 4, 2025 at 1:45 PM</span>
+                            </div>
+                            <div class="comment-text">
+                                Yes, ecosystem services were included using the EPA Eco-SAM framework. It's detailed in Appendix C, but I can add a summary to the main text for clarity.
+                            </div>
+                        </div>
+
+                        <!-- Comment from Emily Thompson -->
+                        <div class="comment-bubble left thompson" data-version="2.1" data-person="thompson" data-timestamp="2025-12-04T15:00">
+                            <div class="comment-header">
+                                <span class="comment-author">Emily Thompson</span>
+                                <span class="comment-time">Dec 4, 2025 at 3:00 PM</span>
+                            </div>
+                            <div class="comment-text">
+                                Please ensure all citations are in the correct EPA format before finalizing. I noticed a few inconsistencies in Section 3.
+                            </div>
+                        </div>
+
+                        <!-- Version 2.0 Comments -->
+                        <div class="version-divider" data-version="2.0">
+                            <span>Version 2.0 - Legal Review (Completed)</span>
+                        </div>
+
+                        <div class="comment-bubble left park" data-version="2.0" data-person="park" data-timestamp="2025-12-01T10:00">
+                            <div class="comment-header">
+                                <span class="comment-author">David Park</span>
+                                <span class="comment-time">Dec 1, 2025 at 10:00 AM</span>
+                            </div>
+                            <div class="comment-text">
+                                The statutory citations in Section 2 need to reference TSCA Section 6(a) instead of Section 5. This is critical for legal authority.
+                            </div>
+                        </div>
+
+                        <div class="comment-bubble right torres" data-version="2.0" data-person="torres" data-timestamp="2025-12-01T11:30">
+                            <div class="comment-header">
+                                <span class="comment-author">Michael Torres</span>
+                                <span class="comment-time">Dec 1, 2025 at 11:30 AM</span>
+                            </div>
+                            <div class="comment-text">
+                                Corrected. All statutory references have been updated to TSCA Section 6(a). Also added supporting case law citations.
+                            </div>
+                        </div>
+
+                        <div class="comment-bubble left park" data-version="2.0" data-person="park" data-timestamp="2025-12-01T14:00">
+                            <div class="comment-header">
+                                <span class="comment-author">David Park</span>
+                                <span class="comment-time">Dec 1, 2025 at 2:00 PM</span>
+                            </div>
+                            <div class="comment-text">
+                                Approved for advancement to Technical Review. All legal concerns addressed.
+                            </div>
+                        </div>
+
+                        <!-- Comment Input Box -->
+                        <div class="comment-input-section">
+                            <h4>Add Comment</h4>
+                            <div class="comment-input-box">
+                                <textarea class="comment-textarea" placeholder="Enter your comment or question here..." rows="4"></textarea>
+                                <div class="comment-input-actions">
+                                    <button class="comment-submit-btn">Submit Comment</button>
+                                    <button class="comment-cancel-btn">Clear</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </section>
+
+                <section class="stage-details attachments-section compact-75">
+                    <h2>Attached Documents</h2>
+                    <div class="detail-subsection">
+                        <div class="subsection-header-with-button">
+                            <h3>Attachments</h3>
+                            <button class="upload-btn">
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="margin-right: 0.5rem;">
+                                    <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2z"/>
+                                </svg>
+                                Upload
+                            </button>
+                        </div>
+                        <div class="attachments-list" id="attachedDocumentsList">
+                            <div class="attachment-item">
+                                <div class="attachment-icon">&#128462;</div>
+                                <div class="attachment-info">
+                                    <div class="attachment-name">Chemical_Safety_Review_Q4_2025_v2.1.pdf</div>
+                                    <div class="attachment-meta">Main Document | 2.4 MB | Modified Dec 1, 2025</div>
+                                </div>
+                            </div>
+                            <div class="attachment-item">
+                                <div class="attachment-icon">&#128462;</div>
+                                <div class="attachment-info">
+                                    <div class="attachment-name">Technical_Data_Analysis.xlsx</div>
+                                    <div class="attachment-meta">Supporting Data | 890 KB | Modified Nov 28, 2025</div>
+                                </div>
+                            </div>
+                            <div class="attachment-item">
+                                <div class="attachment-icon">&#128462;</div>
+                                <div class="attachment-info">
+                                    <div class="attachment-name">Legal_Review_Comments_Stage2.docx</div>
+                                    <div class="attachment-meta">Previous Stage Comments | 124 KB | Modified Dec 1, 2025</div>
+                                </div>
+                            </div>
+                            <div class="attachment-item">
+                                <div class="attachment-icon">&#128462;</div>
+                                <div class="attachment-info">
+                                    <div class="attachment-name">Risk_Assessment_Methodology.pdf</div>
+                                    <div class="attachment-meta">Reference Document | 1.8 MB | Modified Nov 20, 2025</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="approval-actions-panel">
+                    <h2>Approval Decision</h2>
+                    <p class="approval-actions-note">Accept advances the document to the next stage. Stage 6 requires a signature before it can be accepted. Reject returns the document to the beginning of the current stage and requires notes.</p>
+                    <label class="approval-notes-label" for="approvalDecisionNotes">Decision Notes</label>
+                    <textarea id="approvalDecisionNotes" class="approval-notes-input" placeholder="Enter decision notes. Required for rejection."></textarea>
+                    <div class="approval-actions-row">
+                        <button id="acceptDocumentBtn" class="approval-action-btn accept" type="button">Accept</button>
+                        <button id="rejectDocumentBtn" class="approval-action-btn reject" type="button">Reject</button>
+                        <button id="signDocumentBtn" class="approval-action-btn sign" type="button">Sign</button>
+                    </div>
+                    <div id="approvalActionStatus" class="approval-action-status" aria-live="polite"></div>
+                </section>
+
+            </div>
+
+            <!-- Disclaimer Pane - EXACT COPY FROM 7-STAGE APPROVAL -->
+            <div class="disclaimer-pane">
+                <div class="disclaimer-content">
+                    <div class="disclaimer-text">
+                        <p class="disclaimer-title">DISCLAIMER</p>
+                        <p class="disclaimer-body">Official EPA PMTaRP product. Authorized personnel only. Subject to federal recordkeeping requirements (44 U.S.C. § 31, EPA Records Schedule 0155). Unauthorized access subject to 18 U.S.C. § 1030.</p>
+                        <div class="disclaimer-links">
+                            <a href="#" class="disclaimer-link">Contact Us</a>
+                            <span class="disclaimer-separator">|</span>
+                            <a href="#" class="disclaimer-link">Support</a>
+                            <span class="disclaimer-separator">|</span>
+                            <a href="#" class="disclaimer-link">Privacy Policy</a>
+                            <span class="disclaimer-separator">|</span>
+                            <a href="#" class="disclaimer-link">Terms of Use</a>
+                        </div>
+                        <p class="disclaimer-version">Version 2.12.1 | Official Use Only</p>
+                    </div>
+                    <div class="disclaimer-stamp">
+                        <div class="pmtarp-stamp">
+                            <div class="stamp-text">
+                                <div class="stamp-top">OFFICIAL</div>
+                                <div class="stamp-main">PMTaRP</div>
+                                <div class="stamp-subtitle">Project Management<br>Tracking & Reporting Tool</div>
+                                <div class="stamp-bottom">PRODUCT</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        const calendarBase = new Date();
+const PENDING_APPROVAL_COMMENTS_KEY = 'frn_pending_approval_comments';
+const DOCUMENT_OVERRIDES_KEY = 'frn_document_overrides';
+let commentsData = {
+    "EPA-HQ-OPPT-2025-0123": [
+        {
+            "version": "2.1",
+            "person": "chen",
+            "timestamp": "2025-12-03T10:45",
+            "author": "Dr. Sarah Chen",
+            "side": "left",
+            "text": "In Section 4.2, the exposure assessment methodology needs clarification. Can you provide more detail on the sampling protocol used for environmental monitoring?"
+        },
+        {
+            "version": "2.1",
+            "person": "torres",
+            "timestamp": "2025-12-03T14:15",
+            "author": "Michael Torres",
+            "side": "right",
+            "text": "Good question. The sampling protocol follows EPA Method 8270D. I'll add a reference to the methodology appendix in the next revision."
+        },
+        {
+            "version": "2.1",
+            "person": "chen",
+            "timestamp": "2025-12-03T15:20",
+            "author": "Dr. Sarah Chen",
+            "side": "left",
+            "text": "The risk characterization in Table 7 shows uncertainty factors, but the confidence intervals seem narrow given the data variability. Can you explain the statistical approach?"
+        },
+        {
+            "version": "2.1",
+            "person": "martinez",
+            "timestamp": "2025-12-03T16:05",
+            "author": "Dr. Robert Martinez",
+            "side": "left",
+            "text": "I agree with Dr. Chen's concern. Additionally, the bioaccumulation factors in Section 5.3 need verification against the updated 2025 EPA guidance document."
+        },
+        {
+            "version": "2.1",
+            "person": "torres",
+            "timestamp": "2025-12-03T17:30",
+            "author": "Michael Torres",
+            "side": "right",
+            "text": "We used Monte Carlo simulation with 10,000 iterations. I'll expand the statistical methods section and cross-reference with the 2025 guidance. Will have this updated by tomorrow morning."
+        },
+        {
+            "version": "2.1",
+            "person": "chen",
+            "timestamp": "2025-12-04T09:00",
+            "author": "Dr. Sarah Chen",
+            "side": "left",
+            "text": "Section 6.1 references outdated toxicity data from 2022. Please update with the most recent IRIS assessment published in August 2025."
+        },
+        {
+            "version": "2.1",
+            "person": "chen",
+            "timestamp": "2025-12-04T11:30",
+            "author": "Dr. Sarah Chen",
+            "side": "left",
+            "text": "Question about the sensitivity analysis: Were ecosystem services impacts considered in the economic valuation model?"
+        },
+        {
+            "version": "2.1",
+            "person": "torres",
+            "timestamp": "2025-12-04T13:45",
+            "author": "Michael Torres",
+            "side": "right",
+            "text": "Yes, ecosystem services were included using the EPA Eco-SAM framework. It's detailed in Appendix C, but I can add a summary to the main text for clarity."
+        },
+        {
+            "version": "2.0",
+            "person": "park",
+            "timestamp": "2025-12-01T10:00",
+            "author": "David Park",
+            "side": "left",
+            "text": "The statutory citations in Section 2 need to reference TSCA Section 6(a) instead of Section 5. This is critical for legal authority."
+        },
+        {
+            "version": "2.0",
+            "person": "torres",
+            "timestamp": "2025-12-01T11:30",
+            "author": "Michael Torres",
+            "side": "right",
+            "text": "Corrected. All statutory references have been updated to TSCA Section 6(a). Also added supporting case law citations."
+        },
+        {
+            "version": "2.0",
+            "person": "park",
+            "timestamp": "2025-12-01T14:00",
+            "author": "David Park",
+            "side": "left",
+            "text": "Approved for advancement to Technical Review. All legal concerns addressed."
+        }
+    ],
+    "EPA-HQ-OW-2025-0456": [
+        {
+            "version": "1.4",
+            "person": "johnson",
+            "timestamp": "2025-12-02T09:15",
+            "author": "Marcus Johnson",
+            "side": "right",
+            "text": "Director edits applied. Please confirm stakeholder summary incorporates Region 5 feedback."
+        },
+        {
+            "version": "1.4",
+            "person": "park",
+            "timestamp": "2025-12-02T10:00",
+            "author": "David Park",
+            "side": "left",
+            "text": "Legal cross-check complete for new citations. No issues from legal perspective."
+        },
+        {
+            "version": "1.3",
+            "person": "thompson",
+            "timestamp": "2025-11-28T14:30",
+            "author": "Emily Thompson",
+            "side": "left",
+            "text": "Recommend adding EPA Form 817 for public notice compliance in Appendix B."
+        }
+    ]
+};
+
+        function loadStoredPendingApprovalComments() {
+            try {
+                const stored = localStorage.getItem(PENDING_APPROVAL_COMMENTS_KEY);
+                const parsed = stored ? JSON.parse(stored) : {};
+                return parsed && typeof parsed === 'object' ? parsed : {};
+            } catch (error) {
+                console.warn('Unable to load stored pending approval comments.', error);
+                return {};
+            }
+        }
+
+        function saveStoredPendingApprovalComments() {
+            try {
+                localStorage.setItem(PENDING_APPROVAL_COMMENTS_KEY, JSON.stringify(commentsData));
+            } catch (error) {
+                console.warn('Unable to save pending approval comments.', error);
+            }
+        }
+
+        commentsData = {
+            ...commentsData,
+            ...loadStoredPendingApprovalComments()
+        };
+let currentDeadlines = [];
+        const currentYear = calendarBase.getFullYear();
+        let calendarOffset = 0;
+
+        const sharedStageSettings = ((window.FRN_DATA && window.FRN_DATA.processSettings && window.FRN_DATA.processSettings.stages) || []).map(stage => ({
+            ...stage,
+            role: stage.name.includes(' - ') ? stage.name.split(' - ').slice(1).join(' - ') : stage.name
+        }));
+
+        function buildPendingDocumentSummary(doc) {
+            const versions = doc.versions || [];
+            const deadlines = (doc.stageAssignments || []).map(stage => {
+                const date = new Date(stage.dueDate + 'T00:00:00');
+                return {
+                    month: date.getMonth() + 1,
+                    day: date.getDate(),
+                    year: date.getFullYear(),
+                    status: (doc.status === 'completed' || stage.owner === 'Completed') ? 'completed' : 'deadline',
+                    label: stage.stage
+                };
+            });
+
+            return {
+                id: doc.id,
+                title: doc.title,
+                stage: doc.status === 'completed' ? 7 : (doc.stageNumber || 1),
+                status: doc.status,
+                reviewPhase: doc.reviewPhase || (doc.status === 'pending' ? 'approval' : 'review'),
+                stageName: doc.currentStage,
+                stageOwner: doc.stageOwner || doc.assignee,
+                nextReviewer: doc.nextReviewer,
+                stageDeadline: new Date(doc.stageDeadline + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                classification: doc.documentClassification || doc.typeLabel,
+                versionInDate: `Received: ${new Date(doc.submittedDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
+                versionInFrom: `From: ${doc.submittedBy}`,
+                versionInChanges: versions[1] ? versions[1].meta : 'Initial submission',
+                versionCurDate: `Last Modified: ${new Date(doc.lastUpdated + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
+                versionCurBy: `By: ${doc.stageOwner || doc.assignee}`,
+                versionCurChanges: versions[0] ? versions[0].meta : 'Working version',
+                versionOutDate: `Expected: ${new Date(doc.dueDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
+                versionOutTo: `To: ${doc.nextReviewer}`,
+                versionOutChanges: `Pending: ${doc.nextMilestone || doc.currentStage}`,
+                deadlines
+            };
+        }
+
+        const sourceDocuments = ((window.FRN_DATA && window.FRN_DATA.documents) || []).map(buildPendingDocumentSummary);
+
+        const documents = sourceDocuments.length ? sourceDocuments : [];
+        let selectedDocument = null;
+
+        function loadDocumentOverrides() {
+            try {
+                const stored = localStorage.getItem(DOCUMENT_OVERRIDES_KEY);
+                const parsed = stored ? JSON.parse(stored) : {};
+                return parsed && typeof parsed === 'object' ? parsed : {};
+            } catch (error) {
+                console.warn('Unable to read saved FRN overrides.', error);
+                return {};
+            }
+        }
+
+        function saveDocumentOverrides(overrides) {
+            localStorage.setItem(DOCUMENT_OVERRIDES_KEY, JSON.stringify(overrides));
+        }
+
+        function getCurrentActionUser() {
+            const currentUser = typeof window.getFRNCurrentUser === 'function'
+                ? window.getFRNCurrentUser()
+                : (window.FRN_CURRENT_USER || {});
+            const fullName = currentUser.fullName || (window.FRN_DATA && window.FRN_DATA.currentAssignee) || 'Current User';
+            const slugBase = currentUser.userPrincipalName || fullName || 'current-user';
+            return {
+                fullName,
+                objectId: currentUser.objectId || '',
+                tenantId: currentUser.tenantId || '',
+                userPrincipalName: currentUser.userPrincipalName || '',
+                personKey: slugBase.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'current-user'
+            };
+        }
+
+        function appendAuditEntry(record, action, details) {
+            const actionUser = getCurrentActionUser();
+            const existingAudit = Array.isArray(record.actionAudit) ? record.actionAudit : [];
+            return {
+                ...record,
+                actionAudit: [
+                    ...existingAudit,
+                    {
+                        action,
+                        at: new Date().toISOString(),
+                        by: actionUser.fullName,
+                        objectId: actionUser.objectId,
+                        tenantId: actionUser.tenantId,
+                        userPrincipalName: actionUser.userPrincipalName,
+                        details
+                    }
+                ]
+            };
+        }
+
+        function formatIsoDate(date) {
+            return date.toISOString().slice(0, 10);
+        }
+
+        function stageDurationDays(stageNumber) {
+            const stageConfig = sharedStageSettings.find(stage => stage.stageNumber === stageNumber);
+            const match = (stageConfig && stageConfig.expectedDuration || '').match(/\d+/);
+            return match ? Number(match[0]) : 3;
+        }
+
+        function addDays(dateText, days) {
+            const base = new Date(`${dateText}T00:00:00`);
+            base.setDate(base.getDate() + days);
+            return formatIsoDate(base);
+        }
+
+        function getStageConfig(stageNumber) {
+            return sharedStageSettings.find(stage => stage.stageNumber === stageNumber) || null;
+        }
+
+        function getStageLabel(stageNumber) {
+            const config = getStageConfig(stageNumber);
+            return config ? config.name : `Stage ${stageNumber}`;
+        }
+
+        function getStageApprover(stageNumber) {
+            const config = getStageConfig(stageNumber);
+            return config ? config.approver : `Stage ${stageNumber} Approver`;
+        }
+
+        function getSharedDocumentRecord(docId) {
+            return ((window.FRN_DATA && window.FRN_DATA.documents) || []).find(doc => doc.id === docId) || null;
+        }
+
+        function replaceDocumentInCollections(updatedRecord) {
+            if (!updatedRecord) return;
+            if (window.FRN_DATA && Array.isArray(window.FRN_DATA.documents)) {
+                const sharedIndex = window.FRN_DATA.documents.findIndex(doc => doc.id === updatedRecord.id);
+                if (sharedIndex >= 0) {
+                    window.FRN_DATA.documents[sharedIndex] = updatedRecord;
+                }
+            }
+
+            const summary = buildPendingDocumentSummary(updatedRecord);
+            const localIndex = documents.findIndex(doc => doc.id === updatedRecord.id);
+            if (localIndex >= 0) {
+                documents[localIndex] = summary;
+            }
+            selectedDocument = summary;
+        }
+
+        function setApprovalStatusMessage(message, tone = '') {
+            const statusEl = document.getElementById('approvalActionStatus');
+            if (!statusEl) return;
+            statusEl.textContent = message || '';
+            statusEl.className = `approval-action-status${tone ? ` ${tone}` : ''}`;
+        }
+
+        function updateApprovalButtons(doc = selectedDocument) {
+            const acceptBtn = document.getElementById('acceptDocumentBtn');
+            const rejectBtn = document.getElementById('rejectDocumentBtn');
+            const signBtn = document.getElementById('signDocumentBtn');
+            if (!acceptBtn || !rejectBtn || !signBtn || !doc) return;
+
+            const sharedDoc = getSharedDocumentRecord(doc.id) || {};
+            const isStageSix = Number(sharedDoc.stageNumber || doc.stage || 1) === 6;
+            const hasSignature = Boolean(sharedDoc.stage6SignedAt);
+            const isPublished = sharedDoc.status === 'completed';
+            const reviewPhase = sharedDoc.reviewPhase || (sharedDoc.status === 'pending' ? 'approval' : 'review');
+            const isApprovalPhase = reviewPhase === 'approval';
+
+            signBtn.disabled = !isApprovalPhase || !isStageSix || hasSignature || isPublished;
+            acceptBtn.disabled = !isApprovalPhase || isPublished || (isStageSix && !hasSignature);
+            rejectBtn.disabled = !isApprovalPhase || isPublished;
+            signBtn.textContent = hasSignature && isStageSix ? 'Signed' : 'Sign';
+
+            if (isPublished) {
+                setApprovalStatusMessage('This document has already been published.', 'success');
+            } else if (!isApprovalPhase) {
+                setApprovalStatusMessage('This document is still in the review portion of the stage. Submit it from Active Reviews before approval actions are available.', '');
+            } else if (isStageSix && !hasSignature) {
+                setApprovalStatusMessage('Stage 6 requires a signature before the document can be accepted.', '');
+            } else if (isStageSix && hasSignature) {
+                setApprovalStatusMessage(`Stage 6 signature recorded on ${new Date(sharedDoc.stage6SignedAt).toLocaleString()}.`, 'success');
+            } else {
+                setApprovalStatusMessage('');
+            }
+        }
+
+        function persistWorkflowUpdate(updatedRecord, successMessage) {
+            const overrides = loadDocumentOverrides();
+            overrides[updatedRecord.id] = {
+                ...overrides[updatedRecord.id],
+                ...updatedRecord
+            };
+            saveDocumentOverrides(overrides);
+            replaceDocumentInCollections(updatedRecord);
+            populateDocSelectors();
+            const titleSelect = document.getElementById('docTitleSelect');
+            const frnSelect = document.getElementById('frnSelect');
+            if (titleSelect) titleSelect.value = updatedRecord.id;
+            if (frnSelect) frnSelect.value = updatedRecord.id;
+            populateDocument(documents.find(doc => doc.id === updatedRecord.id) || selectedDocument);
+            updateApprovalButtons();
+            setApprovalStatusMessage(successMessage, 'success');
+        }
+
+        function recordDocumentSignature() {
+            if (!selectedDocument) return;
+            const sharedDoc = getSharedDocumentRecord(selectedDocument.id);
+            if (!sharedDoc) return;
+            const actionUser = getCurrentActionUser();
+            if (Number(sharedDoc.stageNumber || selectedDocument.stage || 1) !== 6) {
+                setApprovalStatusMessage('Signature is only available for Stage 6 documents.', 'error');
+                return;
+            }
+            if (sharedDoc.stage6SignedAt) {
+                setApprovalStatusMessage('Stage 6 signature has already been recorded for this document.', 'success');
+                updateApprovalButtons();
+                return;
+            }
+
+            let updatedRecord = {
+                ...sharedDoc,
+                stage6SignedAt: new Date().toISOString(),
+                stage6SignedBy: actionUser.fullName,
+                stage6SignedByObjectId: actionUser.objectId,
+                stage6SignedByTenantId: actionUser.tenantId,
+                stage6SignedByUPN: actionUser.userPrincipalName,
+                reviewPhase: 'approval',
+                lastUpdated: formatIsoDate(new Date())
+            };
+            updatedRecord = appendAuditEntry(updatedRecord, 'signed', 'Stage 6 signature recorded.');
+            persistWorkflowUpdate(updatedRecord, 'Signature recorded. The document can now be accepted to the next stage.');
+        }
+
+        function acceptPendingDocument() {
+            if (!selectedDocument) return;
+            const sharedDoc = getSharedDocumentRecord(selectedDocument.id);
+            if (!sharedDoc) return;
+            const reviewPhase = sharedDoc.reviewPhase || (sharedDoc.status === 'pending' ? 'approval' : 'review');
+            if (reviewPhase !== 'approval') {
+                setApprovalStatusMessage('Submit the review from Active Reviews before sending this document through approval.', 'error');
+                updateApprovalButtons();
+                return;
+            }
+
+            const currentStage = Number(sharedDoc.stageNumber || selectedDocument.stage || 1);
+            if (currentStage === 6 && !sharedDoc.stage6SignedAt) {
+                setApprovalStatusMessage('A Stage 6 signature is required before this document can be accepted.', 'error');
+                updateApprovalButtons();
+                return;
+            }
+
+            const todayIso = formatIsoDate(new Date());
+            const nextStage = currentStage + 1;
+            let updatedRecord;
+
+            if (nextStage > 7) {
+                updatedRecord = {
+                    ...sharedDoc,
+                    status: 'completed',
+                    statusLabel: 'Published',
+                    stageNumber: 7,
+                    currentStage: 'Published',
+                    assignee: 'Publication Team',
+                    stageOwner: 'Publication Team',
+                    nextReviewer: 'Publication Complete',
+                    reviewPhase: 'review',
+                    stageDeadline: sharedDoc.stageDeadline || sharedDoc.dueDate || todayIso,
+                    dueDate: sharedDoc.dueDate || todayIso,
+                    completedDate: todayIso,
+                    lastUpdated: todayIso,
+                    stage6SignedAt: sharedDoc.stage6SignedAt || null
+                };
+            } else {
+                updatedRecord = {
+                    ...sharedDoc,
+                    status: 'active',
+                    statusLabel: 'Active',
+                    stageNumber: nextStage,
+                    currentStage: getStageLabel(nextStage),
+                    assignee: getStageApprover(nextStage),
+                    stageOwner: getStageApprover(nextStage),
+                    nextReviewer: nextStage >= 7 ? 'Publication Team' : getStageApprover(nextStage + 1),
+                    reviewPhase: 'review',
+                    stageDeadline: addDays(todayIso, stageDurationDays(nextStage)),
+                    dueDate: addDays(todayIso, stageDurationDays(nextStage)),
+                    lastUpdated: todayIso,
+                    stage6SignedAt: nextStage > 6 ? sharedDoc.stage6SignedAt || null : null
+                };
+            }
+
+            updatedRecord = appendAuditEntry(updatedRecord, 'accepted', nextStage > 7
+                ? 'Document accepted and published.'
+                : `Document accepted and advanced to ${updatedRecord.currentStage}.`);
+
+            persistWorkflowUpdate(updatedRecord, nextStage > 7
+                ? 'Document accepted and published.'
+                : `Document accepted and advanced to ${updatedRecord.currentStage}.`);
+        }
+
+        function rejectPendingDocument() {
+            if (!selectedDocument) return;
+            const notesField = document.getElementById('approvalDecisionNotes');
+            const rejectionNotes = notesField ? notesField.value.trim() : '';
+            if (!rejectionNotes) {
+                setApprovalStatusMessage('Rejection notes are required before returning the document to the start of the current stage.', 'error');
+                return;
+            }
+
+            const sharedDoc = getSharedDocumentRecord(selectedDocument.id);
+            if (!sharedDoc) return;
+            const reviewPhase = sharedDoc.reviewPhase || (sharedDoc.status === 'pending' ? 'approval' : 'review');
+            if (reviewPhase !== 'approval') {
+                setApprovalStatusMessage('This document has not been submitted into the approval portion of the stage.', 'error');
+                return;
+            }
+            const currentStage = Number(sharedDoc.stageNumber || selectedDocument.stage || 1);
+            const todayIso = formatIsoDate(new Date());
+            let updatedRecord = {
+                ...sharedDoc,
+                status: 'active',
+                statusLabel: 'Active',
+                stageNumber: currentStage,
+                currentStage: getStageLabel(currentStage),
+                assignee: getStageApprover(currentStage),
+                stageOwner: getStageApprover(currentStage),
+                nextReviewer: currentStage >= 7 ? 'Publication Team' : getStageApprover(Math.min(currentStage + 1, 7)),
+                reviewPhase: 'review',
+                stageDeadline: addDays(todayIso, stageDurationDays(currentStage)),
+                dueDate: addDays(todayIso, stageDurationDays(currentStage)),
+                lastUpdated: todayIso,
+                stage6SignedAt: null
+            };
+            updatedRecord = appendAuditEntry(updatedRecord, 'rejected', `Rejected and returned to the beginning of ${updatedRecord.currentStage}. Notes: ${rejectionNotes}`);
+
+            const currentVersion = document.getElementById('versionCurrentNumber')?.textContent.match(/\d+(?:\.\d+)*/)?.[0] || 'current';
+            const docComments = commentsData[sharedDoc.id] || [];
+            const actionUser = getCurrentActionUser();
+            docComments.push({
+                version: currentVersion,
+                person: actionUser.personKey,
+                timestamp: new Date().toISOString(),
+                author: actionUser.fullName,
+                objectId: actionUser.objectId,
+                tenantId: actionUser.tenantId,
+                userPrincipalName: actionUser.userPrincipalName,
+                side: 'right',
+                text: `Rejected and returned to the beginning of ${updatedRecord.currentStage}. Notes: ${rejectionNotes}`
+            });
+            commentsData[sharedDoc.id] = docComments;
+            saveStoredPendingApprovalComments();
+
+            persistWorkflowUpdate(updatedRecord, `Document rejected and reset to the beginning of ${updatedRecord.currentStage}.`);
+            if (notesField) {
+                notesField.value = '';
+            }
+        }
+
+        function toggleVersionHistory() {
+            const container = document.getElementById('versionHistory');
+            const btn = document.querySelector('.version-history-toggle .toggle-btn');
+            const isHidden = container.style.display === 'none';
+            container.style.display = isHidden ? 'block' : 'none';
+            updateVersionToggleLabel();
+        }
+
+        function toggleDocumentInformation() {
+            const container = document.getElementById('document-info-expanded');
+            const btn = document.getElementById('document-info-toggle');
+            if (!container || !btn) return;
+            const isOpen = container.classList.toggle('is-open');
+            btn.innerHTML = isOpen
+                ? '<span class="toggle-icon">&#x25b2;</span> Hide Full Document Information'
+                : '<span class="toggle-icon">&#x25bc;</span> Show Full Document Information';
+        }
+
+        function filterComments() {
+            renderComments();
+        }
+
+        function submitPendingApprovalComment() {
+            const textarea = document.querySelector('.comment-textarea');
+            if (!textarea || !selectedDocument) return;
+            const text = textarea.value.trim();
+            if (!text) {
+                return;
+            }
+            const currentVersion = document.getElementById('versionCurrentNumber')?.textContent.match(/\d+(?:\.\d+)*/)?.[0] || 'current';
+            const docComments = commentsData[selectedDocument.id] || [];
+            const actionUser = getCurrentActionUser();
+            docComments.push({
+                version: currentVersion,
+                person: actionUser.personKey,
+                timestamp: new Date().toISOString(),
+                author: actionUser.fullName,
+                objectId: actionUser.objectId,
+                tenantId: actionUser.tenantId,
+                userPrincipalName: actionUser.userPrincipalName,
+                side: 'right',
+                text
+            });
+            commentsData[selectedDocument.id] = docComments;
+            saveStoredPendingApprovalComments();
+            textarea.value = '';
+            renderComments();
+        }
+
+        function clearPendingApprovalComment() {
+            const textarea = document.querySelector('.comment-textarea');
+            if (textarea) {
+                textarea.value = '';
+            }
+        }
+
+        function formatVersionNumber(stage, revision) {
+            return `${stage}.0.${revision}`;
+        }
+
+        function buildVersionModel(doc) {
+            const stageNumber = doc.status === 'completed' ? 7 : Math.max(1, doc.stage || 1);
+            const comments = commentsData[doc.id] || [];
+            const revisionCount = comments.length;
+            const currentRevision = revisionCount > 0 ? revisionCount : 0;
+            const currentVersionNumber = formatVersionNumber(stageNumber, currentRevision);
+            const priorVersionNumber = formatVersionNumber(Math.max(1, stageNumber - 1), 0);
+            const outgoingVersionNumber = doc.status === 'completed'
+                ? currentVersionNumber
+                : formatVersionNumber(Math.min(stageNumber + 1, 7), 0);
+
+            const stageEntries = Array.from({ length: stageNumber }, (_, idx) => {
+                const stageIndex = idx + 1;
+                const stageConfig = sharedStageSettings[idx];
+                const stageAssignment = (window.FRN_DATA && window.FRN_DATA.documents || [])
+                    .find(item => item.id === doc.id)?.stageAssignments?.[idx];
+                return {
+                    version: formatVersionNumber(stageIndex, 0),
+                    date: stageIndex === 1
+                        ? new Date((window.FRN_DATA.documents.find(item => item.id === doc.id)?.submittedDate || '') + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                        : new Date((stageAssignment && stageAssignment.dueDate || window.FRN_DATA.documents.find(item => item.id === doc.id)?.lastUpdated || '') + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                    by: stageIndex === stageNumber ? doc.stageOwner : (stageAssignment && stageAssignment.owner) || doc.stageOwner,
+                    changes: stageIndex === 1
+                        ? 'Initial submission entered into workflow.'
+                        : `Advanced into ${stageConfig ? stageConfig.name : `Stage ${stageIndex}`}.`
+                };
+            });
+
+            const commentEntries = comments.map((comment, index) => ({
+                version: formatVersionNumber(stageNumber, index + 1),
+                date: new Date(comment.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                by: comment.author,
+                changes: 'Comment or document update recorded during current stage review.'
+            }));
+
+            return {
+                versionIn: priorVersionNumber,
+                versionCurrent: `${currentVersionNumber} (${doc.status === 'completed' ? 'Published' : 'Draft'})`,
+                versionOut: doc.status === 'completed' ? `${currentVersionNumber} (Final)` : `${outgoingVersionNumber} (Pending)`,
+                versionHistory: [...stageEntries, ...commentEntries]
+            };
+        }
+
+        function renderComments() {
+            const conversation = document.querySelector('.comments-conversation');
+            if (!conversation) return;
+            const docId = document.getElementById('frnSelect')?.value || (documents[0] && documents[0].id) || '';
+            const currentVersionText = document.getElementById('versionCurrentNumber')?.textContent || '';
+            const currentVersionNum = currentVersionText.match(/\d+(?:\.\d+)*/)?.[0] || currentVersionText.trim();
+            const versionFilter = document.getElementById('versionFilter')?.value || 'all';
+            const personFilter = document.getElementById('personFilter')?.value || 'all';
+            const sortFilter = document.getElementById('sortFilter')?.value || 'newest';
+            const data = commentsData[docId] || [];
+
+            // Collect unique versions for dropdown
+            const versions = Array.from(new Set(data.map(c => c.version))).sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
+            const versionSelect = document.getElementById('versionFilter');
+            if (versionSelect) {
+                const prev = versionSelect.value;
+                versionSelect.innerHTML = '<option value="all">All Versions</option>' + versions.map(v => `<option value="${v}">${v}</option>`).join('');
+                if (versions.includes(prev)) versionSelect.value = prev;
+            }
+
+            // Clear existing
+            conversation.innerHTML = '';
+
+            // Group by version
+            const grouped = {};
+            data.forEach(c => {
+                if (versionFilter !== 'all' && c.version !== versionFilter) return;
+                if (personFilter !== 'all' && c.person !== personFilter) return;
+                grouped[c.version] = grouped[c.version] || [];
+                grouped[c.version].push(c);
+            });
+
+            // Assign colors per person (excluding logged-in) in order of first appearance
+            const colorPalette = [
+                { bg: '#e3f8e5', border: '#a5d6a7' }, // green
+                { bg: '#ffe3ed', border: '#f48fb1' }, // pink
+                { bg: '#ede7f6', border: '#b39ddb' }, // purple
+                { bg: '#fff3cd', border: '#ffeb99' }, // soft yellow
+                { bg: '#e0f7fa', border: '#80deea' }  // teal
+            ];
+            const personColors = {};
+            const paletteNext = () => colorPalette[Object.keys(personColors).length % colorPalette.length];
+            const loggedIn = 'torres';
+
+            Object.keys(grouped).sort((a, b) => b.localeCompare(a, undefined, { numeric: true })).forEach(ver => {
+                const versionDiv = document.createElement('div');
+                versionDiv.className = 'version-divider';
+                versionDiv.dataset.version = currentVersionNum || ver;
+                versionDiv.innerHTML = `<span>Version ${currentVersionNum || ver} - Current Working Version</span>`;
+                conversation.appendChild(versionDiv);
+
+                const comments = grouped[ver].sort((a, b) => {
+                    if (sortFilter === 'newest') return new Date(b.timestamp) - new Date(a.timestamp);
+                    return new Date(a.timestamp) - new Date(b.timestamp);
+                });
+
+                comments.forEach(c => {
+                    // assign color for non-logged-in commenters
+                    if (c.person !== loggedIn && !personColors[c.person]) {
+                        personColors[c.person] = paletteNext();
+                    }
+                    const bubble = document.createElement('div');
+                    bubble.className = `comment-bubble ${c.person}`;
+                    bubble.dataset.version = c.version;
+                    bubble.dataset.person = c.person;
+                    bubble.dataset.timestamp = c.timestamp;
+                    // side placement: logged-in on right, others on left
+                    bubble.classList.add(c.person === loggedIn ? 'right' : 'left');
+                    // apply colors
+                    if (c.person === loggedIn) {
+                        bubble.style.background = '#dbeafe';
+                        bubble.style.borderColor = '#90caf9';
+                    } else {
+                        const palette = personColors[c.person] || paletteNext();
+                        bubble.style.background = palette.bg;
+                        bubble.style.borderColor = palette.border;
+                    }
+                    bubble.innerHTML = `
+                        <div class="comment-header">
+                            <span class="comment-author">${c.author}</span>
+                            <span class="comment-time">${new Date(c.timestamp).toLocaleString()}</span>
+                        </div>
+                        <div class="comment-text">${c.text}</div>
+                    `;
+                    conversation.appendChild(bubble);
+                });
+            });
+
+            // Re-apply right/left positioning for logged-in user
+            document.querySelectorAll('.comment-bubble').forEach(bubble => {
+                const person = bubble.dataset.person;
+                bubble.classList.remove('left', 'right');
+                if (person === loggedIn) {
+                    bubble.classList.add('right');
+                } else {
+                    bubble.classList.add('left');
+                }
+            });
+
+            const inputSection = document.createElement('div');
+            inputSection.className = 'comment-input-section';
+            inputSection.innerHTML = `
+                <h4>Add Comment</h4>
+                <div class="comment-input-box">
+                    <textarea class="comment-textarea" placeholder="Enter your comment or question here..." rows="4"></textarea>
+                    <div class="comment-input-actions">
+                        <button class="comment-submit-btn" type="button">Submit Comment</button>
+                        <button class="comment-cancel-btn" type="button">Clear</button>
+                    </div>
+                </div>
+            `;
+            conversation.appendChild(inputSection);
+        }
+
+        function updateVersionDisplay(doc) {
+            if (!doc) return;
+            const versionModel = buildVersionModel(doc);
+            const inEl = document.getElementById('versionInNumber');
+            const curEl = document.getElementById('versionCurrentNumber');
+            const outEl = document.getElementById('versionOutNumber');
+            if (inEl) inEl.textContent = versionModel.versionIn;
+            if (curEl) curEl.textContent = versionModel.versionCurrent;
+            if (outEl) outEl.textContent = versionModel.versionOut;
+            updateVersionToggleLabel();
+        }
+
+        function syncTimelineStageLabels() {
+            const stages = document.querySelectorAll('.timeline-stages .stage');
+            stages.forEach((stageEl, idx) => {
+                const config = sharedStageSettings[idx];
+                if (!config) return;
+                const titleEl = stageEl.querySelector('.stage-title');
+                const roleEl = stageEl.querySelector('.stage-role');
+                if (titleEl) titleEl.textContent = `Stage ${config.stageNumber}`;
+                if (roleEl) roleEl.textContent = config.role;
+            });
+        }
+
+        function setTimelineStage(stageNum, docStatus = 'active', reviewPhase = 'review') {
+            const stages = document.querySelectorAll('.timeline-stages .stage');
+            stages.forEach((stage, idx) => {
+                stage.classList.remove('completed', 'active', 'pending');
+                const statusEl = stage.querySelector('.stage-status');
+                if (docStatus === 'completed') {
+                    stage.classList.add('completed');
+                    if (statusEl) statusEl.textContent = 'Completed';
+                } else if (idx + 1 < stageNum) {
+                    stage.classList.add('completed');
+                    if (statusEl) statusEl.textContent = 'Completed';
+                } else if (idx + 1 === stageNum) {
+                    stage.classList.add('active');
+                    if (statusEl) statusEl.textContent = reviewPhase === 'approval' ? 'Awaiting Approval' : 'In Review';
+                } else {
+                    stage.classList.add('pending');
+                    if (statusEl) statusEl.textContent = 'Pending';
+                }
+            });
+        }
+
+        function populateDocument(doc) {
+            if (!doc) return;
+            selectedDocument = doc;
+            const versionModel = buildVersionModel(doc);
+            document.getElementById('info-doc-title').textContent = doc.title;
+            document.getElementById('info-frn').textContent = doc.id;
+            document.getElementById('info-current-stage').textContent = doc.stageName;
+            document.getElementById('info-owner').textContent = doc.stageOwner;
+            document.getElementById('info-next').textContent = doc.nextReviewer;
+            document.getElementById('info-deadline').textContent = doc.stageDeadline;
+            document.getElementById('info-classification').textContent = doc.classification;
+
+            document.getElementById('versionInNumber').textContent = versionModel.versionIn;
+            document.getElementById('versionInDate').textContent = doc.versionInDate;
+            document.getElementById('versionInFrom').textContent = doc.versionInFrom;
+            document.getElementById('versionInChanges').textContent = doc.versionInChanges;
+
+            document.getElementById('versionCurrentNumber').textContent = versionModel.versionCurrent;
+            document.getElementById('versionCurDate').textContent = doc.versionCurDate;
+            document.getElementById('versionCurBy').textContent = doc.versionCurBy;
+            document.getElementById('versionCurChanges').textContent = doc.versionCurChanges;
+
+            document.getElementById('versionOutNumber').textContent = versionModel.versionOut;
+            document.getElementById('versionOutDate').textContent = doc.versionOutDate;
+            document.getElementById('versionOutTo').textContent = doc.versionOutTo;
+            document.getElementById('versionOutChanges').textContent = doc.versionOutChanges;
+
+            currentDeadlines = doc.deadlines || [];
+            syncTimelineStageLabels();
+            setTimelineStage(doc.stage, doc.status, doc.reviewPhase);
+            buildMiniCalendar();
+            syncCommentVersionFromCurrent();
+            renderVersionHistory(versionModel);
+            renderAttachedDocuments(doc);
+            renderComments();
+            updateApprovalButtons(doc);
+        }
+
+        function renderAttachedDocuments(doc) {
+            const list = document.getElementById('attachedDocumentsList');
+            if (!list || !doc) return;
+
+            const sourceDoc = ((window.FRN_DATA && window.FRN_DATA.documents) || []).find(item => item.id === doc.id) || {};
+            const versions = sourceDoc.versions || [];
+            const attachments = sourceDoc.attachments || [];
+            const primaryAttachment = attachments[0];
+
+            const versionFiles = versions.map(entry => {
+                const versionLabel = entry.number.replace(/^Version\s*/i, '').trim();
+                const metaParts = (entry.meta || '').split('•').map(part => part.trim()).filter(Boolean);
+                const dateLabel = metaParts[0] || `Version ${versionLabel}`;
+                const stageLabel = metaParts[1] || 'Workflow document version';
+                const versionedName = primaryAttachment && primaryAttachment.name
+                    ? primaryAttachment.name.replace(/v[\d.]+/i, `v${versionLabel}`)
+                    : `${doc.id}_Document_v${versionLabel}.pdf`;
+
+                return {
+                    icon: '📄',
+                    name: versionedName,
+                    meta: `Document Version | ${primaryAttachment?.size || '2.0 MB'} | ${dateLabel} | ${stageLabel}`
+                };
+            });
+
+            const supportingFiles = attachments.slice(1).map(file => ({
+                icon: file.icon || '📎',
+                name: file.name,
+                meta: `Supporting Attachment | ${file.size || 'Unknown Size'} | Included with current package`
+            }));
+
+            const renderedFiles = [...versionFiles, ...supportingFiles];
+            list.innerHTML = renderedFiles.map(file => `
+                <div class="attachment-item">
+                    <div class="attachment-icon">${file.icon}</div>
+                    <div class="attachment-info">
+                        <div class="attachment-name">${file.name}</div>
+                        <div class="attachment-meta">${file.meta}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderVersionHistory(versionModel) {
+            const body = document.getElementById('versionHistoryBody');
+            if (!body) return;
+            body.innerHTML = '';
+            const history = (versionModel && versionModel.versionHistory) || [];
+            history.forEach(entry => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${entry.version}</td><td>${entry.date}</td><td>${entry.by}</td><td>${entry.changes}</td>`;
+                body.appendChild(tr);
+            });
+            updateVersionToggleLabel();
+        }
+
+        function populateDocSelectors() {
+            const titleSelect = document.getElementById('docTitleSelect');
+            const frnSelect = document.getElementById('frnSelect');
+            if (!titleSelect || !frnSelect) {
+                const params = new URLSearchParams(window.__FRN_CURRENT_PAGE_QUERY || window.location.search);
+                const requestedId = params.get('doc');
+                const first = documents.find(doc => doc.id === requestedId) || documents[0];
+                if (first) {
+                    populateDocument(first);
+                }
+                return;
+            }
+            titleSelect.innerHTML = '';
+            frnSelect.innerHTML = '';
+
+            if (!documents.length) {
+                titleSelect.innerHTML = '<option value="">No documents available</option>';
+                frnSelect.innerHTML = '<option value="">No FRN IDs available</option>';
+                return;
+            }
+
+            documents.forEach(doc => {
+                const optTitle = document.createElement('option');
+                optTitle.value = doc.id;
+                optTitle.textContent = doc.title;
+                titleSelect.appendChild(optTitle);
+
+                const optFrn = document.createElement('option');
+                optFrn.value = doc.id;
+                optFrn.textContent = doc.id;
+                frnSelect.appendChild(optFrn);
+            });
+
+            const onChange = (e) => {
+                const selectedId = e.target.value;
+                titleSelect.value = selectedId;
+                frnSelect.value = selectedId;
+                const doc = documents.find(d => d.id === selectedId) || documents[0];
+                populateDocument(doc);
+            };
+            titleSelect.onchange = onChange;
+            frnSelect.onchange = onChange;
+
+            const params = new URLSearchParams(window.__FRN_CURRENT_PAGE_QUERY || window.location.search);
+            const requestedId = params.get('doc');
+            const first = documents.find(doc => doc.id === requestedId) || documents[0];
+            titleSelect.value = first.id;
+            frnSelect.value = first.id;
+            populateDocument(first);
+        }
+
+        function updateVersionToggleLabel() {
+            const btn = document.querySelector('.version-history-toggle .toggle-btn');
+            const count = document.querySelectorAll('.version-history-table tbody tr').length;
+            const plural = count === 1 ? '' : 's';
+            if (!btn) return;
+            const isHidden = document.getElementById('versionHistory')?.style.display === 'block';
+            if (isHidden) {
+                btn.innerHTML = `<span class="toggle-icon">&#x25b2;</span> Hide Version History (${count} version${plural})`;
+            } else {
+                btn.innerHTML = `<span class="toggle-icon">&#x25bc;</span> View Complete Version History (${count} version${plural})`;
+            }
+        }
+
+        // Sync comment log version header with current working version
+        function syncCommentVersionFromCurrent() {
+            const currentVersionEl = document.getElementById('versionCurrentNumber');
+            if (!currentVersionEl) return;
+            const match = currentVersionEl.textContent.match(/\d+(?:\.\d+)*/);
+            const currentVersion = match ? match[0] : currentVersionEl.textContent.trim();
+            const versionFilter = document.getElementById('versionFilter');
+            if (versionFilter && versionFilter.querySelector(`option[value="${currentVersion}"]`)) {
+                versionFilter.value = currentVersion;
+            }
+            renderComments();
+        }
+
+        // Sync comment log version header with current working version
+        function syncCommentVersionFromCurrent() {
+            const currentVersionEl = document.getElementById('versionCurrentNumber');
+            if (!currentVersionEl) return;
+            const match = currentVersionEl.textContent.match(/\\d+(?:\\.\\d+)*/);
+            const currentVersion = match ? match[0] : currentVersionEl.textContent.trim();
+            document.querySelectorAll('.version-divider').forEach(div => {
+                div.dataset.version = currentVersion;
+                const span = div.querySelector('span');
+                if (span) span.textContent = `Version ${currentVersion} - Current Working Version`;
+            });
+            const versionFilter = document.getElementById('versionFilter');
+            if (versionFilter && versionFilter.querySelector(`option[value=\"${currentVersion}\"]`)) {
+                versionFilter.value = currentVersion;
+            }
+            filterComments();
+        }
+
+        // Build mini calendar for the selected month offset
+        function buildMiniCalendar() {
+            const titleEl = document.getElementById('calendar-title');
+            const gridEl = document.getElementById('calendar-grid');
+            if (!titleEl || !gridEl) return;
+
+            const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            const viewDate = new Date(calendarBase.getFullYear(), calendarBase.getMonth() + calendarOffset, 1);
+            const today = new Date();
+            const year = viewDate.getFullYear();
+            const month = viewDate.getMonth();
+
+            titleEl.textContent = `${monthNames[month]} ${year}`;
+            gridEl.innerHTML = '';
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 0; i < firstDay; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'calendar-day empty';
+                gridEl.appendChild(empty);
+            }
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const cell = document.createElement('div');
+                cell.className = 'calendar-day';
+                cell.textContent = d;
+                const matching = (currentDeadlines || []).find(evt => (evt.year || year) === year && evt.month === month + 1 && evt.day === d);
+                if (matching) {
+                    cell.classList.add('deadline');
+                    if (matching.status === 'completed') {
+                        cell.classList.add('completed');
+                    }
+                    cell.title = matching.label || 'Deadline';
+                }
+                if (d === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                    cell.classList.add('today');
+                    cell.title = matching ? `${matching.label} (Today)` : 'Today';
+                }
+                gridEl.appendChild(cell);
+            }
+
+            const totalCells = firstDay + daysInMonth;
+            const pad = (7 - (totalCells % 7)) % 7;
+            for (let i = 0; i < pad; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'calendar-day empty';
+                gridEl.appendChild(empty);
+            }
+        }
+
+        function initActiveReviewsPage() {
+            const prevBtn = document.getElementById('cal-prev');
+            const nextBtn = document.getElementById('cal-next');
+            if (prevBtn) prevBtn.addEventListener('click', () => { calendarOffset -= 1; buildMiniCalendar(); });
+            if (nextBtn) nextBtn.addEventListener('click', () => { calendarOffset += 1; buildMiniCalendar(); });
+
+            const toggleBtn = document.querySelector('.version-history-toggle .toggle-btn');
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', toggleVersionHistory);
+            }
+
+            const documentInfoToggle = document.getElementById('document-info-toggle');
+            if (documentInfoToggle) {
+                documentInfoToggle.addEventListener('click', toggleDocumentInformation);
+            }
+
+            ['versionFilter', 'personFilter', 'sortFilter'].forEach(id => {
+                const select = document.getElementById(id);
+                if (select) {
+                    select.addEventListener('change', filterComments);
+                }
+            });
+
+            document.addEventListener('click', (event) => {
+                if (event.target.closest('.comment-submit-btn')) {
+                    submitPendingApprovalComment();
+                }
+                if (event.target.closest('.comment-cancel-btn')) {
+                    clearPendingApprovalComment();
+                }
+            });
+
+            const acceptBtn = document.getElementById('acceptDocumentBtn');
+            if (acceptBtn) {
+                acceptBtn.addEventListener('click', acceptPendingDocument);
+            }
+
+            const rejectBtn = document.getElementById('rejectDocumentBtn');
+            if (rejectBtn) {
+                rejectBtn.addEventListener('click', rejectPendingDocument);
+            }
+
+            const signBtn = document.getElementById('signDocumentBtn');
+            if (signBtn) {
+                signBtn.addEventListener('click', recordDocumentSignature);
+            }
+
+            const loggedIn = getCurrentActionUser().personKey;
+            document.querySelectorAll('.comment-bubble').forEach(bubble => {
+                const person = bubble.dataset.person;
+                bubble.classList.remove('left', 'right');
+                if (person === loggedIn) {
+                    bubble.classList.add('right');
+                } else {
+                    bubble.classList.add('left');
+                }
+            });
+
+            syncTimelineStageLabels();
+            populateDocSelectors();
+            updateVersionDisplay(selectedDocument);
+            updateVersionToggleLabel();
+            syncCommentVersionFromCurrent();
+            renderComments();
+            updateApprovalButtons(selectedDocument);
+
+            const submitBtn = document.querySelector('.comment-submit');
+            const commentInput = document.getElementById('newComment');
+            if (submitBtn && commentInput) {
+                submitBtn.addEventListener('click', () => {
+                    const text = commentInput.value.trim();
+                    if (!text) return;
+                    const docId = document.getElementById('frnSelect')?.value || (documents[0] && documents[0].id) || '';
+                    const currentVersion = document.getElementById('versionCurrentNumber')?.textContent.match(/\d+(?:\.\d+)*/)?.[0] || 'current';
+                    const now = new Date();
+                    commentsData[docId] = commentsData[docId] || [];
+                    const actionUser = getCurrentActionUser();
+                    commentsData[docId].push({
+                        version: currentVersion,
+                        person: actionUser.personKey,
+                        timestamp: now.toISOString(),
+                        author: actionUser.fullName,
+                        objectId: actionUser.objectId,
+                        tenantId: actionUser.tenantId,
+                        userPrincipalName: actionUser.userPrincipalName,
+                        side: 'right',
+                        text
+                    });
+                    saveStoredPendingApprovalComments();
+                    commentInput.value = '';
+                    const selected = documents.find(doc => doc.id === docId) || selectedDocument;
+                    if (selected) {
+                        selectedDocument = selected;
+                        const versionModel = buildVersionModel(selected);
+                        updateVersionDisplay(selected);
+                        renderVersionHistory(versionModel);
+                    }
+                    renderComments();
+                    updateVersionToggleLabel();
+                });
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initActiveReviewsPage, { once: true });
+        } else {
+            initActiveReviewsPage();
+        }
+    </script>
+</body>
+</html>
+
+

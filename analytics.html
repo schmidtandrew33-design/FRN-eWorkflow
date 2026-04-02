@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - EPA FRN Approval System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/shared.css">
+    <style>
+        :root {
+            --navy: #002147;
+            --gold: #b8860b;
+            --burgundy: #800020;
+            --cream: #faf8f3;
+            --parchment: #f4f1e8;
+            --gray: #666;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Source Serif 4', serif; background: var(--cream); color: var(--navy); overflow-x: hidden; }
+
+        .content-wrapper { display: flex; flex: 1; margin-left: 285px; width: calc(100vw - 285px); min-height: 100vh; }
+        .main-content { flex: 1; padding: 0 0.25rem; }
+        .container { margin: 0; max-width: none; padding: 0.3rem 1rem 2rem; }
+
+        header {
+            background: white;
+            border: 3px solid var(--navy);
+            border-top: 8px solid var(--gold);
+            padding: 1.2rem 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .header-seal {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 4px solid var(--gold);
+            background: linear-gradient(135deg, var(--navy), var(--burgundy));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            flex-shrink: 0;
+        }
+
+        .department {
+            font-size: 1.3rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2.35rem;
+            color: var(--navy);
+            margin-bottom: 0.35rem;
+        }
+
+        .tagline {
+            font-size: 1.05rem;
+            color: var(--burgundy);
+            font-weight: 800;
+        }
+
+        .notice-panel {
+            background: white;
+            border: 2px solid var(--navy);
+            border-left: 6px solid var(--gold);
+            padding: 2.2rem 2rem;
+            max-width: 920px;
+        }
+
+        .notice-panel h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.8rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .notice-panel p {
+            font-size: 1rem;
+            color: var(--gray);
+            line-height: 1.65;
+            margin-bottom: 1rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            background: rgba(245, 124, 0, 0.14);
+            border: 1px solid #f57c00;
+            color: #8a4f00;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+    </style>
+</head>
+<body>
+    <nav class="left-sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-seal">
+                <img src="Images/EPA Seal.png" alt="EPA Seal" style="width:100%; height:100%; object-fit:cover; object-position:0% center; border-radius:50%;">
+            </div>
+            <div class="logo-text">Environmental<br>Protection<br>Agency</div>
+        </div>
+
+        <div class="nav-sections-wrapper">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item">Dashboard</a>
+                <a href="new-notice.html" class="nav-item">New Notice</a>
+                <a href="DocumentLibrary.html" class="nav-item">Document Library</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Workflow</div>
+                <a href="my-tasks.html" class="nav-item">My Tasks</a>
+                <a href="Active-Reviews.html" class="nav-item">Active Reviews</a>
+                <a href="pending-approvals.html" class="nav-item">Pending Approvals</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Views</div>
+                <a href="calendar.html" class="nav-item">Calendar</a>
+                <a href="team.html" class="nav-item">Team</a>
+                <a href="analytics.html" class="nav-item active">Analytics</a>
+                <a href="leaderboards.html" class="nav-item">Leaderboards</a>
+                <a href="reports.html" class="nav-item">Reports</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="settings.html" class="nav-item">Settings</a>
+                <a href="help.html" class="nav-item">Help</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content-wrapper">
+        <div class="main-content">
+            <div class="container">
+                <header>
+                    <div class="header-seal">🏗️</div>
+                    <div>
+                        <div class="department">Environmental Protection Agency</div>
+                        <h1>Federal Register Notice (FRN) Approval Workflow</h1>
+                        <div class="tagline">Analytics</div>
+                    </div>
+                </header>
+
+                <section class="notice-panel">
+                    <h2>Analytics Under Construction</h2>
+                    <p>
+                        This screen is being held for a future analytics build. The route remains available in the navigation, but the visualizations and reporting logic are not currently active.
+                    </p>
+                    <p>
+                        Use the Dashboard, Calendar, Team, and Reports pages for the currently available workflow views and operational information.
+                    </p>
+                    <div class="status-badge">Under Construction</div>
+                </section>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

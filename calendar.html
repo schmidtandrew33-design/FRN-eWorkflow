@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar - EPA FRN Approval System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/shared.css">
+    <script src="src/frn-data.js"></script>
+    <style>
+        :root { --navy:#002147; --gold:#b8860b; --burgundy:#800020; --cream:#faf8f3; --parchment:#f4f1e8; --light-gray:#e0e0e0; --gray:#666; --approved-green:#2e7d32; --pending-amber:#f57c00; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Source Serif 4', serif; background:var(--cream); color:var(--navy); overflow-x:hidden; }
+        /* Left Navigation Sidebar - match dashboard/active reviews */
+        .left-sidebar { width:285px; min-width:285px; max-width:285px; height:110vh; min-height:110vh; max-height:110vh; background:var(--navy); padding:0.5rem 0 0.5rem 0; display:flex; flex-direction:column; justify-content:flex-start; align-items:stretch; overflow:hidden; box-shadow:4px 0 15px rgba(0,0,0,0.2); position:fixed; left:0; top:0; z-index:100; font-size:0.85rem; }
+        .left-sidebar::after { content:""; position:absolute; right:0; top:0; width:4px; height:100%; background:var(--gold); z-index:101; }
+        .sidebar-logo { text-align:center; padding:0 0.2rem 0.1rem; border-bottom:2px solid var(--gold); margin-bottom:1rem; flex-shrink:0; }
+        .logo-seal { width:80px; height:80px; background:linear-gradient(135deg,var(--gold),var(--burgundy)); border-radius:50%; border:3px solid var(--gold); display:flex; align-items:center; justify-content:center; font-size:2rem; margin:0 auto 0.5rem; }
+        .logo-text { font-size:0.9rem; color:var(--gold); text-transform:uppercase; letter-spacing:0.15em; line-height:1.5; font-weight:600; text-align:center; margin-bottom:0.5rem; }
+        .nav-sections-wrapper { display:flex; flex-direction:column; flex:1 1 auto; gap:0.3rem; height:100%; overflow:hidden; }
+        .nav-section { padding:0 0.25rem 0 10%; margin-bottom:6px; flex:0 0 auto; width:100%; }
+        .nav-section-title { padding-top:0.4rem; font-size:1.25rem; color:var(--gold); font-weight:700; letter-spacing:0.1em; margin-bottom:0.1rem; padding-bottom:0.6rem; position:relative; }
+        .nav-section-title::after { content:""; position:absolute; left:0; right:10%; bottom:0; height:1px; background:rgba(184,134,11,0.3); }
+        .nav-section-title::before { content:""; position:absolute; left:0; right:10%; top:0; height:2px; background:rgba(184,134,11,0.3); }
+        .nav-item { padding:0.25rem 0.25rem; color:var(--cream); text-decoration:none; display:block; font-size:1rem; transition:all 0.3s ease; border-left:5px solid transparent; margin-bottom:0.1rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .nav-item:hover { background:rgba(184,134,11,0.15); border-left-color:var(--gold); color:var(--gold); transform:translateX(3px); }
+        .nav-item.active { background:rgba(184,134,11,0.25); border-left-color:var(--gold); color:white; }
+        /* Layout */
+        .content-wrapper { display:flex; margin-left:285px; margin-right:315px; width:calc(100vw - 600px); min-height:100vh; }
+        .main-content { flex:1; padding:0 0.25rem; }
+        .container { width:1260px; max-width:1260px; margin:0 auto; padding-bottom:3rem; }
+        /* Header */
+        header { background:white; border:3px solid var(--navy); border-top:8px solid var(--gold); padding:1.2rem 1rem; margin:1rem 0; display:flex; align-items:center; gap:1.2rem; }
+        .header-seal { width:110px; height:110px; background:linear-gradient(135deg,var(--navy),var(--burgundy)); border-radius:50%; border:4px solid var(--gold); display:flex; align-items:center; justify-content:center; font-size:3.1rem; font-weight:800; color:white; }
+        .department { font-size:1.458rem; color:var(--gold); text-transform:uppercase; letter-spacing:0.15em; font-weight:700; margin-bottom:0.5rem; }
+        h1 { font-family:'Libre Baskerville', serif; font-size:2.4rem; color:var(--navy); margin-bottom:0.3rem; font-weight:700; }
+        .tagline { font-size:1.15rem; color:var(--burgundy); font-weight:800; }
+        /* Right Sidebar (match dashboard) */
+        .right-sidebar { width:315px; background:var(--parchment); padding:2rem 1.5rem; border-left:3px solid var(--navy); position:fixed; right:0; top:0; height:100vh; overflow-y:auto; }
+        .right-sidebar-content { display:flex; flex-direction:column; gap:1.6rem; }
+        .right-sidebar::-webkit-scrollbar { width:0px; height:0px; }
+        .sidebar-section { margin-bottom:0.5rem; }
+        .sidebar-section h3 { text-align:center; border-bottom:2px solid var(--gold); border-top:2px solid var(--gold); padding:0.5rem 0; font-size:1.32rem; }
+        .time-slider { display:flex; gap:0; margin:0.8rem 0 1rem; background: var(--light-gray); border:2px solid var(--navy); border-radius:4px; overflow:hidden; }
+        .slider-btn { flex:1; padding:0.5rem 0.35rem; background:transparent; border:none; color:var(--navy); font-family:'Source Serif 4', serif; font-size:0.84rem; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; cursor:pointer; transition:all 0.3s ease; border-right:1px solid var(--navy); }
+        .slider-btn:last-child { border-right:none; }
+        .slider-btn:hover { background: rgba(184,134,11,0.2); }
+        .slider-btn.active { background: var(--navy); color: var(--gold); }
+        .quick-stat { background:white; border:2px solid var(--navy); border-left:4px solid var(--gold); padding:1rem; text-align:center; margin-bottom:0.6rem; }
+        .stat-value { font-weight:800; font-size:1.4rem; }
+        /* Main view */
+        .section { background:white; border:2px solid var(--navy); border-left:6px solid var(--gold); padding:1.25rem 1.75rem; margin-bottom:1.5rem; }
+        .section h2 { font-family:'Libre Baskerville', serif; font-size:1.6rem; margin-bottom:0.8rem; border-bottom:2px solid var(--gold); padding-bottom:0.4rem; }
+        .calendar-shell { display:flex; flex-direction:column; align-items:center; gap:0.6rem; }
+        .month-bar { width:100%; display:flex; align-items:center; justify-content:center; gap:1rem; position:relative; padding:0 50px; }
+        .month-title { font-family:'Libre Baskerville', serif; font-size:1.4rem; font-weight:800; color:var(--navy); text-align:center; flex:0; }
+        .cal-nav { background:var(--navy); color:var(--gold); border:2px solid var(--gold); padding:0.35rem 0.65rem; cursor:pointer; font-weight:800; font-size:1rem; position:absolute; top:0; }
+        .calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); border:2px solid var(--navy); width:100%; }
+        .calendar-head { background:var(--navy); color:var(--cream); padding:0.65rem; text-align:center; font-weight:700; border-right:1px solid var(--gold); }
+        .calendar-head:last-child { border-right:none; }
+        .day { min-height:128px; background:var(--cream); border-right:1px solid var(--light-gray); border-top:1px solid var(--light-gray); padding:0.45rem; position:relative; }
+        .day:nth-child(7n) { border-right:none; }
+        .date-num { font-weight:800; margin-bottom:4px; }
+        .day.today { background:#dfefff; box-shadow: inset 0 0 0 2px #6ea8d9; }
+        .frn-indicator { display:block; margin-top:5px; padding:3px 5px; border-radius:4px; border:1px solid var(--navy); font-size:0.68rem; line-height:1.2; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .frn-indicator.in-progress,
+        .frn-indicator.pending { background:rgba(184,134,11,0.22); color:#6f5200; }
+        .frn-indicator.completed { background:rgba(46,125,50,0.18); color:#1f5c22; }
+        .frn-indicator.overdue { background:rgba(198,40,40,0.18); color:#8b1d1d; }
+        .frn-indicator.not-started { background:#ffffff; color:#4a5568; }
+        .calendar-legend { width:100%; display:flex; flex-wrap:wrap; gap:0.8rem; margin-top:0.8rem; }
+        .legend-item { display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; color:var(--navy); }
+        .legend-swatch { width:16px; height:16px; border-radius:4px; border:1px solid var(--navy); }
+        .legend-swatch.today { background:#dfefff; }
+        .legend-swatch.completed { background:rgba(46,125,50,0.18); }
+        .legend-swatch.pending { background:rgba(184,134,11,0.22); }
+        .legend-swatch.not-started { background:#ffffff; }
+        .legend-swatch.overdue { background:rgba(198,40,40,0.18); }
+        .upcoming-table { width:100%; border-collapse:collapse; margin-top:0.5rem; }
+        .upcoming-table th, .upcoming-table td { border:1px solid var(--navy); padding:0.6rem; text-align:left; }
+        .upcoming-table th { background:var(--parchment); font-size:1rem; }
+        .upcoming-table tr:nth-child(even) { background:#fdfbf5; }
+        .label-chip { display:inline-block; padding:0.25rem 0.5rem; border-radius:12px; font-weight:700; font-size:0.85rem; color:white; }
+        .chip-red { background:#c62828; }
+        .chip-blue { background:#1565c0; }
+        .chip-green { background:#2e7d32; }
+        .chip-orange { background:#f57c00; }
+        .chip-white { background:#ffffff; color:#4a5568; border:1px solid var(--navy); }
+        /* Disclaimer */
+        .disclaimer-pane { background:var(--navy); border-top:8px solid var(--gold); margin-top:1rem; padding:0; }
+        .disclaimer-content { display:flex; align-items:center; justify-content:space-between; padding:1.5rem 2rem; gap:1.8rem; color:var(--cream); }
+        .disclaimer-title { font-size:1.32rem; font-weight:700; color:var(--gold); letter-spacing:0.15em; }
+        .disclaimer-body { font-size:0.95rem; line-height:1.6; margin:0.4rem 0 0.8rem 0; }
+        .disclaimer-links { margin-bottom:0.75rem; }
+        .disclaimer-link { color:var(--gold); text-decoration:none; font-weight:700; }
+        .disclaimer-separator { color:var(--gold); margin:0 0.45rem; }
+        .disclaimer-version { color:var(--cream); font-size:0.84rem; }
+        .disclaimer-stamp { display:flex; align-items:center; justify-content:center; }
+        .pmtarp-stamp { background:transparent; color:#c92a2a; width:108px; height:108px; font-family:'Libre Baskerville', serif; border:5px solid #c92a2a; border-radius:50%; text-align:center; transform:rotate(-12deg); box-shadow:0 0 0 2px #c92a2a, inset 0 0 12px rgba(201,42,42,0.1); opacity:0.88; display:flex; align-items:center; justify-content:center; position:relative; }
+        .pmtarp-stamp::before { content:''; position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle at 20% 30%, transparent 40%, rgba(201,42,42,0.05) 41%), radial-gradient(circle at 70% 60%, transparent 35%, rgba(201,42,42,0.05) 36%), radial-gradient(circle at 40% 80%, transparent 30%, rgba(201,42,42,0.05) 31%); }
+        .stamp-text { padding:0.3rem; position:relative; z-index:1; color:#c92a2a; font-weight:800; text-transform:uppercase; }
+    </style>
+</head>
+<body>
+    <nav class="left-sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-seal" style="overflow: hidden; width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid var(--gold); background: white;">
+                <img src="Images/EPA Seal.png" alt="EPA Logo" style="width: 100%; height: 100%; object-fit: cover; object-position: 0% center; border-radius: 50%;" />
+            </div>
+            <div class="logo-text">Environmental<br>Protection<br>Agency</div>
+        </div>
+        <div class="nav-sections-wrapper">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item">Dashboard</a>
+                <a href="new-notice.html" class="nav-item">New Notice</a>
+                <a href="DocumentLibrary.html" class="nav-item">Document Library</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Workflow</div>
+                <a href="my-tasks.html" class="nav-item">My Tasks</a>
+                <a href="Active-Reviews.html" class="nav-item">Active Reviews</a>
+                <a href="pending-approvals.html" class="nav-item">Pending Approvals</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Views</div>
+                <a href="calendar.html" class="nav-item active">Calendar</a>
+                <a href="team.html" class="nav-item">Team</a>
+                <a href="analytics.html" class="nav-item">Analytics</a>
+                <a href="reports.html" class="nav-item">Reports</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="settings.html" class="nav-item">Settings</a>
+                <a href="help.html" class="nav-item">Help</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content-wrapper">
+        <div class="main-content">
+            <div class="container">
+                <header>
+                    <div class="header-seal">📅</div>
+                    <div>
+                        <div class="department">Environmental Protection Agency</div>
+                        <h1>Federal Register Notice (FRN) Approval Workflow</h1>
+                        <div class="tagline">Calendar</div>
+                    </div>
+                </header>
+
+                <div class="section">
+                    <h2>Monthly Calendar</h2>
+                    <div class="calendar-shell">
+                        <div class="month-bar">
+                            <button class="cal-nav" id="prev-month" aria-label="Previous Month" style="left:0;">‹</button>
+                            <div class="month-title" id="month-title"></div>
+                            <button class="cal-nav" id="next-month" aria-label="Next Month" style="right:0;">›</button>
+                        </div>
+                        <div class="calendar-grid" id="calendar-grid">
+                            <!-- populated by JS -->
+                        </div>
+                        <div class="calendar-legend">
+                            <div class="legend-item"><span class="legend-swatch today"></span><span>Today</span></div>
+                            <div class="legend-item"><span class="legend-swatch completed"></span><span>Completed</span></div>
+                            <div class="legend-item"><span class="legend-swatch pending"></span><span>Pending</span></div>
+                            <div class="legend-item"><span class="legend-swatch not-started"></span><span>Not Started</span></div>
+                            <div class="legend-item"><span class="legend-swatch overdue"></span><span>Past Due</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Upcoming Deadlines</h2>
+                    <table class="upcoming-table" id="upcoming-table">
+                        <thead>
+                            <tr>
+                                <th>FRN ID</th>
+                                <th>Document Title</th>
+                                <th>Stage</th>
+                                <th>Assignee</th>
+                                <th>Deadline</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div class="disclaimer-pane">
+                    <div class="disclaimer-content">
+                        <div class="disclaimer-text">
+                            <p class="disclaimer-title">DISCLAIMER</p>
+                            <p class="disclaimer-body">Official EPA PMTaRP product. Authorized personnel only. Subject to federal recordkeeping requirements (44 U.S.C. § 31, EPA Records Schedule 0155). Unauthorized access subject to 18 U.S.C. § 1030.</p>
+                            <div class="disclaimer-links">
+                                <a href="#" class="disclaimer-link">Contact Us</a>
+                                <span class="disclaimer-separator">|</span>
+                                <a href="#" class="disclaimer-link">Support</a>
+                                <span class="disclaimer-separator">|</span>
+                                <a href="#" class="disclaimer-link">Privacy Policy</a>
+                                <span class="disclaimer-separator">|</span>
+                                <a href="#" class="disclaimer-link">Terms of Use</a>
+                            </div>
+                            <p class="disclaimer-version">Version 2.12.1 | Official Use Only</p>
+                        </div>
+                        <div class="disclaimer-stamp">
+                            <div class="pmtarp-stamp">
+                                <div class="stamp-text">
+                                    <div class="stamp-top">OFFICIAL</div>
+                                    <div class="stamp-main">PMTaRP</div>
+                                    <div class="stamp-subtitle">Project Management<br>Tracking & Reporting Tool</div>
+                                    <div class="stamp-bottom">PRODUCT</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <aside class="right-sidebar">
+            <div class="right-sidebar-content">
+                <div class="sidebar-section">
+                    <h3 class="stats-title">System Statistics</h3>
+                    <div class="time-slider">
+                        <button class="slider-btn active" type="button" data-period="monthly">Month</button>
+                        <button class="slider-btn" type="button" data-period="quarterly">Quarter</button>
+                        <button class="slider-btn" type="button" data-period="yearly">Year</button>
+                    </div>
+                    <div class="quick-stat">
+                        <div class="stat-value" id="submitted">45</div>
+                        <div class="stat-label">Submitted</div>
+                    </div>
+                    <div class="quick-stat">
+                        <div class="stat-value" id="approved">38</div>
+                        <div class="stat-label">Approved</div>
+                    </div>
+                    <div class="quick-stat">
+                        <div class="stat-value" id="published">32</div>
+                        <div class="stat-label">Published</div>
+                    </div>
+                    <div class="quick-stat">
+                        <div class="stat-value" id="rejected">7</div>
+                        <div class="stat-label">Rejected</div>
+                    </div>
+                    <div class="quick-stat">
+                        <div class="stat-value" id="completion">92%</div>
+                        <div class="stat-label">On-Time Rate</div>
+                    </div>
+                    <div class="quick-stat">
+                        <div class="stat-value" id="avgDays">4.2</div>
+                        <div class="stat-label">Avg Days/Stage</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        const documents = (window.FRN_DATA && window.FRN_DATA.documents) || [];
+
+        function getPeriodBounds(period) {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+            if (period === 'monthly') {
+                return { start: new Date(year, month, 1), end: new Date(year, month + 1, 0, 23, 59, 59, 999) };
+            }
+            if (period === 'quarterly') {
+                const quarterStartMonth = Math.floor(month / 3) * 3;
+                return { start: new Date(year, quarterStartMonth, 1), end: new Date(year, quarterStartMonth + 3, 0, 23, 59, 59, 999) };
+            }
+            return { start: new Date(year, 0, 1), end: new Date(year, 11, 31, 23, 59, 59, 999) };
+        }
+
+        function isWithin(dateText, bounds) {
+            if (!dateText) return false;
+            const date = new Date(dateText + 'T00:00:00');
+            return date >= bounds.start && date <= bounds.end;
+        }
+
+        function calculateStats(period) {
+            const bounds = getPeriodBounds(period);
+            const submitted = documents.filter(doc => isWithin(doc.submittedDate, bounds)).length;
+            const approved = documents.filter(doc => (doc.status === 'pending' || doc.status === 'completed' || doc.stageNumber >= 6) && isWithin(doc.lastUpdated, bounds)).length;
+            const publishedDocs = documents.filter(doc => doc.status === 'completed' && isWithin(doc.completedDate, bounds));
+            const published = publishedDocs.length;
+            const rejected = 0;
+            const onTimeRate = published
+                ? `${Math.round((publishedDocs.filter(doc => new Date(doc.completedDate + 'T00:00:00') <= new Date(doc.dueDate + 'T00:00:00')).length / published) * 100)}%`
+                : '0%';
+            const avgDays = published
+                ? (publishedDocs.reduce((sum, doc) => sum + ((doc.reviewCompletionDays || 0) / 7), 0) / published).toFixed(1)
+                : '0.0';
+            return { submitted, approved, published, rejected, completion: onTimeRate, avgDays };
+        }
+
+        function changePeriod(period, button) {
+            document.querySelectorAll('.slider-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            const data = calculateStats(period);
+            document.getElementById('submitted').textContent = data.submitted;
+            document.getElementById('approved').textContent = data.approved;
+            document.getElementById('published').textContent = data.published;
+            document.getElementById('rejected').textContent = data.rejected;
+            document.getElementById('completion').textContent = data.completion;
+            document.getElementById('avgDays').textContent = data.avgDays;
+        }
+
+        // Calendar generation
+        const calendarGrid = document.getElementById('calendar-grid');
+        const monthTitle = document.getElementById('month-title');
+        let viewDate = new Date();
+
+        document.querySelectorAll('.time-slider .slider-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                changePeriod(button.dataset.period, button);
+            });
+        });
+
+        function buildCalendarEvents() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return documents.map(doc => {
+                const parsed = new Date(doc.dueDate + 'T00:00:00');
+                let indicatorClass = 'pending';
+                let statusLabel = 'Pending';
+
+                if (doc.status === 'completed') {
+                    indicatorClass = 'completed';
+                    statusLabel = 'Published';
+                } else if (parsed < today) {
+                    indicatorClass = 'overdue';
+                    statusLabel = 'Past Due';
+                } else if (doc.status === 'pending') {
+                    indicatorClass = 'pending';
+                    statusLabel = 'Pending';
+                } else if (doc.stageNumber === 1) {
+                    indicatorClass = 'not-started';
+                    statusLabel = 'Not Started';
+                }
+
+                return {
+                    id: doc.id,
+                    title: doc.title,
+                    stage: doc.currentStage,
+                    assignee: doc.assignee,
+                    date: parsed,
+                    status: doc.status,
+                    indicatorClass,
+                    statusLabel
+                };
+            });
+        }
+
+        function renderCalendar(date) {
+            calendarGrid.innerHTML = '';
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const events = buildCalendarEvents();
+            monthTitle.textContent = date.toLocaleString('default', { month:'long', year:'numeric' });
+            const start = new Date(year, month, 1);
+            const startDay = start.getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const weekdayLabels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+            weekdayLabels.forEach(label => {
+                const head = document.createElement('div');
+                head.className = 'calendar-head';
+                head.textContent = label;
+                calendarGrid.appendChild(head);
+            });
+            for (let i = 0; i < startDay; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'day';
+                calendarGrid.appendChild(empty);
+            }
+            for (let d = 1; d <= daysInMonth; d++) {
+                const cell = document.createElement('div');
+                cell.className = 'day';
+                const num = document.createElement('div');
+                num.className = 'date-num';
+                num.textContent = d;
+                cell.appendChild(num);
+                const today = new Date();
+                if (d === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                    cell.classList.add('today');
+                }
+                events
+                    .filter(e => e.date.getFullYear() === year && e.date.getMonth() === month && e.date.getDate() === d)
+                    .forEach(ev => {
+                        const indicator = document.createElement('div');
+                        indicator.className = `frn-indicator ${ev.indicatorClass}`;
+                        indicator.textContent = ev.id;
+                        indicator.title = `${ev.id} • ${ev.title} • ${ev.stage}`;
+                        cell.appendChild(indicator);
+                    });
+                calendarGrid.appendChild(cell);
+            }
+        }
+
+        document.getElementById('prev-month').addEventListener('click', () => {
+            viewDate.setMonth(viewDate.getMonth() - 1);
+            renderCalendar(viewDate);
+        });
+        document.getElementById('next-month').addEventListener('click', () => {
+            viewDate.setMonth(viewDate.getMonth() + 1);
+            renderCalendar(viewDate);
+        });
+        changePeriod('monthly', document.querySelector('.time-slider .slider-btn.active'));
+        renderCalendar(viewDate);
+
+        // Upcoming deadlines table
+        const tbody = document.querySelector('#upcoming-table tbody');
+        buildCalendarEvents()
+            .sort((a, b) => a.date - b.date)
+            .forEach(row => {
+            const tr = document.createElement('tr');
+            const chipClass = row.indicatorClass === 'completed'
+                ? 'chip-green'
+                : row.indicatorClass === 'pending'
+                    ? 'chip-orange'
+                    : row.indicatorClass === 'not-started'
+                        ? 'chip-white'
+                        : row.indicatorClass === 'overdue'
+                            ? 'chip-red'
+                            : 'chip-blue';
+            tr.innerHTML = `
+                <td>${row.id}</td>
+                <td>${row.title}</td>
+                <td>${row.stage}</td>
+                <td>${row.assignee}</td>
+                <td>${row.date.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })}</td>
+                <td><span class="label-chip ${chipClass}">${row.statusLabel}</span></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    </script>
+</body>
+</html>

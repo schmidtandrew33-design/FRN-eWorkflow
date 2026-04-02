@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - EPA FRN Approval System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/shared.css">
+    <script src="src/frn-data.js"></script>
+    
+    <style>
+        :root {
+            --navy: #002147;
+            --gold: #b8860b;
+            --burgundy: #800020;
+            --cream: #faf8f3;
+            --parchment: #f4f1e8;
+            --light-gray: #e0e0e0;
+            --gray: #666;
+            --approved-green: #2e7d32;
+            --pending-amber: #f57c00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Serif 4', serif;
+            background: var(--cream);
+            color: var(--navy);
+            overflow-x: hidden;
+        }
+
+        /* Left Navigation Sidebar - match nav.html */
+        .left-sidebar {
+            width: 285px;
+            min-width: 285px;
+            max-width: 285px;
+            height: 110vh;
+            min-height: 110vh;
+            max-height: 110vh;
+            background: var(--navy);
+            padding: 0.5rem 0 0.8rem 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: stretch;
+            overflow: hidden;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            box-sizing: border-box;
+            font-size: 1.0625rem;
+            transform: none !important;
+        }
+        /* Gold bar on the right side */
+        .left-sidebar::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gold);
+            z-index: 101;
+        }
+        .left-sidebar > * {
+            flex-shrink: 1;
+        }
+
+        .left-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .left-sidebar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .left-sidebar::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 3px;
+        }
+
+        .sidebar-logo {
+            text-align: center;
+            padding: 0 0.2rem 0.1rem;
+            border-bottom: 2px solid var(--gold);
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+
+        .logo-seal {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--gold), var(--burgundy));
+            border-radius: 50%;
+            border: 3px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 0.5rem;
+        }
+
+        .logo-text {
+            font-size: 0.9rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            line-height: 1.5;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-sections-wrapper {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 auto;
+            justify-content: flex-start;
+            gap: 0.3rem;
+            height: 100%;
+            overflow: hidden;
+        }
+        .nav-section {
+            padding: 0 0.25rem 0 10%;
+            margin-bottom: 6px;
+            flex: 0 0 auto;
+            width: 100%;
+        }
+
+        .nav-section-title {
+            padding-top: 0.4rem;
+            font-size: 1.25rem;
+            color: var(--gold);
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.1rem;
+            padding-bottom: 0.6rem;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .nav-section-title::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 10%;
+            bottom: 0;
+            height: 1px;
+            background: rgba(184, 134, 11, 0.3);
+            display: block;
+        }
+        .nav-section-title::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 10%;
+            top: 0;
+            height: 2px;
+            background: rgba(184, 134, 11, 0.3);
+            display: block;
+        }
+
+        .nav-item {
+            padding: 0.25rem 0.25rem;
+            color: var(--cream);
+            text-decoration: none;
+            display: block;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border-left: 5px solid transparent;
+            margin-bottom: 0.1rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-shrink: 1;
+        }
+
+        .nav-item:last-child {
+            margin-bottom: 0.7rem;
+            padding-bottom: 0.7rem;
+        }
+
+        .nav-item:hover {
+            background: rgba(184, 134, 11, 0.15);
+            border-left-color: var(--gold);
+            color: var(--gold);
+            transform: translateX(3px);
+        }
+
+        .nav-item.active {
+            background: rgba(184, 134, 11, 0.25);
+            border-left-color: var(--gold);
+            color: white;
+        }
+
+        /* Scrollable Content Wrapper */
+.content-wrapper {
+    display: flex;
+    flex: 1;
+    margin-left: 285px;
+    margin-right: 315px;
+    width: calc(100vw - 285px - 315px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 100vh;
+    scrollbar-width: none;
+}
+
+        .content-wrapper::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .content-wrapper::-webkit-scrollbar-track {
+            background: var(--light-gray);
+        }
+
+        .content-wrapper::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 4px;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            min-height: 100vh;
+            padding: 0 0.25rem;
+            margin-bottom: 0.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            background: var(--cream);
+        }
+
+        .container {
+            margin: 0;
+            max-width: none;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            padding-top: 0.3rem;
+            padding-bottom: 1.5rem;
+        }
+
+        /* Official Header */
+        header {
+            background: white;
+            border: 3px solid var(--navy);
+            border-top: 8px solid var(--gold);
+            padding: 1.2rem 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 1.2rem;
+        }
+
+        .header-seal {
+            width: 110px;
+            height: 110px;
+            background: linear-gradient(135deg, var(--navy), var(--burgundy));
+            border-radius: 50%;
+            border: 4px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.1rem;
+            font-weight: 800;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .header-content {
+            margin-left: 0;
+            flex: 1;
+        }
+
+        .department {
+            font-size: 1.458rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+
+        h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2.4rem;
+            color: var(--navy);
+            margin-bottom: 0.3rem;
+            font-weight: 700;
+        }
+
+        .tagline {
+            font-size: 1.15rem;
+            color: var(--burgundy);
+            font-weight: 800;
+            font-style: normal;
+        }
+
+        /* Dashboard Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            border: 2px solid var(--navy);
+            border-left: 6px solid var(--gold);
+            padding: 1rem 1rem 0.85rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-value {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.95rem;
+            color: var(--burgundy);
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .stat-label {
+            font-size: 0.74rem;
+            color: var(--navy);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        /* Section Containers */
+        .section {
+            background: white;
+            border: 2px solid var(--navy);
+            border-left: 6px solid var(--gold);
+            padding: 1.25rem 2.5rem 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-stack-row .section {
+            padding-left: 1.35rem;
+            padding-right: 1.35rem;
+        }
+
+        .recent-documents-section {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        /* Center all table content */
+        table th, table td {
+            text-align: center;
+        }
+
+        /* Needs Attention row colors (solid, stronger with higher overdue) */
+        .needs-row-3 { background: #e57373; }
+        .needs-row-5 { background: #d32f2f; }
+        .needs-row-9 { background: #b71c1c; }
+        .needs-row-3 a,
+        .needs-row-5 a,
+        .needs-row-9 a { color: var(--navy); text-decoration: underline; }
+        .needs-row-3 td strong,
+        .needs-row-5 td strong,
+        .needs-row-9 td strong { color: var(--navy); }
+
+        /* Upcoming Deadlines solid scale (green → orange) */
+        .upcoming-scroll table thead { position: sticky; top: 0; z-index: 2; }
+        .upcoming-scroll table thead th { background: var(--navy); }
+
+        .section-header-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+
+        .deadline-1 { background: #ff9800; color: #1b1b1b; }
+        .upcoming-deadlines td:first-child a { text-decoration: underline; }
+        .kpi-card { text-decoration: none; color: inherit; display: block; }
+        .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+        .deadline-3 { background: #ffbf5f; color: #1b1b1b; }
+        .deadline-5 { background: #f4d44a; color: #1b1b1b; }
+        .deadline-8 { background: #a8d46a; color: #0f2600; }
+        .deadline-12 { background: #5cbf4a; color: #0a1d00; }
+
+        .deadline-2 { background: #ffb74d; color: #1b1b1b; }
+        .deadline-4 { background: #ffeb3b; color: #1b1b1b; }
+        .deadline-6 { background: #d4e157; color: #1b1b1b; }
+        .deadline-7 { background: #c5e1a5; color: #1b1b1b; }
+        .deadline-10 { background: #8bc34a; color: #0c2600; }
+
+        /* Upcoming Deadlines scroll area */
+        .upcoming-scroll {
+            max-height: 325px;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+        .upcoming-scroll::-webkit-scrollbar { width: 0; height: 0; }
+        .upcoming-deadlines { position: relative; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .needs-attention-section td,
+        .needs-attention-section th,
+        .upcoming-deadlines td,
+        .upcoming-deadlines th {
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        thead {
+            background: var(--navy);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: center;
+            color: var(--gold);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 1.0625rem;
+            letter-spacing: 0.05em;
+            border: 1px solid var(--gold);
+        }
+
+        td {
+            padding: 1rem;
+            border: 1px solid var(--gold);
+            font-size: 0.9rem;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .needs-attention-section th,
+        .needs-attention-section td,
+        .upcoming-deadlines th,
+        .upcoming-deadlines td {
+            padding: 0.5rem 0.6rem;
+            font-size: 0.76rem;
+            line-height: 1.15;
+        }
+
+        .needs-attention-section th,
+        .upcoming-deadlines th {
+            font-size: 0.82rem;
+        }
+
+        tbody tr:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 3px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-active {
+            background: var(--pending-amber);
+            color: white;
+        }
+
+        .status-completed {
+            background: var(--approved-green);
+            color: white;
+        }
+
+        .status-pending {
+            background: var(--light-gray);
+            color: var(--gray);
+        }
+
+        .doc-link {
+            color: var(--navy);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .doc-link:hover {
+            color: var(--gold);
+            text-decoration: underline;
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            width: 315px;
+            background: var(--parchment);
+            padding: 2rem 1.5rem;
+            border-left: 3px solid var(--navy);
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: none;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-section h3 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.32rem;
+            color: var(--navy);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--gold);
+            border-top: 2px solid var(--gold);
+            padding-bottom: 0.5rem;
+            padding-top: 0.5rem;
+            text-align: center;
+        }
+
+        .stats-title {
+            font-size: 1.4rem !important;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .time-slider {
+            display: flex;
+            gap: 0;
+            margin-bottom: 1.5rem;
+            background: var(--light-gray);
+            border: 2px solid var(--navy);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .slider-btn {
+            flex: 1;
+            padding: 0.5rem 0.35rem;
+            background: transparent;
+            border: none;
+            color: var(--navy);
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.84rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-right: 1px solid var(--navy);
+        }
+
+        .slider-btn:last-child {
+            border-right: none;
+        }
+
+        .slider-btn:hover {
+            background: rgba(184, 134, 11, 0.2);
+        }
+
+        .slider-btn.active {
+            background: var(--navy);
+            color: var(--gold);
+        }
+
+        .section h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.75rem;
+            color: var(--navy);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            border-bottom: 3px solid var(--gold);
+            padding-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Document Filters */
+        .document-filters {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding: 0.7rem 0.85rem;
+            background: var(--parchment);
+            border: 2px solid var(--navy);
+            border-left: 4px solid var(--gold);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.22rem;
+        }
+
+        .filter-group label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--navy);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .filter-select {
+            padding: 0.4rem 0.5rem;
+            border: 2px solid var(--navy);
+            background: white;
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.76rem;
+            color: var(--navy);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .filter-select:hover {
+            border-color: var(--gold);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.2);
+        }
+
+        .quick-stat {
+            background: white;
+            border: 2px solid var(--navy);
+            border-left: 4px solid var(--gold);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .quick-stat .stat-value {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            color: var(--burgundy);
+            font-weight: 700;
+        }
+
+        .quick-stat .stat-label {
+            font-size: 0.96rem;
+            color: var(--navy);
+            margin-top: 0.5rem;
+            line-height: 1.3;
+        }
+
+        /* Disclaimer Pane */
+        .disclaimer-pane {
+            background: var(--navy);
+            border-top: 8px solid var(--gold);
+            margin: 0;
+            margin-top: 0.5rem;
+            padding: 0;
+        }
+
+        .disclaimer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            gap: 1.8rem;
+        }
+
+        .disclaimer-text {
+            flex: 1;
+            text-align: center;
+        }
+
+        .disclaimer-title {
+            font-size: 1.32rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin: 0 0 0.45rem 0;
+            letter-spacing: 0.15em;
+        }
+
+        .disclaimer-body {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--cream);
+            margin: 0 0 0.6rem 0;
+        }
+
+        .disclaimer-links {
+            margin-bottom: 0.75rem;
+        }
+
+        .disclaimer-link {
+            font-size: 0.96rem;
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 0.96rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .disclaimer-link:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .disclaimer-separator {
+            color: var(--gold);
+            margin: 0 0.45rem;
+        }
+
+        .disclaimer-version {
+            font-size: 0.84rem;
+            color: var(--gray);
+            margin: 0;
+        }
+
+        .disclaimer-stamp {
+            flex-shrink: 0;
+        }
+
+        .pmtarp-stamp {
+            background: transparent;
+            color: #c92a2a;
+            width: 108px;
+            height: 108px;
+            font-family: 'Libre Baskerville', serif;
+            border: 5px solid #c92a2a;
+            border-radius: 50%;
+            text-align: center;
+            transform: rotate(-12deg);
+            box-shadow: 
+                0 0 0 2px #c92a2a,
+                inset 0 0 12px rgba(201, 42, 42, 0.1);
+            opacity: 0.88;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .pmtarp-stamp::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            background: 
+                radial-gradient(circle at 20% 30%, transparent 40%, rgba(201, 42, 42, 0.05) 41%),
+                radial-gradient(circle at 70% 60%, transparent 35%, rgba(201, 42, 42, 0.05) 36%),
+                radial-gradient(circle at 40% 80%, transparent 30%, rgba(201, 42, 42, 0.05) 31%);
+            pointer-events: none;
+        }
+
+        .stamp-text {
+            padding: 0.3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stamp-top {
+            font-size: 0.36rem;
+            letter-spacing: 0.25em;
+            font-weight: 700;
+            margin-bottom: 0.24rem;
+            text-transform: uppercase;
+            font-style: italic;
+        }
+
+        .stamp-main {
+            font-size: 1.08rem;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            margin-bottom: 0.18rem;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 0px rgba(201, 42, 42, 0.3);
+        }
+
+        .stamp-subtitle {
+            font-size: 0.3rem;
+            letter-spacing: 0.08em;
+            line-height: 1.4;
+            margin-bottom: 0.24rem;
+            font-weight: 600;
+            font-style: normal;
+        }
+
+        .stamp-bottom {
+            font-size: 0.36rem;
+            letter-spacing: 0.25em;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+        <!-- Left Navigation Sidebar -->
+    <nav class="left-sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-seal" style="overflow: hidden; width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid var(--gold); background: white;">
+                <img src="Images/EPA Seal.png" alt="EPA Logo" style="width: 100%; height: 100%; object-fit: cover; object-position: 0% center; border-radius: 50%;" />
+            </div>
+            <div class="logo-text">Environmental<br>Protection<br>Agency</div>
+        </div>
+
+        <div class="nav-sections-wrapper">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item">Dashboard</a>
+                <a href="new-notice.html" class="nav-item">New Notice</a>
+                <a href="DocumentLibrary.html" class="nav-item">Document Library</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Workflow</div>
+                <a href="my-tasks.html" class="nav-item">My Tasks</a>
+                <a href="Active-Reviews.html" class="nav-item">Active Reviews</a>
+                <a href="pending-approvals.html" class="nav-item">Pending Approvals</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Views</div>
+                <a href="calendar.html" class="nav-item">Calendar</a>
+                <a href="team.html" class="nav-item">Team</a>
+                <a href="analytics.html" class="nav-item">Analytics</a>
+                <a href="reports.html" class="nav-item">Reports</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="settings.html" class="nav-item">Settings</a>
+                <a href="help.html" class="nav-item">Help</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Scrollable Content Wrapper (Main + Right Sidebar) -->
+    <div class="content-wrapper">
+        <div class="main-content">
+            <div class="container">
+                <!-- Official Header -->
+                <header>
+                    <div class="header-seal">&#128220;</div>
+                    <div class="header-content">
+                        <div class="department">Environmental Protection Agency</div>
+                        <h1>Federal Register Notice (FRN) Approval Workflow</h1>
+                        <div class="tagline">Dashboard Page</div>
+                    </div>
+                </header>
+
+                <!-- Dashboard Stats -->
+                <div class="stats-grid" id="dashboard-kpis"></div>
+
+                <div class="dashboard-stack-row">
+                    <!-- Needs Attention -->
+                    <section class="section needs-attention-section">
+                        <h2>Needs Attention (Overdue)</h2>
+                        <div class="table-container">
+                            <table>
+                                <colgroup>
+                                    <col style="width: 16%">
+                                    <col style="width: 29%">
+                                    <col style="width: 18%">
+                                    <col style="width: 17%">
+                                    <col style="width: 10%">
+                                    <col style="width: 10%">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>Document ID</th>
+                                        <th>Title</th>
+                                        <th>Stage</th>
+                                        <th>Assignee</th>
+                                        <th>Days Overdue</th>
+                                        <th>Task Due Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="needs-attention-body"></tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Upcoming Deadlines -->
+                    <section class="section upcoming-deadlines">
+                        <h2>Upcoming Deadlines (Next 7 Days)</h2>
+                        <div class="table-container upcoming-scroll">
+                            <table>
+                                <colgroup>
+                                    <col style="width: 18%">
+                                    <col style="width: 34%">
+                                    <col style="width: 20%">
+                                    <col style="width: 14%">
+                                    <col style="width: 14%">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>Document ID</th>
+                                        <th>Title</th>
+                                        <th>Stage</th>
+                                        <th>Due Date</th>
+                                        <th>Days Remaining</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="upcoming-deadlines-body"></tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Recent Documents -->
+                <section class="section recent-documents-section">
+                    <h2>Recent Documents</h2>
+                    
+                    <!-- Document Filters -->
+                    <div class="document-filters">
+                        <div class="filter-group">
+                            <label>Status:</label>
+                            <select class="filter-select" id="status-filter">
+                                <option value="all">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="pending">Pending</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Stage:</label>
+                            <select class="filter-select" id="stage-filter">
+                                <option value="all">All Stages</option>
+                                <option value="1">Stage 1 - Intake</option>
+                                <option value="2">Stage 2 - Legal Review</option>
+                                <option value="3">Stage 3 - Technical Review</option>
+                                <option value="4">Stage 4 - Policy Review</option>
+                                <option value="5">Stage 5 - Director Review</option>
+                                <option value="6">Stage 6 - Final Review</option>
+                                <option value="7">Stage 7 - Official Signer</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Assigned To:</label>
+                            <select class="filter-select" id="assignee-filter">
+                                <option value="all">All People</option>
+                                <option value="chen">Dr. Sarah Chen</option>
+                                <option value="johnson">Marcus Johnson</option>
+                                <option value="park">David Park</option>
+                                <option value="martinez">Jennifer Martinez</option>
+                                <option value="administrator">Administrator</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-container" id="recent-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Document ID</th>
+                                    <th>Title</th>
+                                    <th>Current Stage</th>
+                                    <th>Assigned To</th>
+                                    <th>Status</th>
+                                    <th>Due Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-documents-body"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Disclaimer Pane -->
+            <div class="disclaimer-pane">
+                <div class="disclaimer-content">
+                    <div class="disclaimer-text">
+                        <p class="disclaimer-title">DISCLAIMER</p>
+                        <p class="disclaimer-body">Official EPA PMTaRP product. Authorized personnel only. Subject to federal recordkeeping requirements (44 U.S.C. § 31, EPA Records Schedule 0155). Unauthorized access subject to 18 U.S.C. § 1030.</p>
+                        <div class="disclaimer-links">
+                            <a href="#" class="disclaimer-link">Contact Us</a>
+                            <span class="disclaimer-separator">|</span>
+                            <a href="#" class="disclaimer-link">Support</a>
+                            <span class="disclaimer-separator">|</span>
+                            <a href="#" class="disclaimer-link">Privacy Policy</a>
+                            <span class="disclaimer-separator">|</span>
+                            <a href="#" class="disclaimer-link">Terms of Use</a>
+                        </div>
+                        <p class="disclaimer-version">Version 2.12.1 | Official Use Only</p>
+                    </div>
+                    <div class="disclaimer-stamp">
+                        <div class="pmtarp-stamp">
+                            <div class="stamp-text">
+                                <div class="stamp-top">OFFICIAL</div>
+                                <div class="stamp-main">PMTaRP</div>
+                                <div class="stamp-subtitle">Project Management<br>Tracking & Reporting Tool</div>
+                                <div class="stamp-bottom">PRODUCT</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar (Quick Stats Pane) -->
+        <aside class="right-sidebar">
+            <!-- Quick Stats -->
+            <div class="sidebar-section" id="dashboard-sidebar-stats"></div>
+        </aside>
+    </div>
+
+    <script>
+        const frnDocuments = (window.FRN_DATA && window.FRN_DATA.documents) || [];
+        const currentAssignee = (window.FRN_DATA && window.FRN_DATA.currentAssignee) || 'Marcus Johnson';
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        function parseDate(value) {
+            const date = new Date(value + 'T00:00:00');
+            date.setHours(0, 0, 0, 0);
+            return date;
+        }
+
+        function formatDate(value) {
+            return parseDate(value).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+        }
+
+        function dayDiff(from, to) {
+            return Math.round((to - from) / 86400000);
+        }
+
+        function statusClass(status) {
+            if (status === 'completed') return 'status-completed';
+            if (status === 'pending') return 'status-pending';
+            return 'status-active';
+        }
+
+        function needsAttentionClass(daysOverdue) {
+            if (daysOverdue >= 7) return 'needs-row-9';
+            if (daysOverdue >= 4) return 'needs-row-5';
+            return 'needs-row-3';
+        }
+
+        function deadlineClass(daysRemaining) {
+            if (daysRemaining <= 1) return 'deadline-1';
+            if (daysRemaining === 2) return 'deadline-2';
+            if (daysRemaining === 3) return 'deadline-3';
+            if (daysRemaining === 4) return 'deadline-4';
+            if (daysRemaining <= 6) return 'deadline-5';
+            return 'deadline-7';
+        }
+
+        function dashboardDocTarget(doc) {
+            if (doc.status === 'pending') {
+                return {
+                    route: 'pending-approvals',
+                    href: `pending-approvals.html?doc=${encodeURIComponent(doc.id)}`
+                };
+            }
+            return {
+                route: 'active-reviews',
+                href: `Active-Reviews.html?doc=${encodeURIComponent(doc.id)}`
+            };
+        }
+
+        function dashboardDocLink(doc) {
+            const target = dashboardDocTarget(doc);
+            return `<a href="#${target.route}" class="doc-link" onclick="window.openDashboardDocument(event, '${target.route}', '${target.href}')">${doc.id}</a>`;
+        }
+
+        function computeStats() {
+            const completed = frnDocuments.filter(doc => doc.reviewCompletionDays !== null);
+            const avgCompletion = completed.length
+                ? (completed.reduce((sum, doc) => sum + doc.reviewCompletionDays, 0) / completed.length).toFixed(1)
+                : '0.0';
+            const onTimeRate = completed.length
+                ? Math.round((completed.filter(doc => parseDate(doc.completedDate) <= parseDate(doc.dueDate)).length / completed.length) * 100)
+                : 0;
+
+            return {
+                activeReviews: frnDocuments.filter(doc => doc.status === 'active').length,
+                pendingApprovals: frnDocuments.filter(doc => doc.status === 'pending').length,
+                myTasks: frnDocuments.filter(doc => doc.assignee === currentAssignee && doc.status !== 'completed').length,
+                avgCompletion,
+                totalDocuments: frnDocuments.length,
+                published: frnDocuments.filter(doc => doc.status === 'completed').length,
+                activeDocuments: frnDocuments.filter(doc => doc.status === 'active').length,
+                pendingDocuments: frnDocuments.filter(doc => doc.status === 'pending').length,
+                overdue: frnDocuments.filter(doc => doc.status !== 'completed' && parseDate(doc.dueDate) < today).length,
+                onTimeRate
+            };
+        }
+
+        function renderKpis(stats) {
+            document.getElementById('dashboard-kpis').innerHTML = `
+                <a class="stat-card kpi-card" href="Active-Reviews.html" role="button">
+                    <div class="stat-value">${stats.activeReviews}</div>
+                    <div class="stat-label">Active Reviews</div>
+                </a>
+                <a class="stat-card kpi-card" href="pending-approvals.html" role="button">
+                    <div class="stat-value">${stats.pendingApprovals}</div>
+                    <div class="stat-label">Pending Approvals</div>
+                </a>
+                <a class="stat-card kpi-card" href="my-tasks.html" role="button">
+                    <div class="stat-value">${stats.myTasks}</div>
+                    <div class="stat-label">My Tasks</div>
+                </a>
+                <div class="stat-card" role="status" aria-label="Average Review Completion Time">
+                    <div class="stat-value">${stats.avgCompletion}</div>
+                    <div class="stat-label">Average Review Completion Time (Days)</div>
+                </div>
+            `;
+        }
+
+        function renderNeedsAttention() {
+            const rows = frnDocuments
+                .filter(doc => doc.status !== 'completed' && parseDate(doc.dueDate) < today)
+                .map(doc => ({ ...doc, daysOverdue: dayDiff(parseDate(doc.dueDate), today) }))
+                .sort((a, b) => b.daysOverdue - a.daysOverdue)
+                .slice(0, 6);
+
+            document.getElementById('needs-attention-body').innerHTML = rows.length
+                ? rows.map(doc => `
+                    <tr class="${needsAttentionClass(doc.daysOverdue)}">
+                        <td>${dashboardDocLink(doc)}</td>
+                        <td>${doc.title}</td>
+                        <td>${doc.currentStage}</td>
+                        <td>${doc.assignee}</td>
+                        <td><strong>${doc.daysOverdue}</strong></td>
+                        <td>${formatDate(doc.dueDate)}</td>
+                    </tr>
+                `).join('')
+                : '<tr><td colspan="6">No overdue documents.</td></tr>';
+        }
+
+        function renderUpcoming() {
+            const rows = frnDocuments
+                .filter(doc => doc.status !== 'completed')
+                .map(doc => ({ ...doc, daysRemaining: dayDiff(today, parseDate(doc.dueDate)) }))
+                .filter(doc => doc.daysRemaining >= 0 && doc.daysRemaining <= 7)
+                .sort((a, b) => a.daysRemaining - b.daysRemaining || parseDate(a.dueDate) - parseDate(b.dueDate));
+
+            document.getElementById('upcoming-deadlines-body').innerHTML = rows.length
+                ? rows.map(doc => `
+                    <tr class="${deadlineClass(doc.daysRemaining)}">
+                        <td>${dashboardDocLink(doc)}</td>
+                        <td>${doc.title}</td>
+                        <td>${doc.currentStage}</td>
+                        <td>${formatDate(doc.dueDate)}</td>
+                        <td><strong>${doc.daysRemaining} Day${doc.daysRemaining === 1 ? '' : 's'}</strong></td>
+                    </tr>
+                `).join('')
+                : '<tr><td colspan="5">No document deadlines in the next 7 days.</td></tr>';
+        }
+
+        function assigneeSlug(name) {
+            return name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        }
+
+        function renderRecentDocuments() {
+            const rows = frnDocuments
+                .slice()
+                .sort((a, b) => parseDate(b.lastUpdated) - parseDate(a.lastUpdated))
+                .slice(0, 8);
+
+            document.getElementById('recent-documents-body').innerHTML = rows.map(doc => `
+                <tr data-status="${doc.status}" data-stage="${doc.stageNumber}" data-assignee="${assigneeSlug(doc.assignee)}">
+                    <td>${dashboardDocLink(doc)}</td>
+                    <td>${doc.title}</td>
+                    <td>${doc.currentStage}</td>
+                    <td>${doc.assignee}</td>
+                    <td><span class="status-badge ${statusClass(doc.status)}">${doc.statusLabel}</span></td>
+                    <td>${formatDate(doc.dueDate)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderSidebar(stats) {
+            document.getElementById('dashboard-sidebar-stats').innerHTML = `
+                <h3 class="stats-title">Current Library Metrics</h3>
+                <div class="quick-stat">
+                    <div class="stat-value">${stats.totalDocuments}</div>
+                    <div class="stat-label">Total Documents</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="stat-value">${stats.activeDocuments}</div>
+                    <div class="stat-label">Active Reviews</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="stat-value">${stats.pendingDocuments}</div>
+                    <div class="stat-label">Pending Approval</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="stat-value">${stats.published}</div>
+                    <div class="stat-label">Published</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="stat-value">${stats.overdue}</div>
+                    <div class="stat-label">Overdue</div>
+                </div>
+            `;
+        }
+
+        const dashboardStats = computeStats();
+        renderKpis(dashboardStats);
+        renderNeedsAttention();
+        renderUpcoming();
+        renderRecentDocuments();
+        renderSidebar(dashboardStats);
+
+        const statusFilter = document.getElementById('status-filter');
+        const stageFilter = document.getElementById('stage-filter');
+        const assigneeFilter = document.getElementById('assignee-filter');
+
+        function filterRecent() {
+            const statusVal = statusFilter.value;
+            const stageVal = stageFilter.value;
+            const assigneeVal = assigneeFilter.value === 'all'
+                ? 'all'
+                : assigneeSlug(assigneeFilter.options[assigneeFilter.selectedIndex].text);
+
+            document.querySelectorAll('#recent-table tbody tr').forEach(row => {
+                const rs = row.dataset.status;
+                const st = row.dataset.stage;
+                const asg = row.dataset.assignee;
+                const matchStatus = statusVal === 'all' || rs === statusVal;
+                const matchStage = stageVal === 'all' || st === stageVal;
+                const matchAssignee = assigneeVal === 'all' || asg === assigneeVal;
+                row.style.display = matchStatus && matchStage && matchAssignee ? '' : 'none';
+            });
+        }
+
+        [statusFilter, stageFilter, assigneeFilter].forEach(el => el.addEventListener('change', filterRecent));
+        filterRecent();
+
+        window.openDashboardDocument = (event, route, href) => {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            if (typeof window.navigateFRN === 'function') {
+                window.navigateFRN(route, href);
+            } else {
+                window.location.href = href;
+            }
+        };
+    </script>
+</body>
+</html>
+
+

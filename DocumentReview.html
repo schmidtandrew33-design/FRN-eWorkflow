@@ -1,0 +1,2598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Federal Register Notice (FRN) Approval Workflow - EPA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/shared.css">
+    <script src="src/frn-data.js"></script>
+    <script>
+        (function redirectLegacyDocumentReview() {
+            const query = window.location.search || '';
+            const target = `Active-Reviews.html${query}`;
+            if (window.top === window.self) {
+                window.location.replace(target);
+            }
+        })();
+    </script>
+    <style>
+        :root {
+            --navy: #002147;
+            --gold: #b8860b;
+            --burgundy: #800020;
+            --cream: #faf8f3;
+            --parchment: #f4f1e8;
+            --gray: #5a5a5a;
+            --light-gray: #e8e6e1;
+            --success-green: #2d5016;
+            --pending-amber: #d97706;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Serif 4', serif;
+            background: var(--cream);
+            color: var(--navy);
+            line-height: 1.7;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar layout is provided by src/shared.css so it matches dashboard exactly. */
+
+        .document-summary-banner {
+            background: white;
+            border: 2px solid var(--navy);
+            border-left: 6px solid var(--gold);
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .document-summary-banner h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.15rem;
+            color: var(--navy);
+            margin-bottom: 0.65rem;
+        }
+
+        /* Scrollable Content Wrapper */
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+            margin-left: 285px;
+            overflow-y: auto;
+            height: 100vh;
+            width: calc(100vw - 285px);
+        }
+
+        .content-wrapper::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .content-wrapper::-webkit-scrollbar-track {
+            background: var(--light-gray);
+        }
+
+        .content-wrapper::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 4px;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            min-height: 100vh;
+            padding: 0 0.75rem;
+            padding-bottom: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        /* Official Header */
+        header {
+            background: white;
+            border: 3px solid var(--navy);
+            border-top: 8px solid var(--gold);
+            padding: 2.5rem 3rem;
+            margin-bottom: 2rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-seal {
+            position: absolute;
+            top: 2rem;
+            left: 3rem;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--navy), var(--burgundy));
+            border-radius: 50%;
+            border: 4px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .header-content {
+            margin-left: 100px;
+            flex: 1;
+        }
+
+        .header-badge {
+            position: absolute;
+            top: 2rem;
+            right: 3rem;
+        }
+
+        .pmtarp-header-badge {
+            background: transparent;
+            color: var(--burgundy);
+            padding: 0.75rem 1.75rem;
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            border: 4px solid var(--burgundy);
+            border-radius: 8px;
+            text-transform: uppercase;
+            transform: rotate(-8deg);
+            box-shadow: 0 0 0 2px var(--burgundy);
+            opacity: 0.85;
+            position: relative;
+        }
+
+        .pmtarp-header-badge::before {
+            content: 'OFFICIAL';
+            position: absolute;
+            top: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.5rem;
+            letter-spacing: 0.2em;
+            color: var(--burgundy);
+        }
+
+        .pmtarp-header-badge::after {
+            content: 'PRODUCT';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.5rem;
+            letter-spacing: 0.2em;
+            color: var(--burgundy);
+        }
+
+        .department {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            color: var(--burgundy);
+            font-style: italic;
+        }
+
+        /* Document Info Section */
+        .document-info {
+            background: white;
+            border: 2px solid var(--navy);
+            border-left: 6px solid var(--gold);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .document-info h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.5rem;
+            color: var(--navy);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 0.75rem;
+            text-align: center;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--gray);
+            font-weight: 600;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        /* Workflow Timeline */
+        .workflow-timeline {
+            background: white;
+            border: 2px solid var(--navy);
+            border-left: 6px solid var(--gold);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .workflow-timeline h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.5rem;
+            color: var(--navy);
+            margin-bottom: 2rem;
+            text-align: center;
+            border-bottom: 3px solid var(--gold);
+            padding-bottom: 1rem;
+        }
+
+        .timeline-container {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 5rem;
+            left: 5%;
+            right: 5%;
+            height: 3px;
+            background: var(--light-gray);
+            z-index: 0;
+        }
+
+        .timeline-stages {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .stage-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid var(--navy);
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .stage-circle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 33, 71, 0.3);
+        }
+
+        .stage-number {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .stage-icon {
+            font-size: 1.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .stage-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stage-role {
+            font-size: 0.75rem;
+            color: var(--gray);
+            font-style: italic;
+            margin-bottom: 0.5rem;
+        }
+
+        .stage-status {
+            font-size: 0.7rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: 3px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stage.completed .stage-circle {
+            background: var(--success-green);
+            border-color: var(--success-green);
+        }
+
+        .stage.completed .stage-number {
+            color: white;
+        }
+
+        .stage.completed .stage-status {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .stage.active .stage-circle {
+            background: var(--gold);
+            border-color: var(--gold);
+            box-shadow: 0 0 0 6px rgba(184, 134, 11, 0.2);
+        }
+
+        .stage.active .stage-number {
+            color: var(--navy);
+        }
+
+        .stage.active .stage-status {
+            background: var(--pending-amber);
+            color: white;
+        }
+
+        .stage.pending .stage-circle {
+            background: white;
+            border-color: var(--light-gray);
+        }
+
+        .stage.pending .stage-number {
+            color: var(--gray);
+        }
+
+        .stage.pending .stage-status {
+            background: var(--light-gray);
+            color: var(--gray);
+        }
+
+        .stage.signer .stage-circle {
+            width: 90px;
+            height: 90px;
+            border-width: 5px;
+        }
+
+        .stage.signer .stage-title {
+            font-size: 0.95rem;
+            color: var(--burgundy);
+        }
+
+        .stage.signer.completed .stage-circle {
+            border-color: var(--burgundy);
+            background: var(--burgundy);
+        }
+
+        /* Expanded Stage Details */
+        .stage-details {
+            background: white;
+            border: 2px solid var(--navy);
+            border-left: 6px solid var(--gold);
+            padding: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .stage-details h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.75rem;
+            color: var(--navy);
+            margin-bottom: 2.5rem;
+            border-bottom: 3px solid var(--gold);
+            padding-bottom: 1rem;
+            text-align: center;
+        }
+
+        .detail-subsection {
+            margin-bottom: 3rem;
+            padding-bottom: 2.5rem;
+            border-bottom: 3px solid var(--gold);
+        }
+
+        .detail-subsection:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .detail-subsection h3 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.25rem;
+            color: var(--navy);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-left: 4px solid var(--gold);
+            padding-left: 1rem;
+        }
+
+        /* Subsection Header with Button */
+        .subsection-header-with-button {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .subsection-header-with-button h3 {
+            margin-bottom: 0;
+        }
+
+        .upload-btn {
+            background: var(--navy);
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            padding: 0.5rem 1.25rem;
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .upload-btn:hover {
+            background: var(--gold);
+            color: var(--navy);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Version Control */
+        .version-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .version-card {
+            background: var(--parchment);
+            border: 2px solid var(--navy);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .version-card.current {
+            border-color: var(--gold);
+            border-width: 3px;
+            background: white;
+            box-shadow: 0 4px 15px rgba(184, 134, 11, 0.2);
+        }
+
+        .version-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0, 33, 71, 0.15);
+        }
+
+        .version-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--gray);
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .version-number {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.75rem;
+        }
+
+        .version-date,
+        .version-submitter,
+        .version-changes {
+            font-size: 0.85rem;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .version-submitter {
+            color: var(--burgundy);
+            font-weight: 600;
+        }
+
+        .version-changes {
+            color: var(--gray);
+            font-style: italic;
+        }
+
+        /* Responsible Parties */
+        .parties-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .party-card {
+            background: var(--parchment);
+            border: 2px solid var(--navy);
+            border-left: 4px solid var(--gold);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .party-card:hover {
+            background: white;
+            transform: translateX(4px);
+            box-shadow: 0 4px 15px rgba(0, 33, 71, 0.1);
+        }
+
+        .party-role {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--burgundy);
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .party-name {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+        }
+
+        .party-title {
+            font-size: 0.9rem;
+            color: var(--navy);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .party-dept {
+            font-size: 0.85rem;
+            color: var(--gray);
+            font-style: italic;
+            margin-bottom: 0.75rem;
+        }
+
+        .party-contact {
+            font-size: 0.8rem;
+            color: var(--navy);
+            font-family: 'Courier New', monospace;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        /* Timeline Details */
+        .timeline-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .timeline-item {
+            background: var(--parchment);
+            border: 1px solid var(--navy);
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .timeline-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--gray);
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .timeline-value {
+            font-size: 0.95rem;
+            color: var(--navy);
+            font-weight: 700;
+        }
+
+        /* Metadata */
+        .metadata-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .metadata-item {
+            background: var(--parchment);
+            border-left: 3px solid var(--gold);
+            padding: 1rem;
+        }
+
+        .metadata-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--gray);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .metadata-value {
+            font-size: 0.9rem;
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        /* Actions Summary */
+        .actions-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .action-stat {
+            background: var(--parchment);
+            border: 2px solid var(--navy);
+            padding: 2rem 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .action-stat:hover {
+            background: white;
+            border-color: var(--gold);
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0, 33, 71, 0.15);
+        }
+
+        .action-number {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+        }
+
+        .action-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--gray);
+            font-weight: 700;
+        }
+
+        /* Comments Conversation - Message Bubbles */
+        .comment-filters {
+            background: var(--navy);
+            border: 3px solid var(--navy);
+            border-top: 8px solid var(--gold);
+            padding: 1.5rem;
+            margin-bottom: 0;
+        }
+
+        .filter-header {
+            margin-bottom: 1rem;
+        }
+
+        .filter-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .filter-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .filter-select {
+            padding: 0.65rem;
+            border: 2px solid var(--gold);
+            background: white;
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.85rem;
+            color: var(--navy);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .filter-select:hover {
+            background: var(--cream);
+            border-color: var(--burgundy);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--burgundy);
+            box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.2);
+        }
+
+        .comments-conversation {
+            background: var(--parchment);
+            border: 2px solid var(--navy);
+            border-top: none;
+            padding: 2rem;
+        }
+
+        .version-divider {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 1rem 0;
+            border-top: 3px solid var(--gold);
+            border-bottom: 3px solid var(--gold);
+            clear: both;
+        }
+
+        .version-divider span {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--burgundy);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .comment-bubble {
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            max-width: 70%;
+            clear: both;
+        }
+
+        .comment-bubble.left {
+            align-items: flex-start;
+            float: left;
+        }
+
+        .comment-bubble.right {
+            align-items: flex-end;
+            float: right;
+            margin-left: auto;
+        }
+
+        .comment-header {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .comment-author {
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .comment-time {
+            color: var(--gray);
+            font-style: italic;
+        }
+
+        .comment-text {
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Different colors for different people */
+        .comment-bubble.chen .comment-text {
+            background: #d4e8f7;
+            border: 2px solid #5a9bd4;
+            color: var(--navy);
+        }
+
+        .comment-bubble.torres .comment-text {
+            background: #c8e6c9;
+            border: 2px solid #66bb6a;
+            color: var(--navy);
+        }
+
+        .comment-bubble.martinez .comment-text {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: var(--navy);
+        }
+
+        .comment-bubble.thompson .comment-text {
+            background: #f8d7da;
+            border: 2px solid #e57373;
+            color: var(--navy);
+        }
+
+        .comment-bubble.park .comment-text {
+            background: #e1bee7;
+            border: 2px solid #ba68c8;
+            color: var(--navy);
+        }
+
+        .comment-bubble[style*="display: none"] {
+            display: none !important;
+        }
+
+        /* Comment Input Section */
+        .comment-input-section {
+            clear: both;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 3px solid var(--gold);
+        }
+
+        .comment-input-section h4 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.1rem;
+            color: var(--navy);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .comment-input-box {
+            background: white;
+            border: 2px solid var(--navy);
+            padding: 1.5rem;
+        }
+
+        .comment-textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--light-gray);
+            background: var(--cream);
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.9rem;
+            color: var(--navy);
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .comment-textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: white;
+        }
+
+        .comment-input-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            justify-content: flex-end;
+        }
+
+        .comment-submit-btn,
+        .comment-cancel-btn {
+            padding: 0.75rem 2rem;
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid;
+        }
+
+        .comment-submit-btn {
+            background: var(--navy);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .comment-submit-btn:hover {
+            background: var(--gold);
+            color: var(--navy);
+        }
+
+        .comment-cancel-btn {
+            background: white;
+            border-color: var(--navy);
+            color: var(--navy);
+        }
+
+        .comment-cancel-btn:hover {
+            background: var(--light-gray);
+        }
+
+        /* Attachments */
+        .attachments-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .attachment-item {
+            background: var(--parchment);
+            border: 2px solid var(--navy);
+            border-left: 4px solid var(--gold);
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .attachment-item:hover {
+            background: white;
+            transform: translateX(4px);
+            box-shadow: 0 4px 15px rgba(0, 33, 71, 0.1);
+            cursor: pointer;
+        }
+
+        .attachment-icon {
+            font-size: 2rem;
+            opacity: 0.7;
+        }
+
+        .attachment-info {
+            flex: 1;
+        }
+
+        .attachment-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.25rem;
+        }
+
+        .attachment-meta {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        /* Version History Toggle and Table */
+        .version-history-toggle {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .toggle-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--navy);
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .toggle-btn:hover {
+            background: var(--gold);
+            color: var(--navy);
+        }
+
+        .toggle-icon {
+            display: inline-block;
+            transition: transform 0.3s ease;
+            font-size: 0.7rem;
+        }
+
+        .toggle-btn.active .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .version-history-container {
+            margin-top: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .version-history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border: 2px solid var(--navy);
+        }
+
+        .version-history-table thead {
+            background: var(--navy);
+            color: var(--gold);
+        }
+
+        .version-history-table th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .version-history-table td {
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .version-history-table tbody tr:hover {
+            background: var(--parchment);
+        }
+
+        .version-history-table tr.current-version {
+            background: rgba(184, 134, 11, 0.1);
+            border-left: 4px solid var(--gold);
+        }
+
+        .version-link {
+            color: var(--burgundy);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .version-link:hover {
+            text-decoration: underline;
+            color: var(--navy);
+        }
+
+        .legend {
+            background: var(--parchment);
+            border: 2px solid var(--navy);
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .legend h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .legend-items {
+            display: flex;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .legend-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 3px solid;
+        }
+
+        .legend-dot.completed {
+            background: var(--success-green);
+            border-color: var(--success-green);
+        }
+
+        .legend-dot.active {
+            background: var(--gold);
+            border-color: var(--gold);
+        }
+
+        .legend-dot.pending {
+            background: white;
+            border-color: var(--light-gray);
+        }
+
+        .legend-text {
+            font-size: 0.85rem;
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            width: 280px;
+            background: var(--parchment);
+            padding: 2rem 1.5rem;
+            border-left: 3px solid var(--gold);
+            min-height: 100vh;
+        }
+
+        .right-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .right-sidebar::-webkit-scrollbar-track {
+            background: var(--light-gray);
+        }
+
+        .right-sidebar::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 3px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--light-gray);
+        }
+
+        .sidebar-section:last-child {
+            border-bottom: none;
+        }
+
+        .sidebar-section h3 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1rem;
+            color: var(--navy);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .quick-stat {
+            background: white;
+            border: 1px solid var(--navy);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+        }
+
+        .reviewer-card {
+            background: white;
+            border: 1px solid var(--navy);
+            border-left: 3px solid var(--gold);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .reviewer-name {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.25rem;
+        }
+
+        .reviewer-role {
+            font-size: 0.75rem;
+            color: var(--gray);
+            font-style: italic;
+            margin-bottom: 0.5rem;
+        }
+
+        .reviewer-status {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 2px;
+            font-weight: 600;
+            display: inline-block;
+            text-transform: uppercase;
+        }
+
+        .reviewer-status.completed {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .reviewer-status.active {
+            background: var(--pending-amber);
+            color: white;
+        }
+
+        .reviewer-status.pending {
+            background: var(--light-gray);
+            color: var(--gray);
+        }
+
+        /* Recent Activity with Filter */
+        .section-header-with-filter {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .section-header-with-filter h3 {
+            margin: 0;
+        }
+
+        .activity-filter-btn {
+            background: transparent;
+            border: 2px solid var(--navy);
+            color: var(--navy);
+            padding: 0.4rem 0.6rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .activity-filter-btn:hover {
+            background: var(--navy);
+            color: var(--gold);
+        }
+
+        .activity-filter-btn.active {
+            background: var(--navy);
+            color: var(--gold);
+            border-color: var(--gold);
+        }
+
+        .filter-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .activity-list {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .activity-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .activity-list::-webkit-scrollbar-track {
+            background: var(--light-gray);
+        }
+
+        .activity-list::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 3px;
+        }
+
+        .activity-item {
+            font-size: 0.8rem;
+            color: var(--navy);
+            padding: 0.75rem;
+            background: white;
+            border-left: 3px solid var(--gold);
+            margin-bottom: 0.75rem;
+        }
+
+        .activity-time {
+            font-size: 0.7rem;
+            color: var(--gray);
+            font-style: italic;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-text {
+            line-height: 1.5;
+        }
+
+        .activity-user {
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        /* Calendar */
+        .calendar {
+            background: white;
+            border: 2px solid var(--navy);
+            padding: 1rem;
+        }
+
+        .calendar-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .day-label {
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--navy);
+            text-transform: uppercase;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.25rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--navy);
+            border: 1px solid var(--light-gray);
+            background: var(--parchment);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            background: var(--cream);
+            transform: scale(1.05);
+        }
+
+        .calendar-day.today {
+            background: #4a90e2;
+            color: white;
+            font-weight: 700;
+            border: 2px solid #2e5f8f;
+        }
+
+        .calendar-day.deadline {
+            background: #c0392b;
+            color: white;
+            font-weight: 700;
+            border: 1px solid #a02818;
+        }
+
+        .calendar-day.today.deadline {
+            background: linear-gradient(135deg, #4a90e2 0%, #4a90e2 49%, #c0392b 51%, #c0392b 100%);
+            color: white;
+            font-weight: 700;
+            border: 2px solid var(--navy);
+        }
+
+        /* Remove stage-specific border styles since we're using colors now */
+        .calendar-day.stage-3,
+        .calendar-day.stage-4,
+        .calendar-day.stage-5,
+        .calendar-day.stage-6,
+        .calendar-day.stage-7 {
+            /* All stages use the same red background */
+        }
+            background: linear-gradient(135deg, #4a90e2 50%, #c0392b 50%);
+        }
+
+        .calendar-legend {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .legend-item-cal {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--navy);
+        }
+
+        .legend-box {
+            width: 18px;
+            height: 18px;
+            border: 1px solid var(--navy);
+        }
+
+        .legend-box.today {
+            background: #4a90e2;
+        }
+
+        .legend-box.deadline {
+            background: #c0392b;
+        }
+
+        /* Disclaimer Pane */
+        .disclaimer-pane {
+            background: var(--navy);
+            border-top: 8px solid var(--gold);
+            margin: 0;
+            margin-top: 3rem;
+            padding: 0;
+        }
+
+        .disclaimer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            gap: 1.8rem;
+        }
+
+        .disclaimer-text {
+            flex: 1;
+            text-align: center;
+        }
+
+        .disclaimer-title {
+            font-size: 1.32rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin: 0 0 0.45rem 0;
+            letter-spacing: 0.15em;
+        }
+
+        .disclaimer-body {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--cream);
+            margin: 0 0 0.6rem 0;
+        }
+
+        .disclaimer-links {
+            margin-bottom: 0.45rem;
+        }
+
+        .disclaimer-link {
+            font-size: 0.96rem;
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 0.96rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .disclaimer-link:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .disclaimer-separator {
+            color: var(--gold);
+            margin: 0 0.45rem;
+        }
+
+        .disclaimer-version {
+            font-size: 0.84rem;
+            color: var(--gray);
+            margin: 0;
+        }
+
+        .disclaimer-stamp {
+            flex-shrink: 0;
+        }
+
+        .pmtarp-stamp {
+            background: transparent;
+            color: #c92a2a;
+            width: 108px;
+            height: 108px;
+            font-family: 'Libre Baskerville', serif;
+            border: 5px solid #c92a2a;
+            border-radius: 50%;
+            text-align: center;
+            transform: rotate(-12deg);
+            box-shadow: 
+                0 0 0 2px #c92a2a,
+                inset 0 0 12px rgba(201, 42, 42, 0.1);
+            opacity: 0.88;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .pmtarp-stamp::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            background: 
+                radial-gradient(circle at 20% 30%, transparent 40%, rgba(201, 42, 42, 0.05) 41%),
+                radial-gradient(circle at 70% 60%, transparent 35%, rgba(201, 42, 42, 0.05) 36%),
+                radial-gradient(circle at 40% 80%, transparent 30%, rgba(201, 42, 42, 0.05) 31%);
+            pointer-events: none;
+        }
+
+        .stamp-text {
+            padding: 0.3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stamp-top {
+            font-size: 0.36rem;
+            letter-spacing: 0.25em;
+            font-weight: 700;
+            margin-bottom: 0.24rem;
+            text-transform: uppercase;
+            font-style: italic;
+        }
+
+        .stamp-main {
+            font-size: 1.08rem;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            margin-bottom: 0.18rem;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 0px rgba(201, 42, 42, 0.3);
+        }
+
+        .stamp-subtitle {
+            font-size: 0.3rem;
+            letter-spacing: 0.08em;
+            line-height: 1.4;
+            margin-bottom: 0.24rem;
+            font-weight: 600;
+            font-style: normal;
+        }
+
+        .stamp-bottom {
+            font-size: 0.36rem;
+            letter-spacing: 0.25em;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <!-- Left Navigation Sidebar -->
+    <nav class="left-sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-seal">
+                <img src="Images/EPA Seal.png" alt="EPA Seal" style="width:100%; height:100%; object-fit:cover; object-position:0% center; border-radius:50%;" />
+            </div>
+            <div class="logo-text">Environmental<br>Protection<br>Agency</div>
+        </div>
+
+        <div class="nav-sections-wrapper">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item">Dashboard</a>
+                <a href="new-notice.html" class="nav-item">New Notice</a>
+                <a href="DocumentLibrary.html" class="nav-item">Document Library</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Workflow</div>
+                <a href="my-tasks.html" class="nav-item">My Tasks</a>
+                <a href="Active-Reviews.html" class="nav-item active">Active Reviews</a>
+                <a href="pending-approvals.html" class="nav-item">Pending Approvals</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Views</div>
+                <a href="calendar.html" class="nav-item">Calendar</a>
+                <a href="team.html" class="nav-item">Team</a>
+                <a href="analytics.html" class="nav-item">Analytics</a>
+                <a href="leaderboards.html" class="nav-item">Leaderboards</a>
+                <a href="reports.html" class="nav-item">Reports</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="settings.html" class="nav-item">Settings</a>
+                <a href="help.html" class="nav-item">Help</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Scrollable Content Wrapper (Main + Right Sidebar) -->
+    <div class="content-wrapper">
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <div class="container">
+                <!-- Official Header -->
+                <header>
+                    <div class="header-seal">🏛️</div>
+                    <div class="header-content">
+                        <div class="department">Environmental Protection Agency</div>
+                        <h1>Federal Register Notice (FRN) Approval Workflow</h1>
+                        <div class="tagline" id="review-page-tagline">7-Stage Document Review Process</div>
+                    </div>
+                </header>
+
+            <section class="document-summary-banner">
+                <h2 id="review-doc-title-banner">Selected Document Review</h2>
+                <div id="review-doc-summary-banner">Full review details for the selected Federal Register Notice document.</div>
+            </section>
+
+            <!-- Document Information -->
+            <section class="document-info">
+                <h2>Document Information</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Document ID</div>
+                        <div class="info-value" id="review-doc-id">FRN-2025-0847</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Document Title</div>
+                        <div class="info-value" id="review-doc-title">Chemical Safety Review - Q4 2025</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Submission Date</div>
+                        <div class="info-value" id="review-submitted-date">November 28, 2025</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Current Stage</div>
+                        <div class="info-value" id="review-current-stage">Stage 3 - Technical Review</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Submitted By</div>
+                        <div class="info-value" id="review-submitted-by">Michael Torres, Chemical Division</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Target Completion</div>
+                        <div class="info-value" id="review-target-date">December 15, 2025</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Workflow Timeline -->
+            <section class="workflow-timeline">
+                <h2>Approval Workflow Timeline</h2>
+                <div class="timeline-container">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-stages">
+                        <!-- Stage 1 - Completed -->
+                        <div class="stage completed">
+                            <div class="stage-circle">
+                                <div class="stage-icon">✓</div>
+                            </div>
+                            <div class="stage-title">Stage 1</div>
+                            <div class="stage-role">Initial Review</div>
+                            <div class="stage-status">Completed</div>
+                        </div>
+
+                        <!-- Stage 2 - Completed -->
+                        <div class="stage completed">
+                            <div class="stage-circle">
+                                <div class="stage-icon">✓</div>
+                            </div>
+                            <div class="stage-title">Stage 2</div>
+                            <div class="stage-role">Legal Review</div>
+                            <div class="stage-status">Completed</div>
+                        </div>
+
+                        <!-- Stage 3 - Active -->
+                        <div class="stage active">
+                            <div class="stage-circle">
+                                <div class="stage-number">3</div>
+                            </div>
+                            <div class="stage-title">Stage 3</div>
+                            <div class="stage-role">Technical Review</div>
+                            <div class="stage-status">In Progress</div>
+                        </div>
+
+                        <!-- Stage 4 - Pending -->
+                        <div class="stage pending">
+                            <div class="stage-circle">
+                                <div class="stage-number">4</div>
+                            </div>
+                            <div class="stage-title">Stage 4</div>
+                            <div class="stage-role">Policy Review</div>
+                            <div class="stage-status">Pending</div>
+                        </div>
+
+                        <!-- Stage 5 - Pending -->
+                        <div class="stage pending">
+                            <div class="stage-circle">
+                                <div class="stage-number">5</div>
+                            </div>
+                            <div class="stage-title">Stage 5</div>
+                            <div class="stage-role">Director Review</div>
+                            <div class="stage-status">Pending</div>
+                        </div>
+
+                        <!-- Stage 6 - Pending -->
+                        <div class="stage pending">
+                            <div class="stage-circle">
+                                <div class="stage-number">6</div>
+                            </div>
+                            <div class="stage-title">Stage 6</div>
+                            <div class="stage-role">Final Review</div>
+                            <div class="stage-status">Pending</div>
+                        </div>
+
+                        <!-- Stage 7 - Signer (Pending) -->
+                        <div class="stage signer pending">
+                            <div class="stage-circle">
+                                <div class="stage-icon">🖊️</div>
+                            </div>
+                            <div class="stage-title">Stage 7</div>
+                            <div class="stage-role">Official Signer</div>
+                            <div class="stage-status">Awaiting</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Current Stage Details -->
+            <section class="stage-details">
+                <h2 id="review-stage-heading">Stage 3: Technical Review - Current Status</h2>
+                
+                <div class="detail-subsection">
+                    <h3>Document Version Control</h3>
+                    <div class="version-grid">
+                        <div class="version-card">
+                            <div class="version-label">Version In</div>
+                            <div class="version-number">2.1</div>
+                            <div class="version-date">Received: Dec 1, 2025 at 9:15 AM</div>
+                            <div class="version-submitter">From: David Park (Legal Review)</div>
+                            <div class="version-changes">Changes: Legal language updated, 3 sections revised</div>
+                        </div>
+                        <div class="version-card current">
+                            <div class="version-label">Current Working Version</div>
+                            <div class="version-number">2.1 (Draft)</div>
+                            <div class="version-date">Last Modified: Dec 3, 2025 at 2:30 PM</div>
+                            <div class="version-submitter">By: Dr. Sarah Chen</div>
+                            <div class="version-changes">Changes: 7 technical comments added, 2 questions raised</div>
+                        </div>
+                        <div class="version-card">
+                            <div class="version-label">Version Out</div>
+                            <div class="version-number">2.2 (Pending)</div>
+                            <div class="version-date">Expected: Dec 4, 2025</div>
+                            <div class="version-submitter">To: Marcus Johnson (Policy Review)</div>
+                            <div class="version-changes">Pending: Technical validation completion</div>
+                        </div>
+                    </div>
+
+                    <!-- Version History Toggle -->
+                    <div class="version-history-toggle">
+                        <button class="toggle-btn" type="button">
+                            <span class="toggle-icon">▼</span> View Complete Version History (8 versions)
+                        </button>
+                    </div>
+
+                    <!-- Collapsible Version History Table -->
+                    <div class="version-history-container" id="versionHistory" style="display: none;">
+                        <table class="version-history-table">
+                            <thead>
+                                <tr>
+                                    <th>Version</th>
+                                    <th>Date</th>
+                                    <th>Stage</th>
+                                    <th>Modified By</th>
+                                    <th>Change Summary</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="current-version">
+                                    <td><strong>2.1</strong></td>
+                                    <td>Dec 1, 2025</td>
+                                    <td>Stage 3 - Technical Review</td>
+                                    <td>Dr. Sarah Chen</td>
+                                    <td>Technical comments added (in progress)</td>
+                                    <td><a href="#" class="version-link">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>2.0</td>
+                                    <td>Dec 1, 2025</td>
+                                    <td>Stage 2 - Legal Review</td>
+                                    <td>David Park</td>
+                                    <td>Legal language updated, 3 sections revised per counsel</td>
+                                    <td><a href="#" class="version-link">View</a> | <a href="#" class="version-link">Download</a></td>
+                                </tr>
+                                <tr>
+                                    <td>1.3</td>
+                                    <td>Nov 30, 2025</td>
+                                    <td>Stage 2 - Legal Review</td>
+                                    <td>David Park</td>
+                                    <td>Statutory citations corrected</td>
+                                    <td><a href="#" class="version-link">View</a> | <a href="#" class="version-link">Download</a></td>
+                                </tr>
+                                <tr>
+                                    <td>1.2</td>
+                                    <td>Nov 29, 2025</td>
+                                    <td>Stage 1 - Initial Review</td>
+                                    <td>Jennifer Martinez</td>
+                                    <td>Formatting corrections, typo fixes</td>
+                                    <td><a href="#" class="version-link">View</a> | <a href="#" class="version-link">Download</a></td>
+                                </tr>
+                                <tr>
+                                    <td>1.1</td>
+                                    <td>Nov 29, 2025</td>
+                                    <td>Stage 1 - Initial Review</td>
+                                    <td>Jennifer Martinez</td>
+                                    <td>Metadata verification, document classification</td>
+                                    <td><a href="#" class="version-link">View</a> | <a href="#" class="version-link">Download</a></td>
+                                </tr>
+                                <tr>
+                                    <td>1.0</td>
+                                    <td>Nov 28, 2025</td>
+                                    <td>Submission</td>
+                                    <td>Michael Torres</td>
+                                    <td>Initial submission for review</td>
+                                    <td><a href="#" class="version-link">View</a> | <a href="#" class="version-link">Download</a></td>
+                                </tr>
+                                <tr>
+                                    <td>0.9</td>
+                                    <td>Nov 27, 2025</td>
+                                    <td>Pre-submission</td>
+                                    <td>Michael Torres</td>
+                                    <td>Final internal review, executive summary added</td>
+                                    <td><a href="#" class="version-link">View</a> | <a href="#" class="version-link">Download</a></td>
+                                </tr>
+                                <tr>
+                                    <td>0.1</td>
+                                    <td>Nov 15, 2025</td>
+                                    <td>Draft</td>
+                                    <td>Michael Torres</td>
+                                    <td>Initial draft created</td>
+                                    <td><a href="#" class="version-link">View</a> | <a href="#" class="version-link">Download</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="detail-subsection">
+                    <h3>Responsible Parties</h3>
+                    <div class="parties-grid">
+                        <div class="party-card">
+                            <div class="party-role">Primary Reviewer</div>
+                            <div class="party-name">Dr. Sarah Chen</div>
+                            <div class="party-title">Senior Technical Analyst</div>
+                            <div class="party-dept">Technical Assessment Division</div>
+                            <div class="party-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d794bfb2b9f984b6a5b6bf97b2a7b6f9a4b6baa7bbb2">[email&#160;protected]</a> | Ext. 4521</div>
+                        </div>
+                        <div class="party-card">
+                            <div class="party-role">Technical Advisor</div>
+                            <div class="party-name">Dr. Robert Martinez</div>
+                            <div class="party-title">Chief Scientist, Chemical Safety</div>
+                            <div class="party-dept">Office of Chemical Safety</div>
+                            <div class="party-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="db96baa9afb2b5bea1f589b4b9bea9af9bbeabbaf5a8bab6abb7be">[email&#160;protected]</a> | Ext. 4189</div>
+                        </div>
+                        <div class="party-card">
+                            <div class="party-role">Stage Coordinator</div>
+                            <div class="party-name">Emily Thompson</div>
+                            <div class="party-title">Workflow Manager</div>
+                            <div class="party-dept">Document Processing Unit</div>
+                            <div class="party-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d98db1b6b4a9aab6b7f79cb4b0b5a099bca9b8f7aab8b4a9b5bc">[email&#160;protected]</a> | Ext. 4002</div>
+                        </div>
+                        <div class="party-card">
+                            <div class="party-role">Next Stage Reviewer</div>
+                            <div class="party-name">Marcus Johnson</div>
+                            <div class="party-title">Senior Policy Analyst</div>
+                            <div class="party-dept">Policy & Strategy Division</div>
+                            <div class="party-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="175d787f79647879395a7665746264577267763964767a677b72">[email&#160;protected]</a> | Ext. 4756</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-subsection">
+                    <h3>Stage Details & Timeline</h3>
+                    <div class="timeline-detail-grid">
+                        <div class="timeline-item">
+                            <div class="timeline-label">Stage Started</div>
+                            <div class="timeline-value">December 1, 2025 at 9:30 AM</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-label">SLA Due Date</div>
+                            <div class="timeline-value">December 5, 2025 at 5:00 PM</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-label">Estimated Completion</div>
+                            <div class="timeline-value">December 4, 2025 (1 day early)</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-label">Time in Stage</div>
+                            <div class="timeline-value">2 days, 5 hours</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-label">Time Remaining</div>
+                            <div class="timeline-value">1 day, 14 hours</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-label">Review Progress</div>
+                            <div class="timeline-value">65% Complete</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-subsection">
+                    <h3>Document Information</h3>
+                    <div class="metadata-grid">
+                        <div class="metadata-item">
+                            <div class="metadata-label">Document Classification</div>
+                            <div class="metadata-value">Type II - Significant Action</div>
+                        </div>
+                        <div class="metadata-item">
+                            <div class="metadata-label">Regulatory Category</div>
+                            <div class="metadata-value">Chemical Safety Assessment</div>
+                        </div>
+                        <div class="metadata-item">
+                            <div class="metadata-label">Priority Level</div>
+                            <div class="metadata-value">High Priority</div>
+                        </div>
+                        <div class="metadata-item">
+                            <div class="metadata-label">Originating Office</div>
+                            <div class="metadata-value">Office of Chemical Safety & Pollution Prevention</div>
+                        </div>
+                        <div class="metadata-item">
+                            <div class="metadata-label">Public Comment Period</div>
+                            <div class="metadata-value">60 Days (Required)</div>
+                        </div>
+                        <div class="metadata-item">
+                            <div class="metadata-label">Federal Register Target</div>
+                            <div class="metadata-value">December 20, 2025</div>
+                        </div>
+                        <div class="metadata-item">
+                            <div class="metadata-label">Related Dockets</div>
+                            <div class="metadata-value">EPA-HQ-OPPT-2025-0123, EPA-HQ-OPPT-2025-0089</div>
+                        </div>
+                        <div class="metadata-item">
+                            <div class="metadata-label">Statutory Authority</div>
+                            <div class="metadata-value">TSCA Section 6(a)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-subsection">
+                    <h3>Review Questions & Comments</h3>
+                    
+                    <!-- Comment Filters -->
+                    <div class="comment-filters">
+                        <div class="filter-header">
+                            <span class="filter-title">Filter Comments:</span>
+                        </div>
+                        <div class="filter-controls">
+                            <div class="filter-group">
+                                <label>Version</label>
+                                <select class="filter-select" id="versionFilter">
+                                    <option value="all">All Versions</option>
+                                    <option value="2.1" selected>Version 2.1 (Current)</option>
+                                    <option value="2.0">Version 2.0</option>
+                                    <option value="1.3">Version 1.3</option>
+                                    <option value="1.2">Version 1.2</option>
+                                    <option value="1.1">Version 1.1</option>
+                                    <option value="1.0">Version 1.0</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label>Person</label>
+                                <select class="filter-select" id="personFilter">
+                                    <option value="all">All People</option>
+                                    <option value="chen">Dr. Sarah Chen</option>
+                                    <option value="torres">Michael Torres</option>
+                                    <option value="martinez">Dr. Robert Martinez</option>
+                                    <option value="thompson">Emily Thompson</option>
+                                    <option value="park">David Park</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label>Sort By</label>
+                                <select class="filter-select" id="sortFilter">
+                                    <option value="newest">Newest First</option>
+                                    <option value="oldest">Oldest First</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comments-conversation">
+                        <!-- Version 2.1 Comments -->
+                        <div class="version-divider" data-version="2.1">
+                            <span>Version 2.1 - Current Working Version</span>
+                        </div>
+
+                        <!-- Comment from Dr. Sarah Chen -->
+                        <div class="comment-bubble left chen" data-version="2.1" data-person="chen" data-timestamp="2025-12-03T10:45">
+                            <div class="comment-header">
+                                <span class="comment-author">Dr. Sarah Chen</span>
+                                <span class="comment-time">Dec 3, 2025 at 10:45 AM</span>
+                            </div>
+                            <div class="comment-text">
+                                In Section 4.2, the exposure assessment methodology needs clarification. Can you provide more detail on the sampling protocol used for environmental monitoring?
+                            </div>
+                        </div>
+
+                        <!-- Response from Michael Torres -->
+                        <div class="comment-bubble right torres" data-version="2.1" data-person="torres" data-timestamp="2025-12-03T14:15">
+                            <div class="comment-header">
+                                <span class="comment-author">Michael Torres</span>
+                                <span class="comment-time">Dec 3, 2025 at 2:15 PM</span>
+                            </div>
+                            <div class="comment-text">
+                                Good question. The sampling protocol follows EPA Method 8270D. I'll add a reference to the methodology appendix in the next revision.
+                            </div>
+                        </div>
+
+                        <!-- Comment from Dr. Sarah Chen -->
+                        <div class="comment-bubble left chen" data-version="2.1" data-person="chen" data-timestamp="2025-12-03T15:20">
+                            <div class="comment-header">
+                                <span class="comment-author">Dr. Sarah Chen</span>
+                                <span class="comment-time">Dec 3, 2025 at 3:20 PM</span>
+                            </div>
+                            <div class="comment-text">
+                                The risk characterization in Table 7 shows uncertainty factors, but the confidence intervals seem narrow given the data variability. Can you explain the statistical approach?
+                            </div>
+                        </div>
+
+                        <!-- Comment from Dr. Robert Martinez -->
+                        <div class="comment-bubble left martinez" data-version="2.1" data-person="martinez" data-timestamp="2025-12-03T16:05">
+                            <div class="comment-header">
+                                <span class="comment-author">Dr. Robert Martinez</span>
+                                <span class="comment-time">Dec 3, 2025 at 4:05 PM</span>
+                            </div>
+                            <div class="comment-text">
+                                I agree with Dr. Chen's concern. Additionally, the bioaccumulation factors in Section 5.3 need verification against the updated 2025 EPA guidance document.
+                            </div>
+                        </div>
+
+                        <!-- Response from Michael Torres -->
+                        <div class="comment-bubble right torres" data-version="2.1" data-person="torres" data-timestamp="2025-12-03T17:30">
+                            <div class="comment-header">
+                                <span class="comment-author">Michael Torres</span>
+                                <span class="comment-time">Dec 3, 2025 at 5:30 PM</span>
+                            </div>
+                            <div class="comment-text">
+                                We used Monte Carlo simulation with 10,000 iterations. I'll expand the statistical methods section and cross-reference with the 2025 guidance. Will have this updated by tomorrow morning.
+                            </div>
+                        </div>
+
+                        <!-- Comment from Dr. Sarah Chen -->
+                        <div class="comment-bubble left chen" data-version="2.1" data-person="chen" data-timestamp="2025-12-04T09:00">
+                            <div class="comment-header">
+                                <span class="comment-author">Dr. Sarah Chen</span>
+                                <span class="comment-time">Dec 4, 2025 at 9:00 AM</span>
+                            </div>
+                            <div class="comment-text">
+                                Section 6.1 references outdated toxicity data from 2022. Please update with the most recent IRIS assessment published in August 2025.
+                            </div>
+                        </div>
+
+                        <!-- Comment from Dr. Sarah Chen -->
+                        <div class="comment-bubble left chen" data-version="2.1" data-person="chen" data-timestamp="2025-12-04T11:30">
+                            <div class="comment-header">
+                                <span class="comment-author">Dr. Sarah Chen</span>
+                                <span class="comment-time">Dec 4, 2025 at 11:30 AM</span>
+                            </div>
+                            <div class="comment-text">
+                                Question about the sensitivity analysis: Were ecosystem services impacts considered in the economic valuation model?
+                            </div>
+                        </div>
+
+                        <!-- Response from Michael Torres -->
+                        <div class="comment-bubble right torres" data-version="2.1" data-person="torres" data-timestamp="2025-12-04T13:45">
+                            <div class="comment-header">
+                                <span class="comment-author">Michael Torres</span>
+                                <span class="comment-time">Dec 4, 2025 at 1:45 PM</span>
+                            </div>
+                            <div class="comment-text">
+                                Yes, ecosystem services were included using the EPA Eco-SAM framework. It's detailed in Appendix C, but I can add a summary to the main text for clarity.
+                            </div>
+                        </div>
+
+                        <!-- Comment from Emily Thompson -->
+                        <div class="comment-bubble left thompson" data-version="2.1" data-person="thompson" data-timestamp="2025-12-04T15:00">
+                            <div class="comment-header">
+                                <span class="comment-author">Emily Thompson</span>
+                                <span class="comment-time">Dec 4, 2025 at 3:00 PM</span>
+                            </div>
+                            <div class="comment-text">
+                                Please ensure all citations are in the correct EPA format before finalizing. I noticed a few inconsistencies in Section 3.
+                            </div>
+                        </div>
+
+                        <!-- Version 2.0 Comments -->
+                        <div class="version-divider" data-version="2.0">
+                            <span>Version 2.0 - Legal Review (Completed)</span>
+                        </div>
+
+                        <div class="comment-bubble left park" data-version="2.0" data-person="park" data-timestamp="2025-12-01T10:00">
+                            <div class="comment-header">
+                                <span class="comment-author">David Park</span>
+                                <span class="comment-time">Dec 1, 2025 at 10:00 AM</span>
+                            </div>
+                            <div class="comment-text">
+                                The statutory citations in Section 2 need to reference TSCA Section 6(a) instead of Section 5. This is critical for legal authority.
+                            </div>
+                        </div>
+
+                        <div class="comment-bubble right torres" data-version="2.0" data-person="torres" data-timestamp="2025-12-01T11:30">
+                            <div class="comment-header">
+                                <span class="comment-author">Michael Torres</span>
+                                <span class="comment-time">Dec 1, 2025 at 11:30 AM</span>
+                            </div>
+                            <div class="comment-text">
+                                Corrected. All statutory references have been updated to TSCA Section 6(a). Also added supporting case law citations.
+                            </div>
+                        </div>
+
+                        <div class="comment-bubble left park" data-version="2.0" data-person="park" data-timestamp="2025-12-01T14:00">
+                            <div class="comment-header">
+                                <span class="comment-author">David Park</span>
+                                <span class="comment-time">Dec 1, 2025 at 2:00 PM</span>
+                            </div>
+                            <div class="comment-text">
+                                Approved for advancement to Technical Review. All legal concerns addressed.
+                            </div>
+                        </div>
+
+                        <!-- Comment Input Box -->
+                        <div class="comment-input-section">
+                            <h4>Add Comment</h4>
+                            <div class="comment-input-box">
+                                <textarea class="comment-textarea" placeholder="Enter your comment or question here..." rows="4"></textarea>
+                                <div class="comment-input-actions">
+                                    <button class="comment-submit-btn">Submit Comment</button>
+                                    <button class="comment-cancel-btn">Clear</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-subsection">
+                    <div class="subsection-header-with-button">
+                        <h3>Attached Documents</h3>
+                        <button class="upload-btn">
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="margin-right: 0.5rem;">
+                                <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2z"/>
+                            </svg>
+                            Upload
+                        </button>
+                    </div>
+                    <div class="attachments-list">
+                        <div class="attachment-item">
+                            <div class="attachment-icon">📄</div>
+                            <div class="attachment-info">
+                                <div class="attachment-name">Chemical_Safety_Review_Q4_2025_v2.1.pdf</div>
+                                <div class="attachment-meta">Main Document | 2.4 MB | Modified Dec 1, 2025</div>
+                            </div>
+                        </div>
+                        <div class="attachment-item">
+                            <div class="attachment-icon">📊</div>
+                            <div class="attachment-info">
+                                <div class="attachment-name">Technical_Data_Analysis.xlsx</div>
+                                <div class="attachment-meta">Supporting Data | 890 KB | Modified Nov 28, 2025</div>
+                            </div>
+                        </div>
+                        <div class="attachment-item">
+                            <div class="attachment-icon">📑</div>
+                            <div class="attachment-info">
+                                <div class="attachment-name">Legal_Review_Comments_Stage2.docx</div>
+                                <div class="attachment-meta">Previous Stage Comments | 124 KB | Modified Dec 1, 2025</div>
+                            </div>
+                        </div>
+                        <div class="attachment-item">
+                            <div class="attachment-icon">📈</div>
+                            <div class="attachment-info">
+                                <div class="attachment-name">Risk_Assessment_Methodology.pdf</div>
+                                <div class="attachment-meta">Reference Document | 1.8 MB | Modified Nov 20, 2025</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+        
+        <!-- Disclaimer Pane -->
+        <div class="disclaimer-pane">
+            <div class="disclaimer-content">
+                <div class="disclaimer-text">
+                    <p class="disclaimer-title">DISCLAIMER</p>
+                    <p class="disclaimer-body">Official EPA PMTaRP product. Authorized personnel only. Subject to federal recordkeeping requirements (44 U.S.C. § 31, EPA Records Schedule 0155). Unauthorized access subject to 18 U.S.C. § 1030.</p>
+                    <div class="disclaimer-links">
+                        <a href="#" class="disclaimer-link">Contact Us</a>
+                        <span class="disclaimer-separator">|</span>
+                        <a href="#" class="disclaimer-link">Support</a>
+                        <span class="disclaimer-separator">|</span>
+                        <a href="#" class="disclaimer-link">Privacy Policy</a>
+                        <span class="disclaimer-separator">|</span>
+                        <a href="#" class="disclaimer-link">Terms of Use</a>
+                    </div>
+                    <p class="disclaimer-version">Version 2.12.1 | Official Use Only</p>
+                </div>
+                <div class="disclaimer-stamp">
+                    <div class="pmtarp-stamp">
+                        <div class="stamp-text">
+                            <div class="stamp-top">OFFICIAL</div>
+                            <div class="stamp-main">PMTaRP</div>
+                            <div class="stamp-subtitle">Project Management<br>Tracking & Reporting Tool</div>
+                            <div class="stamp-bottom">PRODUCT</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats Pane (Right Sidebar) -->
+
+    <!-- Quick Stats Pane (Right Sidebar) -->
+    <aside class="right-sidebar">
+        <!-- Quick Stats -->
+        <div class="sidebar-section">
+            <h3>Quick Stats</h3>
+            <div class="quick-stat">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Days Remaining<br>This Stage</div>
+            </div>
+            <div class="quick-stat">
+                <div class="stat-value">12</div>
+                <div class="stat-label">Days Remaining<br>Until Deadline</div>
+            </div>
+            <div class="quick-stat">
+                <div class="stat-value">65%</div>
+                <div class="stat-label">Progress</div>
+            </div>
+            <div class="quick-stat">
+                <div class="stat-value">3/7</div>
+                <div class="stat-label">Stages Complete</div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="sidebar-section">
+            <div class="section-header-with-filter">
+                <h3>Recent Activity</h3>
+                <button class="activity-filter-btn active" id="activityFilter" type="button" title="Show only this document's activity">
+                    <svg class="filter-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M14 2H2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1zM5 12H3v-2h2v2zm0-3H3V7h2v2zm0-3H3V4h2v2zm5 6H6v-2h4v2zm0-3H6V7h4v2zm0-3H6V4h4v2zm3 6h-2v-2h2v2zm0-3h-2V7h2v2zm0-3h-2V4h2v2z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="activity-list">
+            <div class="activity-item">
+                <div class="activity-time">2 hours ago</div>
+                <div class="activity-text">
+                    <span class="activity-user">Dr. Sarah Chen</span> added 3 technical comments
+                </div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-time">5 hours ago</div>
+                <div class="activity-text">
+                    <span class="activity-user">David Park</span> approved legal review
+                </div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-time">1 day ago</div>
+                <div class="activity-text">
+                    <span class="activity-user">Jennifer Martinez</span> completed initial review
+                </div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-time">3 days ago</div>
+                <div class="activity-text">
+                    <span class="activity-user">Michael Torres</span> submitted document
+                </div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-time">4 days ago</div>
+                <div class="activity-text">
+                    <span class="activity-user">Emily Thompson</span> initiated workflow
+                </div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-time">5 days ago</div>
+                <div class="activity-text">
+                    <span class="activity-user">Dr. Robert Martinez</span> reviewed methodology
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <!-- Deadline Calendar -->
+        <div class="sidebar-section">
+            <h3>December 2025</h3>
+            <div class="calendar">
+                <div class="calendar-header">
+                    <div class="day-label">Su</div>
+                    <div class="day-label">Mo</div>
+                    <div class="day-label">Tu</div>
+                    <div class="day-label">We</div>
+                    <div class="day-label">Th</div>
+                    <div class="day-label">Fr</div>
+                    <div class="day-label">Sa</div>
+                </div>
+                <div class="calendar-grid">
+                    <!-- Week 1 -->
+                    <div class="calendar-day"></div>
+                    <div class="calendar-day">1</div>
+                    <div class="calendar-day">2</div>
+                    <div class="calendar-day">3</div>
+                    <div class="calendar-day">4</div>
+                    <div class="calendar-day today deadline stage-3" title="Today - Stage 3 Due">5</div>
+                    <div class="calendar-day">6</div>
+                    <!-- Week 2 -->
+                    <div class="calendar-day">7</div>
+                    <div class="calendar-day deadline stage-4" title="Stage 4 Due">8</div>
+                    <div class="calendar-day">9</div>
+                    <div class="calendar-day">10</div>
+                    <div class="calendar-day deadline stage-5" title="Stage 5 Due">11</div>
+                    <div class="calendar-day">12</div>
+                    <div class="calendar-day">13</div>
+                    <!-- Week 3 -->
+                    <div class="calendar-day">14</div>
+                    <div class="calendar-day deadline stage-6" title="Stage 6 Due">15</div>
+                    <div class="calendar-day">16</div>
+                    <div class="calendar-day">17</div>
+                    <div class="calendar-day">18</div>
+                    <div class="calendar-day">19</div>
+                    <div class="calendar-day deadline stage-7" title="Stage 7 - Final Signature Due">20</div>
+                    <!-- Week 4 -->
+                    <div class="calendar-day">21</div>
+                    <div class="calendar-day">22</div>
+                    <div class="calendar-day">23</div>
+                    <div class="calendar-day">24</div>
+                    <div class="calendar-day">25</div>
+                    <div class="calendar-day">26</div>
+                    <div class="calendar-day">27</div>
+                    <!-- Week 5 -->
+                    <div class="calendar-day">28</div>
+                    <div class="calendar-day">29</div>
+                    <div class="calendar-day">30</div>
+                    <div class="calendar-day">31</div>
+                </div>
+                <div class="calendar-legend">
+                    <div class="legend-item-cal">
+                        <div class="legend-box today"></div>
+                        <span>Today</span>
+                    </div>
+                    <div class="legend-item-cal">
+                        <div class="legend-box deadline"></div>
+                        <span>Deadline</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage Reviewers -->
+        <div class="sidebar-section">
+            <h3>Stage Reviewers</h3>
+            <div id="reviewer-list">
+            <div class="reviewer-card">
+                <div class="reviewer-name">Jennifer Martinez</div>
+                <div class="reviewer-role">Stage 1 - Initial Review</div>
+                <span class="reviewer-status completed">Completed</span>
+            </div>
+            <div class="reviewer-card">
+                <div class="reviewer-name">David Park</div>
+                <div class="reviewer-role">Stage 2 - Legal Review</div>
+                <span class="reviewer-status completed">Completed</span>
+            </div>
+            <div class="reviewer-card">
+                <div class="reviewer-name">Dr. Sarah Chen</div>
+                <div class="reviewer-role">Stage 3 - Technical Review</div>
+                <span class="reviewer-status active">In Progress</span>
+            </div>
+            <div class="reviewer-card">
+                <div class="reviewer-name">Marcus Johnson</div>
+                <div class="reviewer-role">Stage 4 - Policy Review</div>
+                <span class="reviewer-status pending">Pending</span>
+            </div>
+            <div class="reviewer-card">
+                <div class="reviewer-name">Lisa Anderson</div>
+                <div class="reviewer-role">Stage 5 - Director Review</div>
+                <span class="reviewer-status pending">Pending</span>
+            </div>
+            <div class="reviewer-card">
+                <div class="reviewer-name">Review Board</div>
+                <div class="reviewer-role">Stage 6 - Final Review</div>
+                <span class="reviewer-status pending">Pending</span>
+            </div>
+            <div class="reviewer-card">
+                <div class="reviewer-name">EPA Administrator</div>
+                <div class="reviewer-role">Stage 7 - Official Signer</div>
+                <span class="reviewer-status pending">Awaiting</span>
+            </div>
+            </div>
+        </div>
+    </aside>
+    </div>
+
+    <script>
+        (function () {
+            const documents = (window.FRN_DATA && window.FRN_DATA.documents) || [];
+            const pageQuery = window.__FRN_CURRENT_PAGE_QUERY || window.location.search;
+            const params = new URLSearchParams(pageQuery);
+            const docId = params.get('doc');
+            const doc = documents.find(item => item.id === docId) || documents[0];
+
+            if (!doc) return;
+
+            const formatDate = value => {
+                if (!value) return 'Not Available';
+                return new Date(value + 'T00:00:00').toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+            };
+
+            const setText = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = value;
+            };
+
+            setText('review-page-tagline', `${doc.currentStage} Review Process`);
+            setText('review-doc-title-banner', `${doc.id} Review Overview`);
+            setText('review-doc-summary-banner', doc.summary);
+            setText('review-doc-id', doc.id);
+            setText('review-doc-title', doc.title);
+            setText('review-submitted-date', formatDate(doc.submittedDate));
+            setText('review-current-stage', doc.currentStage);
+            setText('review-submitted-by', `${doc.submittedBy} • ${doc.originatingOffice}`);
+            setText('review-target-date', formatDate(doc.dueDate));
+            setText('review-stage-heading', `${doc.currentStage} - Current Status`);
+
+            const reviewerList = document.getElementById('reviewer-list');
+            if (reviewerList) {
+                reviewerList.innerHTML = (doc.stageAssignments || []).map((stage, index) => {
+                    let statusClass = 'pending';
+                    let statusText = 'Pending';
+                    if (index + 1 < doc.stageNumber) {
+                        statusClass = 'completed';
+                        statusText = 'Completed';
+                    } else if (index + 1 === doc.stageNumber) {
+                        statusClass = 'active';
+                        statusText = doc.status === 'completed' ? 'Completed' : 'In Progress';
+                    }
+
+                    return `
+                        <div class="reviewer-card">
+                            <div class="reviewer-name">${stage.owner}</div>
+                            <div class="reviewer-role">${stage.stage}</div>
+                            <span class="reviewer-status ${statusClass}">${statusText}</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+        })();
+    </script>
+    <script>
+        function toggleVersionHistory() {
+            const container = document.getElementById('versionHistory');
+            const btn = document.querySelector('.toggle-btn');
+            
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                btn.classList.add('active');
+                btn.innerHTML = '<span class="toggle-icon">▲</span> Hide Version History';
+            } else {
+                container.style.display = 'none';
+                btn.classList.remove('active');
+                btn.innerHTML = '<span class="toggle-icon">▼</span> View Complete Version History (8 versions)';
+            }
+        }
+
+        function filterComments() {
+            const versionFilter = document.getElementById('versionFilter').value;
+            const personFilter = document.getElementById('personFilter').value;
+            const sortFilter = document.getElementById('sortFilter').value;
+            
+            const bubbles = document.querySelectorAll('.comment-bubble');
+            const dividers = document.querySelectorAll('.version-divider');
+            
+            // Filter comments
+            bubbles.forEach(bubble => {
+                const version = bubble.getAttribute('data-version');
+                const person = bubble.getAttribute('data-person');
+                
+                let showVersion = (versionFilter === 'all' || version === versionFilter);
+                let showPerson = (personFilter === 'all' || person === personFilter);
+                
+                if (showVersion && showPerson) {
+                    bubble.style.display = '';
+                } else {
+                    bubble.style.display = 'none';
+                }
+            });
+            
+            // Show/hide version dividers
+            dividers.forEach(divider => {
+                const version = divider.getAttribute('data-version');
+                let showDivider = (versionFilter === 'all' || version === versionFilter);
+                
+                if (showDivider) {
+                    divider.style.display = '';
+                } else {
+                    divider.style.display = 'none';
+                }
+            });
+        }
+
+        function toggleActivityFilter() {
+            const btn = document.getElementById('activityFilter');
+            btn.classList.toggle('active');
+            
+            // In a real implementation, this would filter activity items
+            // For now, it just toggles the visual state
+            if (btn.classList.contains('active')) {
+                btn.title = 'Showing only this document\'s activity';
+            } else {
+                btn.title = 'Showing all activity';
+            }
+        }
+
+        const versionToggleBtn = document.querySelector('.version-history-toggle .toggle-btn');
+        if (versionToggleBtn) {
+            versionToggleBtn.addEventListener('click', toggleVersionHistory);
+        }
+
+        ['versionFilter', 'personFilter', 'sortFilter'].forEach(id => {
+            const select = document.getElementById(id);
+            if (select) {
+                select.addEventListener('change', filterComments);
+            }
+        });
+
+        const activityFilterBtn = document.getElementById('activityFilter');
+        if (activityFilterBtn) {
+            activityFilterBtn.addEventListener('click', toggleActivityFilter);
+        }
+    </script>
+</body>
+</html>

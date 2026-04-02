@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Notice - EPA FRN Approval System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/shared.css">
+    <script src="src/frn-data.js"></script>
+    
+    <style>
+        /* === COPY ALL CSS FROM Active Reviews.html === */
+        /* This ensures exact same styling */
+        
+        :root {
+            --navy: #002147;
+            --gold: #b8860b;
+            --burgundy: #800020;
+            --cream: #faf8f3;
+            --parchment: #f4f1e8;
+            --light-gray: #e0e0e0;
+            --gray: #666;
+            --approved-green: #2e7d32;
+            --pending-amber: #f57c00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+        }
+
+        /* Content Wrapper */
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+            margin-left: 285px;
+            margin-right: 315px;
+            width: calc(100vw - 285px - 315px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            height: 100vh;
+        }
+
+        .content-wrapper::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .content-wrapper::-webkit-scrollbar-track {
+            background: var(--light-gray);
+        }
+
+        .content-wrapper::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 4px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            min-height: 100vh;
+            padding: 0 0.25rem;
+            margin-bottom: 0.25rem;
+            flex: 1 1 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .container {
+            margin: 0 auto;
+            width: 1260px;
+            max-width: 1260px;
+            padding-left: 0;
+            padding-right: 0;
+            padding-top: 0.3rem;
+            padding-bottom: 3rem;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            border: 3px solid var(--navy);
+            border-top: 8px solid var(--gold);
+            padding: 1.2rem 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 1.2rem;
+        }
+
+        .header-seal {
+            width: 110px;
+            height: 110px;
+            background: linear-gradient(135deg, var(--navy), var(--burgundy));
+            border-radius: 50%;
+            border: 4px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.1rem;
+            font-weight: 800;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .header-content {
+            margin-left: 0;
+            flex: 1;
+        }
+
+        .department {
+            font-size: 1.458rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2.4rem;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .tagline {
+            font-size: 1.15rem;
+            color: var(--burgundy);
+            font-weight: 800;
+        }
+
+        /* Disclaimer Pane - EXACT COPY */
+        .disclaimer-pane {
+            background: var(--navy);
+            border-top: 8px solid var(--gold);
+            margin: 0;
+            margin-top: 3rem;
+            padding: 0;
+        }
+
+        .disclaimer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            gap: 1.8rem;
+        }
+
+        .disclaimer-text {
+            flex: 1;
+            text-align: center;
+        }
+
+        .disclaimer-title {
+            font-size: 1.32rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin: 0 0 0.45rem 0;
+            letter-spacing: 0.15em;
+        }
+
+        .disclaimer-body {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--cream);
+            margin: 0 0 0.6rem 0;
+        }
+
+        .disclaimer-links {
+            margin-bottom: 0.75rem;
+        }
+
+        .disclaimer-link {
+            font-size: 0.96rem;
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 0.96rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .disclaimer-link:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .disclaimer-separator {
+            color: var(--gold);
+            margin: 0 0.45rem;
+        }
+
+        .disclaimer-version {
+            font-size: 0.84rem;
+            color: var(--gray);
+            margin: 0;
+        }
+
+        .disclaimer-stamp {
+            flex-shrink: 0;
+        }
+
+        .pmtarp-stamp {
+            background: transparent;
+            color: #c92a2a;
+            width: 108px;
+            height: 108px;
+            font-family: 'Libre Baskerville', serif;
+            border: 5px solid #c92a2a;
+            border-radius: 50%;
+            text-align: center;
+            transform: rotate(-12deg);
+            box-shadow: 
+                0 0 0 2px #c92a2a,
+                inset 0 0 12px rgba(201, 42, 42, 0.1);
+            opacity: 0.88;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .pmtarp-stamp::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            background: 
+                radial-gradient(circle at 20% 30%, transparent 40%, rgba(201, 42, 42, 0.05) 41%),
+                radial-gradient(circle at 70% 60%, transparent 35%, rgba(201, 42, 42, 0.05) 36%),
+                radial-gradient(circle at 40% 80%, transparent 30%, rgba(201, 42, 42, 0.05) 31%);
+            pointer-events: none;
+        }
+
+        .stamp-text {
+            padding: 0.3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stamp-top {
+            font-size: 0.36rem;
+            letter-spacing: 0.25em;
+            font-weight: 700;
+            margin-bottom: 0.24rem;
+            text-transform: uppercase;
+            font-style: italic;
+        }
+
+        .stamp-main {
+            font-size: 1.08rem;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            margin-bottom: 0.18rem;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 0px rgba(201, 42, 42, 0.3);
+        }
+
+        .stamp-subtitle {
+            font-size: 0.3rem;
+            letter-spacing: 0.08em;
+            line-height: 1.4;
+            margin-bottom: 0.24rem;
+            font-weight: 600;
+            font-style: normal;
+        }
+
+        .stamp-bottom {
+            font-size: 0.36rem;
+            letter-spacing: 0.25em;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-style: italic;
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            width: 315px;
+            background: var(--parchment);
+            padding: 2rem 1.5rem;
+            border-left: 3px solid var(--navy);
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .right-sidebar-content {
+            height: 100%;
+            overflow-y: auto;
+            padding-right: 0.25rem;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-section h3 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.32rem;
+            color: var(--navy);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        /* ADD PAGE-SPECIFIC STYLES BELOW THIS LINE */
+        /* ========================================= */
+        
+        .form-section {
+            background: white;
+            border: 2px solid var(--navy);
+            border-left: 6px solid var(--gold);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-section h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.5rem;
+            color: var(--navy);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            border-bottom: 3px solid var(--gold);
+            padding-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-grid.full-width {
+            grid-template-columns: 1fr;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--navy);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-label .required {
+            color: var(--burgundy);
+            margin-left: 0.25rem;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            padding: 0.75rem;
+            border: 2px solid var(--navy);
+            background: var(--cream);
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.9rem;
+            color: var(--navy);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.2);
+        }
+
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .file-upload {
+            border: 3px dashed var(--navy);
+            background: var(--parchment);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload:hover {
+            border-color: var(--gold);
+            background: var(--cream);
+        }
+
+        .file-upload-icon {
+            font-size: 3rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .file-upload-text {
+            font-size: 1rem;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+        }
+
+        .file-upload-hint {
+            font-size: 0.96rem;
+            color: var(--gray);
+            font-style: italic;
+        }
+
+        .document-upload-section {
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .document-upload-section h2 {
+            margin-bottom: 0.9rem;
+            padding-bottom: 0.65rem;
+        }
+
+        .document-upload-section .file-upload {
+            padding: 0.95rem 1rem;
+        }
+
+        .document-upload-section .file-upload-icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .document-upload-section .file-upload-text {
+            font-size: 0.92rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .document-upload-section .file-upload-hint {
+            font-size: 0.82rem;
+        }
+
+        .stage-reviewer-section {
+            padding: 1.3rem 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .stage-reviewer-section h2 {
+            margin-bottom: 0.85rem;
+            padding-bottom: 0.65rem;
+        }
+
+        .stage-reviewer-section .info-box {
+            padding: 0.9rem 1rem;
+            margin-bottom: 1rem !important;
+        }
+
+        .stage-reviewer-section .info-box h3 {
+            margin-bottom: 0.35rem;
+            font-size: 1rem;
+        }
+
+        .stage-reviewer-section .info-box ul {
+            gap: 0.25rem;
+            line-height: 1.35;
+            font-size: 0.88rem;
+        }
+
+        .stage-reviewer-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.85rem 1rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .stage-reviewer-item {
+            background: var(--cream);
+            border: 1px solid rgba(0, 33, 71, 0.18);
+            padding: 0.75rem 0.8rem;
+        }
+
+        .stage-reviewer-item > .form-label {
+            font-size: 0.75rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .stage-reviewer-row {
+            display: grid;
+            grid-template-columns: 1.35fr 0.9fr;
+            gap: 0.6rem;
+            align-items: end;
+        }
+
+        .stage-reviewer-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.22rem;
+        }
+
+        .stage-reviewer-field-label {
+            font-size: 0.66rem;
+            font-weight: 700;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .stage-reviewer-section .form-input {
+            padding: 0.55rem 0.65rem;
+            font-size: 0.84rem;
+        }
+
+        .stage-reviewer-section .form-field {
+            gap: 0.28rem;
+        }
+
+        .stage-reviewer-section .form-grid.full-width {
+            margin-bottom: 0.75rem;
+        }
+
+        .stage-reviewer-section .form-textarea {
+            min-height: 90px;
+        }
+
+        @media (max-width: 1100px) {
+            .stage-reviewer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--light-gray);
+        }
+
+        .btn {
+            padding: 0.85rem 2rem;
+            border: 2px solid;
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--navy);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .btn-primary:hover {
+            background: var(--gold);
+            color: var(--navy);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: white;
+            border-color: var(--navy);
+            color: var(--navy);
+        }
+
+        .btn-secondary:hover {
+            background: var(--light-gray);
+        }
+
+        .info-box {
+            background: rgba(184, 134, 11, 0.1);
+            border: 2px solid var(--gold);
+            border-left: 6px solid var(--gold);
+            padding: 0.9rem 1rem;
+            margin-bottom: 1.35rem;
+        }
+
+        .info-box h3 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 0.92rem;
+            color: var(--navy);
+            margin-bottom: 0.45rem;
+        }
+
+        .info-box ul {
+            margin-left: 1.15rem;
+            color: var(--navy);
+            line-height: 1.32;
+            font-size: 0.88rem;
+        }
+
+        .quick-stat {
+            background: white;
+            border: 2px solid var(--navy);
+            border-left: 4px solid var(--gold);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .quick-stat .stat-value {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            color: var(--burgundy);
+            font-weight: 700;
+        }
+
+        .quick-stat .stat-label {
+            font-size: 0.96rem;
+            color: var(--navy);
+            margin-top: 0.5rem;
+            line-height: 1.3;
+        }
+        
+    </style>
+</head>
+<body>
+        <!-- Left Navigation Sidebar -->
+    <nav class="left-sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-seal">
+                <img src="Images/EPA Seal.png" alt="EPA Logo" style="width: 100%; height: 100%; object-fit: cover; object-position: 0% center; border-radius: 50%;" />
+            </div>
+            <div class="logo-text">Environmental<br>Protection<br>Agency</div>
+        </div>
+        <div class="nav-sections-wrapper">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item">Dashboard</a>
+                <a href="new-notice.html" class="nav-item active">New Notice</a>
+                <a href="DocumentLibrary.html" class="nav-item">Document Library</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Workflow</div>
+                <a href="my-tasks.html" class="nav-item">My Tasks</a>
+                <a href="Active-Reviews.html" class="nav-item">Active Reviews</a>
+                <a href="pending-approvals.html" class="nav-item">Pending Approvals</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Views</div>
+                <a href="calendar.html" class="nav-item">Calendar</a>
+                <a href="team.html" class="nav-item">Team</a>
+                <a href="analytics.html" class="nav-item">Analytics</a>
+                <a href="reports.html" class="nav-item">Reports</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="settings.html" class="nav-item">Settings</a>
+                <a href="help.html" class="nav-item">Help</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Scrollable Content Wrapper (Main + Right Sidebar) -->
+    <div class="content-wrapper">
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <div class="container">
+                <!-- Official Header -->
+                <header>
+                    <div class="header-seal">📜</div>
+                    <div class="header-content">
+                        <div class="department">Environmental Protection Agency</div>
+                        <h1>Federal Register Notice (FRN) Approval Workflow</h1>
+                        <div class="tagline">Update Notice Page</div>
+                    </div>
+                </header>
+
+                <!-- ====================================== -->
+                <!-- PAGE CONTENT GOES HERE -->
+                <!-- ====================================== -->
+                
+                <!-- Information Box -->
+                <div class="info-box">
+                    <h3>Before You Begin</h3>
+                    <ul>
+                        <li>Ensure supporting documents are prepared and ready for upload if available</li>
+                        <li>Review the 7-stage approval process timeline (typically 20-30 business days)</li>
+                        <li>Coordinate with your division's legal and technical reviewers</li>
+                        <li>Only Document Title and FRN ID are required for initial submission</li>
+                    </ul>
+                </div>
+
+                <!-- Document Information -->
+                <section class="form-section">
+                    <h2>Document Information</h2>
+                    
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label class="form-label">Document Title<span class="required">*</span></label>
+                            <input id="notice-title" type="text" class="form-input" placeholder="Enter document title" required>
+                        </div>
+                        <div class="form-field">
+                            <label class="form-label">FRN ID<span class="required">*</span></label>
+                            <input id="notice-frn-id" type="text" class="form-input" placeholder="e.g., EPA-HQ-XXXX-2026-0001" required>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label class="form-label">Document Type</label>
+                            <input id="notice-type" type="text" class="form-input" list="notice-type-options" placeholder="Start typing a document type...">
+                            <datalist id="notice-type-options"></datalist>
+                        </div>
+                        <div class="form-field">
+                            <label class="form-label">Originating Office</label>
+                            <input id="notice-office" type="text" class="form-input" list="notice-office-options" placeholder="Start typing an office...">
+                            <datalist id="notice-office-options"></datalist>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label class="form-label">Document Owner</label>
+                            <input id="notice-stage-owner" type="text" class="form-input" placeholder="e.g., Dr. Sarah Chen">
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label class="form-label">Stage Deadline</label>
+                            <input id="notice-stage-deadline" type="datetime-local" class="form-input">
+                        </div>
+                        <div class="form-field">
+                            <label class="form-label">Federal Register Target</label>
+                            <input id="notice-fr-target" type="date" class="form-input">
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label class="form-label">Public Comment Period (days)</label>
+                            <input id="notice-comment-days" type="number" min="0" class="form-input" placeholder="e.g., 60">
+                        </div>
+                        <div class="form-field">
+                            <label class="form-label">Related Dockets</label>
+                            <input id="notice-dockets" type="text" class="form-input" placeholder="e.g., EPA-HQ-OPPT-2026-0001, ...">
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label class="form-label">Statutory Authority</label>
+                            <input id="notice-authority" type="text" class="form-input" placeholder="e.g., TSCA Section 6(a)">
+                        </div>
+                        <div class="form-field">
+                            <label class="form-label">Statutory Deadline</label>
+                            <input id="notice-statutory-deadline" type="date" class="form-input">
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label class="form-label">OMB Review Required (E.O. 12866)</label>
+                            <select id="notice-omb-review" class="form-select">
+                                <option value="">Select...</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label class="form-label">RIN (Regulatory ID Number)</label>
+                            <input id="notice-rin" type="text" class="form-input" placeholder="e.g., 2070-AB12">
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label class="form-label">CFR Citation</label>
+                            <input id="notice-cfr" type="text" class="form-input" placeholder="e.g., 40 CFR Part 720">
+                        </div>
+                        <div class="form-field">
+                            <label class="form-label">PRA Burden Estimate (hours)</label>
+                            <input id="notice-pra-hours" type="number" min="0" class="form-input" placeholder="e.g., 120">
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label class="form-label">Legal Point of Contact</label>
+                            <input id="notice-legal-poc" type="text" class="form-input" placeholder="e.g., Jane Smith (OGC)">
+                        </div>
+                        <div class="form-field">
+                            <label class="form-label">Policy Lead</label>
+                            <input id="notice-policy-lead" type="text" class="form-input" placeholder="e.g., Marcus Johnson">
+                        </div>
+                    </div>
+
+                    <div class="form-grid full-width">
+                        <div class="form-field">
+                            <label class="form-label">Document Summary</label>
+                            <textarea id="notice-summary" class="form-textarea" placeholder="Provide a brief summary of the document and its purpose..."></textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- File Upload -->
+                <section class="form-section document-upload-section">
+                    <h2>Document Upload</h2>
+                    
+                    <div class="form-field">
+                        <label class="form-label">Primary Document</label>
+                        <div id="notice-primary-upload" class="file-upload">
+                            <div class="file-upload-icon">📄</div>
+                            <div class="file-upload-text">Click to upload or drag and drop</div>
+                            <div class="file-upload-hint">PDF, DOCX, or DOC (Max 25MB)</div>
+                        </div>
+                    </div>
+
+                    <div class="form-field" style="margin-top: 1.5rem;">
+                        <label class="form-label">Supporting Documents</label>
+                        <div id="notice-supporting-upload" class="file-upload">
+                            <div class="file-upload-icon">📎</div>
+                            <div class="file-upload-text">Upload supporting materials</div>
+                            <div class="file-upload-hint">Multiple files accepted (Max 10MB each)</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Review Coordination -->
+                <section class="form-section stage-reviewer-section">
+                    <h2>Stage Reviewer Overrides</h2>
+                    <div class="info-box" style="margin-bottom: 1.5rem;">
+                        <h3>Optional Reviewer Overrides</h3>
+                        <ul>
+                            <li>Default stage reviewer settings are already configured for the workflow.</li>
+                            <li>Enter a name below only if this notice needs a stage-specific reviewer override.</li>
+                            <li>Any name entered here will override the default reviewer assignment for that stage for this notice only.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="stage-reviewer-grid">
+                        <div class="form-field stage-reviewer-item">
+                            <label class="form-label">Stage 1 - Initial Review</label>
+                            <div class="stage-reviewer-row">
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Reviewer</div>
+                                    <input id="stage-1-reviewer" type="text" class="form-input" list="reviewer-name-options" placeholder="Enter reviewer name">
+                                </div>
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Due Date</div>
+                                    <input id="stage-1-due" type="date" class="form-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-field stage-reviewer-item">
+                            <label class="form-label">Stage 2 - Legal Review</label>
+                            <div class="stage-reviewer-row">
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Reviewer</div>
+                                    <input id="stage-2-reviewer" type="text" class="form-input" list="reviewer-name-options" placeholder="Enter reviewer name">
+                                </div>
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Due Date</div>
+                                    <input id="stage-2-due" type="date" class="form-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-field stage-reviewer-item">
+                            <label class="form-label">Stage 3 - Technical Review</label>
+                            <div class="stage-reviewer-row">
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Reviewer</div>
+                                    <input id="stage-3-reviewer" type="text" class="form-input" list="reviewer-name-options" placeholder="Enter reviewer name">
+                                </div>
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Due Date</div>
+                                    <input id="stage-3-due" type="date" class="form-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-field stage-reviewer-item">
+                            <label class="form-label">Stage 4 - Policy Review</label>
+                            <div class="stage-reviewer-row">
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Reviewer</div>
+                                    <input id="stage-4-reviewer" type="text" class="form-input" list="reviewer-name-options" placeholder="Enter reviewer name">
+                                </div>
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Due Date</div>
+                                    <input id="stage-4-due" type="date" class="form-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-field stage-reviewer-item">
+                            <label class="form-label">Stage 5 - Final QA</label>
+                            <div class="stage-reviewer-row">
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Reviewer</div>
+                                    <input id="stage-5-reviewer" type="text" class="form-input" list="reviewer-name-options" placeholder="Enter reviewer name">
+                                </div>
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Due Date</div>
+                                    <input id="stage-5-due" type="date" class="form-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-field stage-reviewer-item">
+                            <label class="form-label">Stage 6 - Official Signer</label>
+                            <div class="stage-reviewer-row">
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Reviewer</div>
+                                    <input id="stage-6-reviewer" type="text" class="form-input" list="reviewer-name-options" placeholder="Enter reviewer name">
+                                </div>
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Due Date</div>
+                                    <input id="stage-6-due" type="date" class="form-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-field stage-reviewer-item">
+                            <label class="form-label">Stage 7 - Final Review</label>
+                            <div class="stage-reviewer-row">
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Reviewer</div>
+                                    <input id="stage-7-reviewer" type="text" class="form-input" list="reviewer-name-options" placeholder="Enter reviewer name">
+                                </div>
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Due Date</div>
+                                    <input id="stage-7-due" type="date" class="form-input" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <datalist id="reviewer-name-options"></datalist>
+
+                    <div class="form-grid full-width">
+                        <div class="form-field">
+                            <label class="form-label">Special Instructions</label>
+                            <textarea id="notice-special-instructions" class="form-textarea" placeholder="Any special instructions for reviewers..." rows="4"></textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button id="submit-review-btn" type="button" class="btn btn-primary">Submit for Update</button>
+                </div>
+                
+            </div>
+
+            <!-- Disclaimer Pane - EXACT COPY FROM 7-STAGE APPROVAL -->
+            <div class="disclaimer-pane">
+                <div class="disclaimer-content">
+                    <div class="disclaimer-text">
+                        <p class="disclaimer-title">DISCLAIMER</p>
+                        <p class="disclaimer-body">Official EPA PMTaRP product. Authorized personnel only. Subject to federal recordkeeping requirements (44 U.S.C. § 31, EPA Records Schedule 0155). Unauthorized access subject to 18 U.S.C. § 1030.</p>
+                        <div class="disclaimer-links">
+                            <a href="#" class="disclaimer-link">Contact Us</a>
+                            <span class="disclaimer-separator">|</span>
+                            <a href="#" class="disclaimer-link">Support</a>
+                            <span class="disclaimer-separator">|</span>
+                            <a href="#" class="disclaimer-link">Privacy Policy</a>
+                            <span class="disclaimer-separator">|</span>
+                            <a href="#" class="disclaimer-link">Terms of Use</a>
+                        </div>
+                        <p class="disclaimer-version">Version 2.12.1 | Official Use Only</p>
+                    </div>
+                    <div class="disclaimer-stamp">
+                        <div class="pmtarp-stamp">
+                            <div class="stamp-text">
+                                <div class="stamp-top">OFFICIAL</div>
+                                <div class="stamp-main">PMTaRP</div>
+                                <div class="stamp-subtitle">Project Management<br>Tracking & Reporting Tool</div>
+                                <div class="stamp-bottom">PRODUCT</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar (Quick Stats Pane) -->
+        <aside class="right-sidebar">
+            <div class="right-sidebar-content">
+            <!-- ====================================== -->
+            <!-- RIGHT SIDEBAR CONTENT GOES HERE -->
+            <!-- ====================================== -->
+            
+            <div class="sidebar-section">
+                <h3>Submission Guide</h3>
+                <div class="quick-stat">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">Review Stages</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="stat-value">20-30</div>
+                    <div class="stat-label">Business Days<br>Average Timeline</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="stat-value">92%</div>
+                    <div class="stat-label">On-Time<br>Approval Rate</div>
+                </div>
+            </div>
+            </div>
+        </aside>
+    </div>
+    <script>
+        (function initUpdateNoticeSubmission() {
+            const CUSTOM_DOCUMENTS_KEY = 'frn_custom_documents';
+            const DOCUMENT_OVERRIDES_KEY = 'frn_document_overrides';
+            const currentDocId = new URLSearchParams(window.__FRN_CURRENT_PAGE_QUERY || window.location.search).get('doc');
+
+            const officeNames = {
+                oppt: 'Office of Chemical Safety and Pollution Prevention',
+                ow: 'Office of Water',
+                oar: 'Office of Air and Radiation',
+                olem: 'Office of Land and Emergency Management',
+                oeca: 'Office of Enforcement and Compliance Assurance'
+            };
+
+            const officeShortNames = {
+                oppt: 'Chemical Safety',
+                ow: 'Water',
+                oar: 'Air & Radiation',
+                olem: 'Land & Emergency',
+                oeca: 'Enforcement & Compliance'
+            };
+
+            const typeMap = {
+                'proposed rule': { type: 'rule', label: 'Proposed Rule' },
+                'final rule': { type: 'final', label: 'Final Rule' },
+                'notice': { type: 'notice', label: 'Notice' },
+                'guidance': { type: 'guidance', label: 'Guidance' },
+                'guidance document': { type: 'guidance', label: 'Guidance' },
+                'correction/technical amendment': { type: 'notice', label: 'Correction / Technical Amendment' },
+                'correction / technical amendment': { type: 'notice', label: 'Correction / Technical Amendment' }
+            };
+
+            function $(id) {
+                return document.getElementById(id);
+            }
+
+            function buildDatalistOptions(datalistId, values) {
+                const datalist = $(datalistId);
+                if (!datalist) return;
+                const uniqueValues = Array.from(new Set(values.map(value => (value || '').trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+                datalist.innerHTML = uniqueValues.map(value => `<option value="${value}"></option>`).join('');
+            }
+
+            function normalizeOfficeInput(value) {
+                const normalized = (value || '').trim().toLowerCase();
+                const fullNameToCode = Object.fromEntries(Object.entries(officeNames).map(([code, name]) => [name.toLowerCase(), code]));
+                const shortNameToCode = Object.fromEntries(Object.entries(officeShortNames).map(([code, name]) => [name.toLowerCase(), code]));
+                const officeCode = fullNameToCode[normalized] || shortNameToCode[normalized] || normalized;
+                return {
+                    officeCode,
+                    officeLabel: officeNames[officeCode] || officeShortNames[officeCode] || (value || '').trim()
+                };
+            }
+
+            function normalizeTypeInput(value) {
+                const normalized = (value || '').trim().toLowerCase();
+                return typeMap[normalized] || null;
+            }
+
+            function collectStageOverrides() {
+                return Array.from({ length: 7 }, (_, index) => {
+                    const stageNumber = index + 1;
+                    return {
+                        stageNumber,
+                        stageLabel: `Stage ${stageNumber} - ${[
+                            'Initial Review',
+                            'Legal Review',
+                            'Technical Review',
+                            'Policy Review',
+                            'Final QA',
+                            'Official Signer',
+                            'Final Review'
+                        ][index]}`,
+                        reviewer: $(`stage-${stageNumber}-reviewer`).value.trim(),
+                        dueDate: $(`stage-${stageNumber}-due`).value
+                    };
+                });
+            }
+
+            function formatIso(date) {
+                return date.toISOString().slice(0, 10);
+            }
+
+            function formatDateOffset(baseText, days) {
+                const base = new Date((baseText || formatIso(new Date())) + 'T00:00:00');
+                base.setDate(base.getDate() + days);
+                return formatIso(base);
+            }
+
+            function normalizeStageNumber(stageLabel) {
+                const match = (stageLabel || '').match(/Stage\s+(\d+)/i);
+                return match ? Number(match[1]) : 1;
+            }
+
+            function loadCustomDocuments() {
+                try {
+                    const stored = localStorage.getItem(CUSTOM_DOCUMENTS_KEY);
+                    const parsed = stored ? JSON.parse(stored) : [];
+                    return Array.isArray(parsed) ? parsed : [];
+                } catch (error) {
+                    console.warn('Unable to read saved custom FRN documents.', error);
+                    return [];
+                }
+            }
+
+            function saveCustomDocuments(documents) {
+                localStorage.setItem(CUSTOM_DOCUMENTS_KEY, JSON.stringify(documents));
+            }
+
+            function loadOverrides() {
+                try {
+                    const stored = localStorage.getItem(DOCUMENT_OVERRIDES_KEY);
+                    const parsed = stored ? JSON.parse(stored) : {};
+                    return parsed && typeof parsed === 'object' ? parsed : {};
+                } catch (error) {
+                    console.warn('Unable to read saved FRN overrides.', error);
+                    return {};
+                }
+            }
+
+            function saveOverrides(overrides) {
+                localStorage.setItem(DOCUMENT_OVERRIDES_KEY, JSON.stringify(overrides));
+            }
+
+            function populateUpdateForm(documentRecord) {
+                if (!documentRecord) return;
+                $('notice-title').value = documentRecord.title || '';
+                $('notice-frn-id').value = documentRecord.id || '';
+                $('notice-type').value = documentRecord.typeLabel || '';
+                $('notice-office').value = documentRecord.originatingOffice || documentRecord.office || '';
+                $('notice-stage-owner').value = documentRecord.documentOwner || documentRecord.stageOwner || documentRecord.assignee || '';
+                $('notice-stage-deadline').value = documentRecord.stageDeadline ? `${documentRecord.stageDeadline}T17:00` : '';
+                $('notice-fr-target').value = documentRecord.federalRegisterTarget || '';
+                $('notice-comment-days').value = documentRecord.publicCommentDays || '';
+                $('notice-dockets').value = documentRecord.relatedDockets || '';
+                $('notice-authority').value = documentRecord.statutoryAuthority || '';
+                $('notice-statutory-deadline').value = documentRecord.statutoryDeadline || '';
+                $('notice-omb-review').value = (documentRecord.ombReviewRequired || '').toLowerCase() === 'yes' ? 'yes' : (documentRecord.ombReviewRequired || '').toLowerCase() === 'no' ? 'no' : '';
+                $('notice-rin').value = documentRecord.rin || '';
+                $('notice-cfr').value = documentRecord.cfrCitation || '';
+                $('notice-pra-hours').value = documentRecord.praBurdenHours || '';
+                $('notice-legal-poc').value = documentRecord.legalPointOfContact || '';
+                $('notice-policy-lead').value = documentRecord.policyLead || '';
+                $('notice-summary').value = documentRecord.summary || '';
+                $('notice-special-instructions').value = documentRecord.specialInstructions || '';
+
+                (documentRecord.stageAssignments || []).slice(0, 7).forEach((assignment, index) => {
+                    const stageNumber = index + 1;
+                    const reviewer = $(`stage-${stageNumber}-reviewer`);
+                    const due = $(`stage-${stageNumber}-due`);
+                    if (reviewer) reviewer.value = assignment.owner && assignment.owner !== 'Completed' ? assignment.owner : '';
+                    if (due) due.value = assignment.dueDate || '';
+                });
+            }
+
+            function buildDocumentRecord(statusValue) {
+                const title = $('notice-title').value.trim();
+                const id = $('notice-frn-id').value.trim();
+                const typeSelection = normalizeTypeInput($('notice-type').value) || { type: 'notice', label: ($('notice-type').value || 'Notice').trim() || 'Notice' };
+                const officeSelection = normalizeOfficeInput($('notice-office').value || 'Unassigned Office');
+                const stageLabel = 'Stage 1 - Initial Review';
+                const stageNumber = 1;
+                const stageOverrides = collectStageOverrides();
+                const stageOneReviewer = stageOverrides[0].reviewer || $('notice-stage-owner').value.trim() || 'Unassigned';
+                const stageTwoReviewer = stageOverrides[1].reviewer || 'Pending Assignment';
+                const submittedDate = formatIso(new Date());
+                const dueDate = stageOverrides[0].dueDate || ($('notice-stage-deadline').value || '').slice(0, 10) || formatDateOffset(submittedDate, 5);
+                const frTarget = $('notice-fr-target').value || formatDateOffset(dueDate, 2);
+                const primaryFileName = `${title.replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g, '') || 'FRN_Document'}_v1.0.pdf`;
+
+                if (!title || !id) {
+                    return null;
+                }
+
+                return {
+                    id,
+                    title,
+                    type: typeSelection.type,
+                    typeLabel: typeSelection.label,
+                    office: officeShortNames[officeSelection.officeCode] || officeSelection.officeLabel,
+                    officeCode: officeSelection.officeCode,
+                    status: statusValue,
+                    statusLabel: statusValue === 'pending' ? 'Pending' : 'Active',
+                    currentStage: stageLabel,
+                    stageNumber,
+                    assignee: stageOneReviewer,
+                    submittedBy: (window.FRN_DATA && window.FRN_DATA.currentAssignee) || 'Current User',
+                    submittedDate,
+                    lastUpdated: submittedDate,
+                    dueDate,
+                    currentVersion: 'v1.0',
+                    completedDate: null,
+                    reviewCompletionDays: null,
+                    attachments: [
+                        { icon: '📄', name: primaryFileName, size: '2.0 MB' },
+                        { icon: '📎', name: 'Supporting_Materials_Placeholder.pdf', size: '640 KB' }
+                    ],
+                    versions: [
+                        { number: 'Version 1.0', meta: `Submitted ${new Date(submittedDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} • ${stageLabel}` }
+                    ],
+                    priorityLevel: 'Standard',
+                    stageOwner: stageOneReviewer,
+                    nextReviewer: stageTwoReviewer,
+                    stageDeadline: dueDate,
+                    federalRegisterTarget: frTarget,
+                    documentClassification: 'Agency Document',
+                    regulatoryCategory: 'General',
+                    publicCommentDays: Number($('notice-comment-days').value || 0),
+                    relatedDockets: $('notice-dockets').value.trim() || id,
+                    statutoryAuthority: $('notice-authority').value.trim() || 'Not Provided',
+                    statutoryDeadline: $('notice-statutory-deadline').value || dueDate,
+                    ombReviewRequired: $('notice-omb-review').value === 'yes' ? 'Yes' : $('notice-omb-review').value === 'no' ? 'No' : 'Not Provided',
+                    rin: $('notice-rin').value.trim() || 'Not Assigned',
+                    cfrCitation: $('notice-cfr').value.trim() || 'Not Provided',
+                    praBurdenHours: Number($('notice-pra-hours').value || 0),
+                    foiaSensitivity: 'Public',
+                    privacyPII: 'None',
+                    legalPointOfContact: $('notice-legal-poc').value.trim() || 'Not Assigned',
+                    policyLead: $('notice-policy-lead').value.trim() || 'Not Assigned',
+                    commentWindowOpens: submittedDate,
+                    commentWindowCloses: frTarget,
+                    riskCategory: 'Moderate',
+                    nextMilestone: 'Initial review assignment',
+                    summary: $('notice-summary').value.trim(),
+                    specialInstructions: $('notice-special-instructions').value.trim() || 'None provided',
+                    primaryDocument: primaryFileName,
+                    supportingDocuments: ['Supporting_Materials_Placeholder.pdf'],
+                    stageAssignments: stageOverrides.map((stage, index) => ({
+                        stage: stage.stageLabel,
+                        owner: index + 1 === stageNumber
+                            ? (stage.reviewer || stageOneReviewer)
+                            : index + 1 < stageNumber
+                                ? 'Completed'
+                                : (stage.reviewer || 'Pending Assignment'),
+                        dueDate: stage.dueDate || formatDateOffset(submittedDate, 3 + (index * 4))
+                    }))
+                };
+            }
+
+            function persistDocument(statusValue) {
+                const record = buildDocumentRecord(statusValue);
+                if (!record) {
+                    alert('Document Title and FRN ID are required.');
+                    return;
+                }
+
+                const customDocuments = loadCustomDocuments();
+                const sourceDocuments = ((window.FRN_DATA && window.FRN_DATA.documents) || []);
+                const targetId = currentDocId || record.id;
+                const targetIndex = sourceDocuments.findIndex(doc => doc.id === targetId);
+                const targetDoc = targetIndex >= 0 ? sourceDocuments[targetIndex] : null;
+                const mergedRecord = targetDoc ? { ...targetDoc, ...record, id: targetId } : record;
+
+                if (!targetDoc && sourceDocuments.some(doc => doc.id === record.id)) {
+                    alert('That FRN ID already exists. Use a unique FRN ID.');
+                    return;
+                }
+
+                if (targetDoc && window.FRN_DATA && Array.isArray(window.FRN_DATA.documents)) {
+                    window.FRN_DATA.documents[targetIndex] = mergedRecord;
+                } else if (window.FRN_DATA && Array.isArray(window.FRN_DATA.documents)) {
+                    window.FRN_DATA.documents.push(mergedRecord);
+                }
+
+                const customIndex = customDocuments.findIndex(doc => doc.id === targetId);
+                if (customIndex >= 0) {
+                    customDocuments[customIndex] = mergedRecord;
+                } else if (!targetDoc) {
+                    customDocuments.push(mergedRecord);
+                }
+                saveCustomDocuments(customDocuments);
+
+                const overrides = loadOverrides();
+                overrides[targetId] = mergedRecord;
+                saveOverrides(overrides);
+
+                const targetHref = 'DocumentLibrary.html';
+                if (typeof window.navigateFRN === 'function') {
+                    window.navigateFRN('document-library', targetHref);
+                } else {
+                    window.location.href = targetHref;
+                }
+            }
+
+            const submitButton = $('submit-review-btn');
+            if (submitButton) {
+                submitButton.addEventListener('click', () => persistDocument('active'));
+            }
+
+            const sourceDocuments = ((window.FRN_DATA && window.FRN_DATA.documents) || []);
+            buildDatalistOptions('notice-office-options', [
+                ...sourceDocuments.map(doc => doc.originatingOffice || doc.office),
+                ...Object.values(officeNames),
+                ...Object.values(officeShortNames)
+            ]);
+            buildDatalistOptions('notice-type-options', [
+                ...sourceDocuments.map(doc => doc.typeLabel),
+                'Proposed Rule',
+                'Final Rule',
+                'Notice',
+                'Guidance',
+                'Correction / Technical Amendment'
+            ]);
+            buildDatalistOptions('reviewer-name-options', [
+                ...sourceDocuments.flatMap(doc => [doc.assignee, doc.stageOwner, doc.nextReviewer, doc.submittedBy]),
+                ...(((window.FRN_DATA && window.FRN_DATA.teamGroups) || []).flatMap(group => group.members || []))
+            ]);
+
+            if (currentDocId) {
+                const selectedDoc = sourceDocuments.find(doc => doc.id === currentDocId);
+                populateUpdateForm(selectedDoc);
+            }
+        })();
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tasks - EPA FRN Approval System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/shared.css">
+    <script src="src/frn-data.js"></script>
+    <style>
+        /* Reusing the same CSS from dashboard.html for consistency */
+        :root {
+            --navy: #002147;
+            --gold: #b8860b;
+            --burgundy: #800020;
+            --cream: #faf8f3;
+            --parchment: #f4f1e8;
+            --light-gray: #e0e0e0;
+            --gray: #666;
+            --approved-green: #2e7d32;
+            --pending-amber: #f57c00;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Source Serif 4', serif; background: var(--cream); color: var(--navy); overflow-x: hidden; }
+        
+        /* Sidebar layout is provided by src/shared.css so it matches dashboard exactly. */
+        
+        .content-wrapper { display: flex; flex: 1; margin-left: 285px; margin-right: 315px; width: calc(100vw - 285px - 315px); overflow-y: auto; overflow-x: hidden; height: 100vh; scrollbar-width: none; }
+        .content-wrapper::-webkit-scrollbar { display: none; }
+        
+        .main-content { flex: 1; min-height: 100vh; padding: 0 0.25rem; margin-bottom: 0.25rem; display: flex; flex-direction: column; justify-content: flex-start; }
+        .container { margin: 0 auto; width: 1260px; max-width: 1260px; padding-left: 0; padding-right: 0; padding-top: 0.3rem; padding-bottom: 3rem; }
+        
+        header { background: white; border: 3px solid var(--navy); border-top: 8px solid var(--gold); padding: 1.2rem 1rem; margin-bottom: 1rem; position: relative; display: flex; align-items: center; justify-content: flex-start; gap: 1.2rem; }
+        .header-seal { width: 110px; height: 110px; background: linear-gradient(135deg, var(--navy), var(--burgundy)); border-radius: 50%; border: 4px solid var(--gold); display: flex; align-items: center; justify-content: center; font-size: 3.1rem; font-weight: 800; color: white; flex-shrink: 0; }
+        .header-content { margin-left: 0; flex: 1; }
+        .department { font-size: 1.458rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700; margin-bottom: 1rem; }
+        h1 { font-family: 'Libre Baskerville', serif; font-size: 2.4rem; color: var(--navy); margin-bottom: 0.5rem; font-weight: 700; white-space: nowrap; }
+        .tagline { font-size: 1.15rem; color: var(--burgundy); font-weight: 800; }
+        
+        .task-card { background: white; border: 2px solid var(--navy); border-left: 6px solid var(--gold); padding: 0.95rem 1rem; margin-bottom: 0.85rem; transition: all 0.3s ease; }
+        .task-card:hover { transform: translateX(5px); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
+        .task-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem; border-bottom: 2px solid var(--gold); padding-bottom: 0.4rem; }
+        .task-id { font-family: 'Libre Baskerville', serif; font-size: 0.92rem; color: var(--navy); font-weight: 700; }
+        .task-priority { padding: 0.25rem 0.55rem; border-radius: 3px; font-size: 0.64rem; font-weight: 700; text-transform: uppercase; }
+        .priority-high { background: #d32f2f; color: white; }
+        .priority-medium { background: var(--pending-amber); color: white; }
+        .priority-low { background: var(--light-gray); color: var(--gray); }
+        .task-title { font-size: 0.96rem; color: var(--navy); font-weight: 600; margin-bottom: 0.45rem; line-height: 1.18; }
+        .task-details { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.55rem; font-size: 0.76rem; }
+        .task-detail-item { display: flex; flex-direction: column; }
+        .detail-label { font-size: 0.62rem; color: var(--gray); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.15rem; }
+        .detail-value { color: var(--navy); font-weight: 600; }
+        .task-actions { margin-top: 0.55rem; display: flex; gap: 0.75rem; }
+        .btn { padding: 0.42rem 0.95rem; border: 2px solid; font-family: 'Source Serif 4', serif; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: inline-block; }
+        .btn-primary { background: var(--navy); border-color: var(--gold); color: var(--gold); }
+        .btn-primary:hover { background: var(--gold); color: var(--navy); }
+        .btn-secondary { background: white; border-color: var(--navy); color: var(--navy); }
+        .btn-secondary:hover { background: var(--light-gray); }
+        
+        .right-sidebar { width: 315px; background: var(--parchment); padding: 2rem 1.5rem; border-left: 3px solid var(--navy); position: fixed; top: 0; right: 0; height: 100vh; overflow: hidden; }
+        .right-sidebar-content { height: 100%; overflow-y: auto; padding-right: 0.25rem; }
+        .sidebar-section { margin-bottom: 2rem; }
+        .sidebar-section h3 { font-family: 'Libre Baskerville', serif; font-size: 1.1rem; color: var(--navy); margin-bottom: 1rem; border-bottom: 2px solid var(--gold); padding-bottom: 0.5rem; text-align: center; }
+        .quick-stat { background: white; border: 2px solid var(--navy); border-left: 4px solid var(--gold); padding: 1.25rem; margin-bottom: 1rem; text-align: center; }
+        .quick-stat .stat-value { font-family: 'Libre Baskerville', serif; font-size: 2rem; color: var(--burgundy); font-weight: 700; }
+        .quick-stat .stat-label { font-size: 0.8rem; color: var(--navy); margin-top: 0.5rem; line-height: 1.3; }
+        
+        .disclaimer-pane { background: var(--navy); border-top: 8px solid var(--gold); margin: 0; margin-top: 0.5rem; padding: 0; }
+        .disclaimer-content { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; gap: 1.8rem; }
+        .disclaimer-text { flex: 1; text-align: center; }
+        .disclaimer-title {
+            font-size: 1.32rem; font-weight: 700; color: var(--gold); margin: 0 0 0.45rem 0; letter-spacing: 0.15em; }
+        .disclaimer-body {
+            font-size: 0.9rem; line-height: 1.6; color: var(--cream); margin: 0 0 0.6rem 0; }
+        .disclaimer-links { margin-bottom: 0.75rem; }
+        .disclaimer-link {
+            font-size: 0.96rem; color: var(--gold); text-decoration: none; font-weight: 600; transition: all 0.3s ease; }
+        .disclaimer-link:hover { color: white; text-decoration: underline; }
+        .disclaimer-separator { color: var(--gold); margin: 0 0.45rem; }
+        .disclaimer-version {
+            font-size: 0.84rem; color: var(--gray); margin: 0; }
+        .disclaimer-stamp { flex-shrink: 0; }
+        .pmtarp-stamp { background: transparent; color: #c92a2a; width: 108px; height: 108px; font-family: 'Libre Baskerville', serif; border: 5px solid #c92a2a; border-radius: 50%; text-align: center; transform: rotate(-12deg); box-shadow: 0 0 0 2px #c92a2a, inset 0 0 12px rgba(201, 42, 42, 0.1); opacity: 0.88; display: flex; align-items: center; justify-content: center; position: relative; }
+        .pmtarp-stamp::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 50%; background: radial-gradient(circle at 20% 30%, transparent 40%, rgba(201, 42, 42, 0.05) 41%), radial-gradient(circle at 70% 60%, transparent 35%, rgba(201, 42, 42, 0.05) 36%), radial-gradient(circle at 40% 80%, transparent 30%, rgba(201, 42, 42, 0.05) 31%); pointer-events: none; }
+        .stamp-text { padding: 0.3rem; position: relative; z-index: 1; }
+        .stamp-top { font-size: 0.37rem; letter-spacing: 0.12em; font-weight: 700; margin-bottom: 0.12rem; text-transform: uppercase; font-style: italic; }
+        .stamp-main { font-size: 1rem; font-weight: 900; letter-spacing: 0.08em; margin-bottom: 0.1rem; text-transform: uppercase; text-shadow: 1px 1px 0px rgba(201, 42, 42, 0.3); }
+        .stamp-subtitle { font-size: 0.27rem; letter-spacing: 0.04em; line-height: 1.2; margin-bottom: 0.12rem; font-weight: 600; font-style: normal; }
+        .stamp-bottom { font-size: 0.37rem; letter-spacing: 0.12em; font-weight: 700; text-transform: uppercase; font-style: italic; }
+    </style>
+</head>
+<body>
+        <nav class="left-sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-seal" style="overflow: hidden; width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid var(--gold); background: white;">
+                <img src="Images/EPA Seal.png" alt="EPA Logo" style="width: 100%; height: 100%; object-fit: cover; object-position: 0% center; border-radius: 50%;" />
+            </div>
+            <div class="logo-text">Environmental<br>Protection<br>Agency</div>
+        </div>
+        <div class="nav-sections-wrapper">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item">Dashboard</a>
+                <a href="new-notice.html" class="nav-item">New Notice</a>
+                <a href="DocumentLibrary.html" class="nav-item">Document Library</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Workflow</div>
+                <a href="my-tasks.html" class="nav-item active">My Tasks</a>
+                <a href="Active-Reviews.html" class="nav-item">Active Reviews</a>
+                <a href="pending-approvals.html" class="nav-item">Pending Approvals</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Views</div>
+                <a href="calendar.html" class="nav-item">Calendar</a>
+                <a href="team.html" class="nav-item">Team</a>
+                <a href="analytics.html" class="nav-item">Analytics</a>
+                <a href="reports.html" class="nav-item">Reports</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="settings.html" class="nav-item">Settings</a>
+                <a href="help.html" class="nav-item">Help</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content-wrapper">
+        <div class="main-content">
+            <div class="container">
+                <header>
+                    <div class="header-seal">📜</div>
+                    <div class="header-content">
+                        <div class="department">Environmental Protection Agency</div>
+                        <h1>Federal Register Notice (FRN) Approval Workflow</h1>
+                        <div class="tagline">My Tasks Page</div>
+                    </div>
+                </header>
+
+                <div id="my-task-list"></div>
+            </div>
+
+            <div class="disclaimer-pane">
+                <div class="disclaimer-content">
+                    <div class="disclaimer-text">
+                        <p class="disclaimer-title">DISCLAIMER</p>
+                        <p class="disclaimer-body">Official EPA PMTaRP product. Authorized personnel only. Subject to federal recordkeeping requirements (44 U.S.C. § 31, EPA Records Schedule 0155). Unauthorized access subject to 18 U.S.C. § 1030.</p>
+                        <div class="disclaimer-links">
+                            <a href="#" class="disclaimer-link">Contact Us</a>
+                            <span class="disclaimer-separator">|</span>
+                            <a href="#" class="disclaimer-link">Support</a>
+                            <span class="disclaimer-separator">|</span>
+                            <a href="#" class="disclaimer-link">Privacy Policy</a>
+                            <span class="disclaimer-separator">|</span>
+                            <a href="#" class="disclaimer-link">Terms of Use</a>
+                        </div>
+                        <p class="disclaimer-version">Version 2.12.1 | Official Use Only</p>
+                    </div>
+                    <div class="disclaimer-stamp">
+                        <div class="pmtarp-stamp">
+                            <div class="stamp-text">
+                                <div class="stamp-top">OFFICIAL</div>
+                                <div class="stamp-main">PMTaRP</div>
+                                <div class="stamp-subtitle">Project Management<br>Tracking & Reporting Tool</div>
+                                <div class="stamp-bottom">PRODUCT</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <aside class="right-sidebar">
+            <div class="right-sidebar-content">
+                <div class="sidebar-section" id="my-tasks-sidebar"></div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        const myTaskDocuments = (window.FRN_DATA && window.FRN_DATA.documents) || [];
+        const currentTaskOwner = (window.FRN_DATA && window.FRN_DATA.currentAssignee) || 'Marcus Johnson';
+        const taskList = document.getElementById('my-task-list');
+        const workloadSidebar = document.getElementById('my-tasks-sidebar');
+
+        function parseTaskDate(value) {
+            const date = new Date(value + 'T00:00:00');
+            date.setHours(0, 0, 0, 0);
+            return date;
+        }
+
+        function formatTaskDate(value) {
+            return parseTaskDate(value).toLocaleDateString('en-US', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+            });
+        }
+
+        function daysRemainingText(value) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const remaining = Math.round((parseTaskDate(value) - today) / 86400000);
+            if (remaining < 0) return `${Math.abs(remaining)} Days Overdue`;
+            if (remaining === 0) return 'Due Today';
+            if (remaining === 1) return '1 Day';
+            return `${remaining} Days`;
+        }
+
+        function priorityClass(priorityLevel, dueDate) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const remaining = Math.round((parseTaskDate(dueDate) - today) / 86400000);
+            if (remaining < 0 || priorityLevel === 'Critical') return 'priority-high';
+            if (priorityLevel === 'High' || remaining <= 5) return 'priority-medium';
+            return 'priority-low';
+        }
+
+        function priorityLabel(priorityLevel, dueDate) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const remaining = Math.round((parseTaskDate(dueDate) - today) / 86400000);
+            if (remaining < 0 || priorityLevel === 'Critical') return 'High Priority';
+            if (priorityLevel === 'High' || remaining <= 5) return 'Medium Priority';
+            return 'Low Priority';
+        }
+
+        function renderMyTasks() {
+            const tasks = myTaskDocuments
+                .filter(doc => doc.assignee === currentTaskOwner && doc.status !== 'completed')
+                .sort((a, b) => parseTaskDate(a.dueDate) - parseTaskDate(b.dueDate));
+
+            taskList.innerHTML = tasks.length ? tasks.map(doc => `
+                <div class="task-card">
+                    <div class="task-header">
+                        <div class="task-id">${doc.id}</div>
+                        <div class="task-priority ${priorityClass(doc.priorityLevel, doc.dueDate)}">${priorityLabel(doc.priorityLevel, doc.dueDate)}</div>
+                    </div>
+                    <div class="task-title">${doc.title}</div>
+                    <div class="task-details">
+                        <div class="task-detail-item">
+                            <div class="detail-label">Current Stage</div>
+                            <div class="detail-value">${doc.currentStage}</div>
+                        </div>
+                        <div class="task-detail-item">
+                            <div class="detail-label">Due Date</div>
+                            <div class="detail-value">${formatTaskDate(doc.dueDate)}</div>
+                        </div>
+                        <div class="task-detail-item">
+                            <div class="detail-label">Days Remaining</div>
+                            <div class="detail-value">${daysRemainingText(doc.dueDate)}</div>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <a href="Active-Reviews.html?doc=${doc.id}" class="btn btn-primary">Open Document</a>
+                    </div>
+                </div>
+            `).join('') : `
+                <div class="task-card">
+                    <div class="task-title">No active tasks are assigned to ${currentTaskOwner}.</div>
+                </div>
+            `;
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const completedThisMonth = myTaskDocuments.filter(doc => {
+                if (doc.assignee !== currentTaskOwner || !doc.completedDate) return false;
+                const completed = parseTaskDate(doc.completedDate);
+                return completed.getMonth() === today.getMonth() && completed.getFullYear() === today.getFullYear();
+            }).length;
+            const overdue = tasks.filter(doc => parseTaskDate(doc.dueDate) < today).length;
+
+            workloadSidebar.innerHTML = `
+                <h3>My Workload</h3>
+                <div class="quick-stat">
+                    <div class="stat-value">${tasks.length}</div>
+                    <div class="stat-label">Active Tasks</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="stat-value">${overdue}</div>
+                    <div class="stat-label">Overdue</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="stat-value">${completedThisMonth}</div>
+                    <div class="stat-label">Completed<br>This Month</div>
+                </div>
+            `;
+        }
+
+        renderMyTasks();
+    </script>
+</body>
+</html>
+
