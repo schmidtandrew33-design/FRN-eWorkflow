@@ -19,6 +19,7 @@ const routePages = [
   'team.html',
   'reports.html',
   'settings.html',
+  'admin-relay.html',
   'notifications-escalations.html',
   'help.html'
 ];
@@ -33,6 +34,7 @@ const sealPath = path.join(root, 'Images', 'EPA Seal.png');
 const sealDataUri = `data:image/png;base64,${fs.readFileSync(sealPath).toString('base64')}`;
 const sharedCss = fs.readFileSync(path.join(root, 'src', 'shared.css'), 'utf8');
 const frnDataJs = fs.readFileSync(path.join(root, 'src', 'frn-data.js'), 'utf8');
+const notificationsJs = fs.readFileSync(path.join(root, 'src', 'notifications.js'), 'utf8');
 const appJs = fs.readFileSync(path.join(root, 'src', 'app.js'), 'utf8');
 const rootIndexHtml = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 
@@ -40,11 +42,12 @@ function inlineAssetPaths(html) {
   return html.replace(/Images\/EPA Seal\.png/g, sealDataUri);
 }
 
-function replaceExactTag(html, tag, replacement) {
-  return html
-    .replace(`${tag}\r\n`, `${replacement}\r\n`)
-    .replace(`${tag}\n`, `${replacement}\n`)
-    .replace(tag, replacement);
+function replaceAssetTag(html, pattern, replacement, label) {
+  const nextHtml = html.replace(pattern, replacement);
+  if (nextHtml === html) {
+    throw new Error(`Unable to inline ${label}; the expected asset tag was not found in index.html.`);
+  }
+  return nextHtml;
 }
 
 function escapeForInlineScript(content) {
@@ -59,25 +62,40 @@ for (const fileName of routePages) {
 }
 
 let inlinedIndex = inlineAssetPaths(rootIndexHtml);
-inlinedIndex = replaceExactTag(
+inlinedIndex = replaceAssetTag(
   inlinedIndex,
-  '    <link rel="stylesheet" href="src/shared.css">',
+  /<link rel="stylesheet" href="src\/shared\.css(?:\?[^"]*)?">/,
   `    <style>\n${sharedCss}\n    </style>`
+  ,
+  'shared.css'
 );
-inlinedIndex = replaceExactTag(
+inlinedIndex = replaceAssetTag(
   inlinedIndex,
-  '    <script src="src/frn-data.js"></script>',
+  /<script src="src\/frn-data\.js(?:\?[^"]*)?"><\/script>/,
   `    <script>\n${escapeForInlineScript(frnDataJs)}\n    </script>`
+  ,
+  'frn-data.js'
 );
-inlinedIndex = replaceExactTag(
+inlinedIndex = replaceAssetTag(
   inlinedIndex,
-  '    <script src="src/page-manifest.js"></script>',
-  `    <script>\nwindow.FRN_PAGE_MANIFEST = ${escapeForInlineScript(JSON.stringify(manifest))};\n    </script>`
+  /<script src="src\/notifications\.js(?:\?[^"]*)?"><\/script>/,
+  `    <script>\n${escapeForInlineScript(notificationsJs)}\n    </script>`
+  ,
+  'notifications.js'
 );
-inlinedIndex = replaceExactTag(
+inlinedIndex = replaceAssetTag(
   inlinedIndex,
-  '    <script src="src/app.js"></script>',
+  /<script src="src\/app\.js(?:\?[^"]*)?"><\/script>/,
   `    <script>\n${escapeForInlineScript(appJs)}\n    </script>`
+  ,
+  'app.js'
+);
+inlinedIndex = replaceAssetTag(
+  inlinedIndex,
+  /<script src="src\/page-manifest\.js(?:\?[^"]*)?"><\/script>/,
+  `    <script>\nwindow.FRN_PAGE_MANIFEST = ${escapeForInlineScript(JSON.stringify(manifest))};\n    </script>`
+  ,
+  'page-manifest.js'
 );
 
 fs.writeFileSync(path.join(distDir, 'index.html'), inlinedIndex, 'utf8');

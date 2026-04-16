@@ -3,3 +3,5 @@ node_modules/
 *.log
 dist/
 .cache/
+relay.config.json
+*.pid

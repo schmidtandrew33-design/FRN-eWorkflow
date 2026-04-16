@@ -10,6 +10,7 @@
     
     <link rel="stylesheet" href="src/shared.css">
     <script src="src/frn-data.js"></script>
+    <script src="src/notifications.js"></script>
     <style>
         /* === COPY ALL CSS FROM Active Reviews.html === */
         /* This ensures exact same styling */
@@ -2528,6 +2529,30 @@ let currentDeadlines = [];
             statusEl.className = `review-action-status${tone ? ` ${tone}` : ''}`;
         }
 
+        function sendWorkflowNotification(eventType, payload) {
+            if (!window.FRN_NOTIFICATIONS || typeof window.FRN_NOTIFICATIONS.notify !== 'function') {
+                console.warn('[FRN Workflow] Notification service unavailable.', {
+                    eventType,
+                    documentId: (payload && payload.doc && payload.doc.id) || ''
+                });
+                return;
+            }
+            console.groupCollapsed(`[FRN Workflow] Triggering ${eventType}`);
+            console.log({
+                documentId: (payload && payload.doc && payload.doc.id) || '',
+                documentTitle: (payload && payload.doc && payload.doc.title) || '',
+                currentStage: payload && payload.currentStage,
+                nextStage: payload && payload.nextStage,
+                route: payload && payload.route,
+                actionUser: payload && payload.actionUser
+            });
+            console.log('Payload:', payload);
+            console.groupEnd();
+            window.FRN_NOTIFICATIONS.notify(eventType, payload).catch(error => {
+                console.warn(`Unable to dispatch ${eventType} notification.`, error);
+            });
+        }
+
         function submitDocumentToApproval() {
             if (!selectedDocument) return;
             const sharedDocument = ((window.FRN_DATA && window.FRN_DATA.documents) || []).find(doc => doc.id === selectedDocument.id);
@@ -2606,6 +2631,14 @@ let currentDeadlines = [];
                 };
                 selectedDocument = documents[localIndex];
             }
+
+            sendWorkflowNotification('ready_for_approval', {
+                doc: updatedRecord,
+                actionUser,
+                currentStage: sharedDocument.currentStage || sharedDocument.stageName || '',
+                currentStageNumber: updatedRecord.stageNumber,
+                route: 'pending-approvals'
+            });
 
             setReviewActionStatus('Document submitted to Pending Approvals.', 'success');
 

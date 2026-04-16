@@ -1,5 +1,5 @@
 window.FRN_DATA = {
-    currentAssignee: 'Marcus Johnson',
+    currentAssignee: 'Testy McTestFace',
     processSettings: {
         stages: [
             { stageNumber: 1, name: 'Stage 1 - Initial Review', expectedDuration: '3 Business Days', approver: 'Stage 1 Approver' },

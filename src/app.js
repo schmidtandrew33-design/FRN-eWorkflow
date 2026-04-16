@@ -28,6 +28,7 @@ const ROUTES = {
     'team':              'team.html',
     'reports':           'reports.html',
     'settings':          'settings.html',
+    'admin-relay':       'admin-relay.html',
     'notifications-escalations': 'notifications-escalations.html',
     'help':              'help.html',
 };
@@ -94,6 +95,21 @@ function renderSidebarUserProfile() {
         avatarImgEl.removeAttribute('src');
         avatarEl.classList.remove('has-photo');
     }
+
+    renderAdminNavVisibility();
+}
+
+function isRelayAdminUser() {
+    const currentUser = window.FRN_CURRENT_USER || {};
+    return String(currentUser.fullName || '').trim().toLowerCase() === 'andrew schmidt';
+}
+
+function renderAdminNavVisibility() {
+    const adminNav = document.getElementById('nav-admin-relay');
+    if (!adminNav) {
+        return;
+    }
+    adminNav.hidden = !isRelayAdminUser();
 }
 
 function createPowerAppsBridge() {
@@ -474,6 +490,11 @@ async function navigate(route, targetHref = null) {
         return;
     }
 
+    if (route === 'admin-relay' && !isRelayAdminUser()) {
+        showError(route, 'This page is only available to the relay administrator.');
+        return;
+    }
+
     if (route === 'document-review') {
         const currentQuery = targetHref && targetHref.includes('?') ? targetHref.slice(targetHref.indexOf('?')) : '';
         const redirectedHref = `Active-Reviews.html${currentQuery}`;
@@ -579,6 +600,7 @@ function hrefToRoute(href) {
         'team.html':              'team',
         'reports.html':           'reports',
         'settings.html':          'settings',
+        'admin-relay.html':       'admin-relay',
         'notifications-escalations.html': 'notifications-escalations',
         'help.html':              'help',
     };

@@ -133,8 +133,12 @@
 
         .team-grid {
             display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .team-builder-panel {
             margin-bottom: 1rem;
         }
 
@@ -157,6 +161,7 @@
             color: var(--gray);
             line-height: 1.55;
             margin-bottom: 1rem;
+            min-height: 2.9rem;
         }
 
         .field-grid {
@@ -195,9 +200,131 @@
             color: var(--navy);
         }
 
+        .field input:disabled,
+        .field select:disabled,
+        .field textarea:disabled {
+            background: #ece8dc;
+            color: var(--gray);
+            cursor: not-allowed;
+        }
+
         .field textarea {
             min-height: 90px;
             resize: vertical;
+        }
+
+        .field-note {
+            font-size: 0.8rem;
+            color: var(--gray);
+            line-height: 1.45;
+        }
+
+        .owner-picker {
+            position: relative;
+        }
+
+        .owner-picker-results {
+            position: absolute;
+            top: calc(100% + 0.3rem);
+            left: 0;
+            right: 0;
+            z-index: 30;
+            background: white;
+            border: 2px solid var(--navy);
+            box-shadow: 0 14px 28px rgba(0, 33, 71, 0.18);
+            max-height: 280px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .owner-picker-results.is-open {
+            display: block;
+        }
+
+        .owner-picker-option {
+            width: 100%;
+            border: 0;
+            border-bottom: 1px solid rgba(0, 33, 71, 0.12);
+            background: white;
+            color: var(--navy);
+            text-align: left;
+            padding: 0.75rem 0.9rem;
+            cursor: pointer;
+            font-family: 'Source Serif 4', serif;
+        }
+
+        .owner-picker-option:last-child {
+            border-bottom: 0;
+        }
+
+        .owner-picker-option:hover,
+        .owner-picker-option:focus {
+            background: var(--cream);
+            outline: none;
+        }
+
+        .owner-picker-name {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .owner-picker-meta {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--gray);
+            line-height: 1.35;
+        }
+
+        .selected-member-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+            min-height: 2.5rem;
+            padding: 0.8rem;
+            border: 2px solid var(--navy);
+            background: white;
+        }
+
+        .selected-member-empty {
+            font-size: 0.84rem;
+            color: var(--gray);
+        }
+
+        .selected-member-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.35rem 0.45rem 0.35rem 0.7rem;
+            border: 1px solid var(--navy);
+            background: var(--parchment);
+            color: var(--navy);
+        }
+
+        .selected-member-chip-text {
+            display: flex;
+            flex-direction: column;
+            gap: 0.1rem;
+        }
+
+        .selected-member-chip-name {
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .selected-member-chip-meta {
+            font-size: 0.72rem;
+            color: var(--gray);
+        }
+
+        .selected-member-remove {
+            border: 0;
+            background: transparent;
+            color: var(--burgundy);
+            font-size: 1rem;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0.15rem 0.2rem;
         }
 
         .actions {
@@ -240,6 +367,12 @@
             display: flex;
             flex-direction: column;
             gap: 0.8rem;
+            flex: 1;
+        }
+
+        .assignment-panel {
+            display: flex;
+            flex-direction: column;
         }
 
         .group-card,
@@ -300,6 +433,18 @@
             color: var(--navy);
             font-size: 0.78rem;
             font-weight: 600;
+        }
+
+        .panel-status {
+            margin-top: 0.85rem;
+            font-size: 0.86rem;
+            color: var(--gray);
+            line-height: 1.45;
+            min-height: 1.2rem;
+        }
+
+        .panel-status.error {
+            color: var(--burgundy);
         }
 
         .team-table-panel {
@@ -390,7 +535,7 @@
                     <div>
                         <div class="department">Environmental Protection Agency</div>
                         <h1>Federal Register Notice (FRN) Approval Workflow</h1>
-                        <div class="tagline">Team Builder & Approval Group Management</div>
+                        <div class="tagline">Reviewer and Approver Group Management</div>
                     </div>
                 </header>
 
@@ -398,7 +543,7 @@
                     <div class="kpi-card">
                         <div class="kpi-title">Active Team Groups</div>
                         <div class="kpi-value" id="kpi-active-groups">0</div>
-                        <div class="kpi-note">Reusable approver groups available for workflow assignment.</div>
+                        <div class="kpi-note">Reusable reviewer and approver groups available for workflow assignment.</div>
                     </div>
                     <div class="kpi-card">
                         <div class="kpi-title">Named Team Members</div>
@@ -408,7 +553,7 @@
                     <div class="kpi-card">
                         <div class="kpi-title">Stage Assignments</div>
                         <div class="kpi-value" id="kpi-stage-assignments">0</div>
-                        <div class="kpi-note">Configured approver groups tied to the current workflow stages.</div>
+                        <div class="kpi-note">Configured reviewer and approver group assignments tied to workflow stages.</div>
                     </div>
                     <div class="kpi-card">
                         <div class="kpi-title">Unassigned Groups</div>
@@ -418,71 +563,106 @@
                 </div>
 
                 <div class="team-grid">
-                    <section class="panel">
-                        <h2>Team Builder</h2>
-                        <div class="panel-intro">Create a reusable group of individuals, define its purpose, and then use that group when assigning stage approvers in the workflow.</div>
-                        <div class="field-grid">
-                            <div class="field">
-                                <label>Group Name</label>
-                                <input type="text" id="group-name" value="Stage 3 Technical Core Reviewers">
-                            </div>
-                            <div class="field">
-                                <label>Group Type</label>
-                                <select id="group-type">
-                                    <option selected>Primary Approver Group</option>
-                                    <option>Backup Approver Group</option>
-                                    <option>Alternate Approver Group</option>
-                                </select>
-                            </div>
-                            <div class="field">
-                                <label>Default Stage Usage</label>
-                                <select id="group-stage">
-                                    <option>Stage 1 Approver</option>
-                                    <option>Stage 2 Approver</option>
-                                    <option selected>Stage 3 Approver</option>
-                                    <option>Stage 4 Approver</option>
-                                    <option>Stage 5 Approver</option>
-                                    <option>Stage 6 Approver</option>
-                                    <option>Stage 7 Approver</option>
-                                </select>
-                            </div>
-                            <div class="field full-width">
-                                <label>Group Members</label>
-                                <textarea id="group-members">Dr. Sarah Chen
-Dr. Robert Martinez
-Emily Thompson
-Marcus Johnson</textarea>
-                            </div>
-                            <div class="field full-width">
-                                <label>Group Notes</label>
-                                <textarea id="group-notes">Primary technical review pool for chemical safety notices requiring scientific assessment and policy handoff readiness.</textarea>
-                            </div>
-                        </div>
+                    <section class="panel assignment-panel">
+                        <h2>Stage Reviewer Group Assignments</h2>
+                        <div class="panel-intro">Assign each workflow stage review step to a reusable group so review work can be managed separately from approval work.</div>
+                        <div class="assignment-list" id="stage-reviewer-assignment-list"></div>
                         <div class="actions">
-                            <button class="btn btn-primary" type="button" id="save-team-group">Save Team Group</button>
+                            <button class="btn btn-secondary" type="button" id="reviewer-load-template">Load Group Template</button>
+                            <button class="btn btn-primary" type="button" id="reviewer-update-assignments">Update Stage Assignments</button>
                         </div>
+                        <div class="panel-status" id="reviewer-assignment-status"></div>
                     </section>
 
-                    <section class="panel">
+                    <section class="panel assignment-panel">
                         <h2>Stage Approver Group Assignments</h2>
-                        <div class="panel-intro">Assign each workflow stage to a reusable group rather than a single individual position.</div>
-                        <div class="assignment-list" id="stage-assignment-list"></div>
+                        <div class="panel-intro">Assign each workflow stage approval step to a reusable group so approval work can be managed separately from review work.</div>
+                        <div class="assignment-list" id="stage-approver-assignment-list"></div>
                         <div class="actions">
-                            <button class="btn btn-secondary" type="button">Load Group Template</button>
-                            <button class="btn btn-primary" type="button">Update Stage Assignments</button>
+                            <button class="btn btn-secondary" type="button" id="approver-load-template">Load Group Template</button>
+                            <button class="btn btn-primary" type="button" id="approver-update-assignments">Update Stage Assignments</button>
                         </div>
+                        <div class="panel-status" id="approver-assignment-status"></div>
                     </section>
                 </div>
 
+                <section class="panel team-builder-panel">
+                    <h2>Team Builder</h2>
+                    <div class="panel-intro">Create a reusable group of individuals, define whether it supports reviewer or approver routing, and then use that group in the workflow assignments above.</div>
+                    <div class="field-grid">
+                        <div class="field">
+                            <label>Group Name</label>
+                            <input type="text" id="group-name" value="Stage 3 Technical Core Reviewers">
+                        </div>
+                        <div class="field">
+                            <label>Group Type</label>
+                            <select id="group-type">
+                                <option selected>Primary Reviewer Group</option>
+                                <option>Backup Reviewer Group</option>
+                                <option>Alternate Reviewer Group</option>
+                                <option>Primary Approver Group</option>
+                                <option>Backup Approver Group</option>
+                                <option>Alternate Approver Group</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Default Reviewer Stage Usage</label>
+                            <select id="group-reviewer-stage">
+                                <option value="">Not Assigned</option>
+                                <option>Stage 1 Reviewer</option>
+                                <option>Stage 2 Reviewer</option>
+                                <option selected>Stage 3 Reviewer</option>
+                                <option>Stage 4 Reviewer</option>
+                                <option>Stage 5 Reviewer</option>
+                                <option>Stage 6 Reviewer</option>
+                                <option>Stage 7 Reviewer</option>
+                            </select>
+                            <div class="field-note" id="group-reviewer-stage-note">Reviewer stage usage stays active only when no approver stage usage is selected.</div>
+                        </div>
+                        <div class="field">
+                            <label>Default Approver Stage Usage</label>
+                            <select id="group-approver-stage">
+                                <option value="" selected>Not Assigned</option>
+                                <option>Stage 1 Approver</option>
+                                <option>Stage 2 Approver</option>
+                                <option>Stage 3 Approver</option>
+                                <option>Stage 4 Approver</option>
+                                <option>Stage 5 Approver</option>
+                                <option>Stage 6 Approver</option>
+                                <option>Stage 7 Approver</option>
+                            </select>
+                            <div class="field-note" id="group-approver-stage-note">Approver stage usage stays active only when no reviewer stage usage is selected.</div>
+                        </div>
+                        <div class="field full-width">
+                            <label>Group Members</label>
+                            <div class="owner-picker">
+                                <input id="group-member-search" type="text" autocomplete="off" placeholder="Search Entra ID people and select members...">
+                                <div id="group-member-search-results" class="owner-picker-results" role="listbox" aria-label="Group member search results"></div>
+                            </div>
+                            <div class="field-note" id="group-members-note">Type at least 2 characters to search for people from Microsoft Entra ID. Group members must be selected from the results.</div>
+                            <div class="selected-member-list" id="selected-group-members" aria-live="polite"></div>
+                        </div>
+                        <div class="field full-width">
+                            <label>Group Notes</label>
+                            <textarea id="group-notes">Primary technical review pool for chemical safety notices requiring scientific assessment and policy handoff readiness.</textarea>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-primary" type="button" id="save-team-group">Save Team Group</button>
+                    </div>
+                </section>
+
                 <section class="team-table-panel">
-                    <h2>Configured Approval Groups</h2>
+                    <h2>Configured Team Groups</h2>
                     <table>
                         <thead>
                             <tr>
                                 <th>Group Name</th>
+                                <th>Type</th>
                                 <th>Purpose</th>
                                 <th>Members</th>
-                                <th>Assigned Stage Approver</th>
+                                <th>Assigned Reviewer Stage</th>
+                                <th>Assigned Approver Stage</th>
                             </tr>
                         </thead>
                         <tbody id="configured-groups-body"></tbody>
@@ -493,17 +673,61 @@ Marcus Johnson</textarea>
     </div>
     <script>
         const TEAM_GROUPS_STORAGE_KEY = 'frn_team_groups';
-        const defaultConfiguredGroups = ((window.FRN_DATA && window.FRN_DATA.teamGroups) || []).map(group => ({
-            ...group,
-            members: [...(group.members || [])]
-        }));
+        const defaultConfiguredGroups = ((window.FRN_DATA && window.FRN_DATA.teamGroups) || []).map(normalizeGroupRecord);
         const configuredGroups = loadConfiguredGroups();
+        let selectedGroupMembers = [];
+
+        function normalizeGroupRecord(group) {
+            const normalized = {
+                ...group,
+                members: [...((group && group.members) || [])],
+                memberDetails: Array.isArray(group && group.memberDetails)
+                    ? group.memberDetails
+                        .map(member => normalizeDirectoryPerson(member))
+                        .filter(member => member.displayName)
+                    : []
+            };
+            const legacyStage = normalized.assignedStage || '';
+            const type = normalized.type || '';
+
+            if (!normalized.assignedApproverStage) {
+                normalized.assignedApproverStage = legacyStage;
+            }
+            if (!normalized.assignedReviewerStage) {
+                normalized.assignedReviewerStage = type.includes('Reviewer') ? legacyStage.replace('Approver', 'Reviewer') : '';
+            }
+            if (!normalized.memberDetails.length && normalized.members.length) {
+                normalized.memberDetails = normalized.members
+                    .map(member => normalizeDirectoryPerson({ displayName: member, source: 'Configured team group' }))
+                    .filter(member => member.displayName);
+            }
+            if (!normalized.members.length && normalized.memberDetails.length) {
+                normalized.members = normalized.memberDetails.map(member => member.displayName);
+            }
+
+            return normalized;
+        }
+
+        function normalizeDirectoryPerson(person) {
+            if (!person) return null;
+            const displayName = String(person.displayName || person.name || '').trim();
+            if (!displayName) return null;
+            return {
+                displayName,
+                id: String(person.id || person.objectId || '').trim(),
+                userPrincipalName: String(person.userPrincipalName || person.upn || '').trim(),
+                mail: String(person.mail || '').trim(),
+                jobTitle: String(person.jobTitle || '').trim(),
+                department: String(person.department || '').trim(),
+                source: String(person.source || 'Microsoft Entra ID').trim()
+            };
+        }
 
         function loadConfiguredGroups() {
             try {
                 const stored = window.localStorage.getItem(TEAM_GROUPS_STORAGE_KEY);
                 if (stored) {
-                    return JSON.parse(stored);
+                    return JSON.parse(stored).map(normalizeGroupRecord);
                 }
             } catch (error) {
                 console.warn('Unable to load saved team groups.', error);
@@ -519,6 +743,292 @@ Marcus Johnson</textarea>
             }
         }
 
+        function buildFallbackMemberDirectory() {
+            const roster = new Map();
+            const addPerson = (rawName, extra = {}) => {
+                const person = normalizeDirectoryPerson({
+                    displayName: rawName,
+                    ...extra
+                });
+                if (!person) return;
+                const key = person.displayName.toLowerCase();
+                if (roster.has(key)) return;
+                roster.set(key, person);
+            };
+
+            const currentUser = typeof window.getFRNCurrentUser === 'function'
+                ? window.getFRNCurrentUser()
+                : (window.FRN_CURRENT_USER || {});
+
+            addPerson(currentUser.fullName || (window.FRN_DATA && window.FRN_DATA.currentAssignee) || '', {
+                id: currentUser.objectId || '',
+                userPrincipalName: currentUser.userPrincipalName || '',
+                mail: currentUser.userPrincipalName || '',
+                source: 'Current session'
+            });
+
+            configuredGroups.forEach(group => {
+                (group.memberDetails || []).forEach(member => addPerson(member.displayName, {
+                    ...member,
+                    source: member.source || 'Configured team group'
+                }));
+            });
+
+            (((window.FRN_DATA || {}).documents) || []).forEach(doc => {
+                [doc.assignee, doc.stageOwner, doc.nextReviewer, doc.submittedBy, doc.documentOwner].forEach(name => addPerson(name, {
+                    department: doc.office || '',
+                    source: 'Existing workflow history'
+                }));
+            });
+
+            return [...roster.values()].sort((left, right) => left.displayName.localeCompare(right.displayName));
+        }
+
+        function getDirectorySearchEndpoint() {
+            const fallbackBase = 'http://127.0.0.1:3001';
+            const notificationsApi = window.FRN_NOTIFICATIONS;
+            const settings = notificationsApi && typeof notificationsApi.loadSettings === 'function'
+                ? notificationsApi.loadSettings()
+                : null;
+            const relayEndpoint = (((settings || {}).transport) || {}).endpoint || '';
+            if (!relayEndpoint) {
+                return `${fallbackBase}/api/entra-users`;
+            }
+
+            try {
+                const relayUrl = new URL(relayEndpoint, window.location.href);
+                relayUrl.pathname = '/api/entra-users';
+                relayUrl.search = '';
+                relayUrl.hash = '';
+                return relayUrl.toString();
+            } catch (error) {
+                console.warn('Unable to derive the relay base URL from notification settings. Falling back to localhost relay.', error);
+                return `${fallbackBase}/api/entra-users`;
+            }
+        }
+
+        function renderGroupMembers() {
+            const container = document.getElementById('selected-group-members');
+            if (!container) return;
+
+            if (!selectedGroupMembers.length) {
+                container.innerHTML = '<div class="selected-member-empty">No Entra ID members selected yet.</div>';
+                return;
+            }
+
+            container.innerHTML = selectedGroupMembers.map((member, index) => `
+                <div class="selected-member-chip">
+                    <div class="selected-member-chip-text">
+                        <span class="selected-member-chip-name">${member.displayName}</span>
+                        <span class="selected-member-chip-meta">${[
+                            member.userPrincipalName || member.mail || '',
+                            member.jobTitle || '',
+                            member.department || '',
+                            member.source || ''
+                        ].filter(Boolean).join(' • ')}</span>
+                    </div>
+                    <button type="button" class="selected-member-remove" data-member-index="${index}" aria-label="Remove ${member.displayName}">×</button>
+                </div>
+            `).join('');
+        }
+
+        function setSelectedGroupMembers(members) {
+            selectedGroupMembers = (Array.isArray(members) ? members : [])
+                .map(member => normalizeDirectoryPerson(member))
+                .filter(member => member && member.displayName);
+            renderGroupMembers();
+        }
+
+        function addSelectedGroupMember(person) {
+            const normalized = normalizeDirectoryPerson(person);
+            if (!normalized) return;
+
+            const exists = selectedGroupMembers.some(member => (
+                member.displayName.toLowerCase() === normalized.displayName.toLowerCase()
+            ));
+            if (exists) return;
+
+            selectedGroupMembers.push(normalized);
+            renderGroupMembers();
+        }
+
+        function initializeGroupMemberPicker() {
+            const input = document.getElementById('group-member-search');
+            const resultsContainer = document.getElementById('group-member-search-results');
+            const note = document.getElementById('group-members-note');
+            if (!input || !resultsContainer || !note) return;
+
+            const fallbackDirectory = buildFallbackMemberDirectory();
+            let latestSearchToken = 0;
+
+            const searchFallbackDirectory = searchTerm => {
+                const normalized = String(searchTerm || '').trim().toLowerCase();
+                if (!normalized) return [];
+                return fallbackDirectory
+                    .filter(person => {
+                        const searchable = [
+                            person.displayName,
+                            person.mail,
+                            person.userPrincipalName,
+                            person.department,
+                            person.jobTitle
+                        ].join(' ').toLowerCase();
+                        return searchable.includes(normalized);
+                    })
+                    .slice(0, 12);
+            };
+
+            const renderResults = results => {
+                resultsContainer.innerHTML = '';
+
+                if (!Array.isArray(results) || !results.length) {
+                    resultsContainer.classList.remove('is-open');
+                    return;
+                }
+
+                results.forEach(person => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'owner-picker-option';
+                    button.setAttribute('role', 'option');
+                    button.innerHTML = `
+                        <span class="owner-picker-name">${person.displayName || 'Unknown User'}</span>
+                        <span class="owner-picker-meta">${[
+                            person.userPrincipalName || person.mail || '',
+                            person.jobTitle || '',
+                            person.department || '',
+                            person.source || ''
+                        ].filter(Boolean).join(' • ')}</span>
+                    `;
+                    button.addEventListener('mousedown', event => {
+                        event.preventDefault();
+                        addSelectedGroupMember({
+                            ...person,
+                            source: person.source || 'Microsoft Entra ID'
+                        });
+                        input.value = '';
+                        note.textContent = 'Member added from the Entra-backed people picker.';
+                        resultsContainer.classList.remove('is-open');
+                    });
+                    resultsContainer.appendChild(button);
+                });
+
+                resultsContainer.classList.add('is-open');
+            };
+
+            const searchDirectory = async searchTerm => {
+                const token = ++latestSearchToken;
+                const trimmedSearch = String(searchTerm || '').trim();
+
+                if (trimmedSearch.length < 2) {
+                    resultsContainer.classList.remove('is-open');
+                    note.textContent = 'Type at least 2 characters to search for people from Microsoft Entra ID. Group members must be selected from the results.';
+                    return;
+                }
+
+                note.textContent = 'Searching Microsoft Entra ID...';
+                const fallbackMatches = searchFallbackDirectory(trimmedSearch);
+
+                try {
+                    const endpoint = new URL(getDirectorySearchEndpoint());
+                    endpoint.searchParams.set('search', trimmedSearch);
+                    const response = await window.fetch(endpoint.toString());
+                    const payload = await response.json().catch(() => ({}));
+                    if (token !== latestSearchToken) return;
+                    if (!response.ok) {
+                        throw new Error(payload.error || `Directory lookup returned HTTP ${response.status}`);
+                    }
+
+                    const remoteResults = Array.isArray(payload.users)
+                        ? payload.users
+                            .map(person => normalizeDirectoryPerson({
+                                ...person,
+                                source: 'Microsoft Entra ID'
+                            }))
+                            .filter(Boolean)
+                        : [];
+                    renderResults(remoteResults);
+                    note.textContent = remoteResults.length
+                        ? 'Select the correct people from the Entra-backed results.'
+                        : 'No matching people were found.';
+                } catch (error) {
+                    if (token !== latestSearchToken) return;
+                    console.warn('[FRN Team] Group member search failed. Falling back to the configured roster.', error);
+                    renderResults(fallbackMatches);
+                    note.textContent = fallbackMatches.length
+                        ? 'Directory search is unavailable right now. Select a person from the configured roster.'
+                        : 'No matching people were found.';
+                }
+            };
+
+            input.addEventListener('input', () => searchDirectory(input.value));
+            input.addEventListener('focus', () => {
+                if (input.value.trim().length >= 2) {
+                    searchDirectory(input.value);
+                }
+            });
+            input.addEventListener('blur', () => {
+                window.setTimeout(() => {
+                    resultsContainer.classList.remove('is-open');
+                }, 150);
+            });
+
+            document.getElementById('selected-group-members').addEventListener('click', event => {
+                const button = event.target.closest('[data-member-index]');
+                if (!button) return;
+                const index = Number(button.dataset.memberIndex);
+                if (Number.isNaN(index)) return;
+                selectedGroupMembers.splice(index, 1);
+                renderGroupMembers();
+                note.textContent = selectedGroupMembers.length
+                    ? 'Group member removed.'
+                    : 'Type at least 2 characters to search for people from Microsoft Entra ID. Group members must be selected from the results.';
+            });
+
+            renderGroupMembers();
+        }
+
+        function syncStageUsageFields(preferredMode = '') {
+            const typeField = document.getElementById('group-type');
+            const reviewerField = document.getElementById('group-reviewer-stage');
+            const approverField = document.getElementById('group-approver-stage');
+            const reviewerNote = document.getElementById('group-reviewer-stage-note');
+            const approverNote = document.getElementById('group-approver-stage-note');
+            if (!typeField || !reviewerField || !approverField) return;
+
+            let mode = preferredMode;
+            if (!mode) {
+                if (reviewerField.value && !approverField.value) {
+                    mode = 'reviewer';
+                } else if (approverField.value && !reviewerField.value) {
+                    mode = 'approver';
+                } else {
+                    mode = typeField.value.includes('Approver') ? 'approver' : 'reviewer';
+                }
+            }
+
+            if (mode === 'reviewer') {
+                if (!reviewerField.value) {
+                    reviewerField.value = 'Stage 1 Reviewer';
+                }
+                approverField.value = '';
+                reviewerField.disabled = false;
+                approverField.disabled = true;
+                if (reviewerNote) reviewerNote.textContent = 'Reviewer stage usage is active for this team.';
+                if (approverNote) approverNote.textContent = 'Approver stage usage is disabled because reviewer stage usage is selected.';
+                return;
+            }
+
+            if (!approverField.value) {
+                approverField.value = 'Stage 1 Approver';
+            }
+            reviewerField.value = '';
+            approverField.disabled = false;
+            reviewerField.disabled = true;
+            if (reviewerNote) reviewerNote.textContent = 'Reviewer stage usage is disabled because approver stage usage is selected.';
+            if (approverNote) approverNote.textContent = 'Approver stage usage is active for this team.';
+        }
+
         function renderConfiguredGroups() {
             const body = document.getElementById('configured-groups-body');
             if (!body) return;
@@ -529,21 +1039,23 @@ Marcus Johnson</textarea>
                         <div class="group-name">${group.name}</div>
                         <div class="group-meta">${group.summary}</div>
                     </td>
+                    <td>${group.type || 'Unspecified Group'}</td>
                     <td>${group.purpose}</td>
                     <td>
                         <div class="member-tags">
                             ${group.members.map(member => `<span class="member-tag">${member}</span>`).join('')}
                         </div>
                     </td>
-                    <td>${group.assignedStage || 'Unassigned'}</td>
+                    <td>${group.assignedReviewerStage || 'Unassigned'}</td>
+                    <td>${group.assignedApproverStage || group.assignedStage || 'Unassigned'}</td>
                 </tr>
             `).join('');
         }
 
         function renderTeamKpis() {
             const uniqueMembers = new Set(configuredGroups.flatMap(group => group.members));
-            const stageAssignments = configuredGroups.filter(group => group.assignedStage).length;
-            const unassignedGroups = configuredGroups.filter(group => !group.assignedStage).length;
+            const stageAssignments = configuredGroups.filter(group => group.assignedReviewerStage || group.assignedApproverStage || group.assignedStage).length;
+            const unassignedGroups = configuredGroups.filter(group => !group.assignedReviewerStage && !group.assignedApproverStage && !group.assignedStage).length;
 
             const activeGroupsEl = document.getElementById('kpi-active-groups');
             const membersEl = document.getElementById('kpi-named-members');
@@ -556,22 +1068,22 @@ Marcus Johnson</textarea>
             if (unassignedEl) unassignedEl.textContent = unassignedGroups;
         }
 
-        function renderStageAssignments() {
-            const list = document.getElementById('stage-assignment-list');
+        function renderAssignmentList(listId, stageLabels, assignmentKey) {
+            const list = document.getElementById(listId);
             if (!list) return;
 
-            const stages = ((window.FRN_DATA && window.FRN_DATA.processSettings && window.FRN_DATA.processSettings.stages) || [])
-                .map(stage => stage.approver);
-
-            list.innerHTML = stages.map(stageApprover => {
-                const assignedGroups = configuredGroups.filter(group => group.assignedStage === stageApprover);
+            list.innerHTML = stageLabels.map(stageLabel => {
+                const assignedGroups = configuredGroups.filter(group => {
+                    const effectiveStage = group[assignmentKey] || (assignmentKey === 'assignedApproverStage' ? group.assignedStage : '');
+                    return effectiveStage === stageLabel;
+                });
                 const primaryGroup = assignedGroups[0];
                 const backupGroup = assignedGroups[1];
 
                 return `
                     <div class="assignment-card">
                         <div class="assignment-header">
-                            <div class="assignment-title">${stageApprover}</div>
+                            <div class="assignment-title">${stageLabel}</div>
                             <div class="assignment-badge">${primaryGroup ? primaryGroup.type.replace(' Group', '') : 'Unassigned'}</div>
                         </div>
                         <div class="assignment-meta">Assigned Group: ${primaryGroup ? primaryGroup.name : 'Not Assigned'}</div>
@@ -581,23 +1093,138 @@ Marcus Johnson</textarea>
             }).join('');
         }
 
+        function renderStageAssignments() {
+            const stages = ((window.FRN_DATA && window.FRN_DATA.processSettings && window.FRN_DATA.processSettings.stages) || []);
+            const approverStages = stages.map(stage => stage.approver);
+            const reviewerStages = stages.map(stage => `Stage ${stage.stageNumber} Reviewer`);
+
+            renderAssignmentList('stage-approver-assignment-list', approverStages, 'assignedApproverStage');
+            renderAssignmentList('stage-reviewer-assignment-list', reviewerStages, 'assignedReviewerStage');
+        }
+
+        function setAssignmentStatus(section, message, isError = false) {
+            const element = document.getElementById(`${section}-assignment-status`);
+            if (!element) return;
+            element.textContent = message || '';
+            element.className = `panel-status${isError ? ' error' : ''}`;
+        }
+
+        function populateTeamBuilder(group) {
+            if (!group) return;
+            document.getElementById('group-name').value = group.name || '';
+            document.getElementById('group-type').value = group.type || 'Primary Reviewer Group';
+            document.getElementById('group-reviewer-stage').value = group.assignedReviewerStage || '';
+            document.getElementById('group-approver-stage').value = group.assignedApproverStage || group.assignedStage || '';
+            setSelectedGroupMembers((group.memberDetails && group.memberDetails.length)
+                ? group.memberDetails
+                : (group.members || []).map(member => ({ displayName: member, source: 'Configured team group' })));
+            syncStageUsageFields(group.assignedApproverStage || group.assignedStage ? 'approver' : 'reviewer');
+            document.getElementById('group-notes').value = group.purpose || '';
+        }
+
+        function getTeamBuilderValues() {
+            return {
+                name: document.getElementById('group-name').value.trim(),
+                type: document.getElementById('group-type').value,
+                assignedReviewerStage: document.getElementById('group-reviewer-stage').value,
+                assignedApproverStage: document.getElementById('group-approver-stage').value,
+                notes: document.getElementById('group-notes').value.trim(),
+                members: selectedGroupMembers.map(member => member.displayName),
+                memberDetails: selectedGroupMembers.map(member => ({ ...member }))
+            };
+        }
+
+        function loadGroupTemplate(section) {
+            const isReviewer = section === 'reviewer';
+            const selectedStage = isReviewer
+                ? document.getElementById('group-reviewer-stage').value
+                : document.getElementById('group-approver-stage').value;
+            const matchingGroup = configuredGroups.find(group => (
+                isReviewer
+                    ? group.assignedReviewerStage === selectedStage
+                    : (group.assignedApproverStage || group.assignedStage) === selectedStage
+            ));
+
+            if (!matchingGroup) {
+                setAssignmentStatus(section, `No saved ${section} group is currently assigned to ${selectedStage}.`, true);
+                return;
+            }
+
+            populateTeamBuilder(matchingGroup);
+            setAssignmentStatus(section, `Loaded ${matchingGroup.name} into Team Builder for ${selectedStage}.`);
+        }
+
+        function updateStageAssignments(section) {
+            const isReviewer = section === 'reviewer';
+            const builder = getTeamBuilderValues();
+
+            if (!builder.name || !builder.members.length) {
+                setAssignmentStatus(section, 'Enter a group name and at least one member in Team Builder before updating stage assignments.', true);
+                return;
+            }
+
+            if (isReviewer && !builder.type.includes('Reviewer')) {
+                setAssignmentStatus(section, 'Select a reviewer group type in Team Builder before updating reviewer stage assignments.', true);
+                return;
+            }
+
+            if (!isReviewer && !builder.type.includes('Approver')) {
+                setAssignmentStatus(section, 'Select an approver group type in Team Builder before updating approver stage assignments.', true);
+                return;
+            }
+
+            const existingIndex = configuredGroups.findIndex(group => group.name.toLowerCase() === builder.name.toLowerCase());
+            const nextRecord = {
+                name: builder.name,
+                type: builder.type,
+                summary: `${builder.type} supporting ${isReviewer ? builder.assignedReviewerStage.toLowerCase() : builder.assignedApproverStage.toLowerCase()}.`,
+                purpose: builder.notes || `Configured group assigned to ${isReviewer ? builder.assignedReviewerStage : builder.assignedApproverStage}.`,
+                members: builder.members,
+                memberDetails: builder.memberDetails,
+                assignedReviewerStage: isReviewer ? builder.assignedReviewerStage : '',
+                assignedApproverStage: isReviewer ? '' : builder.assignedApproverStage,
+                assignedStage: isReviewer ? '' : builder.assignedApproverStage
+            };
+
+            if (existingIndex >= 0) {
+                const existing = configuredGroups[existingIndex];
+                configuredGroups[existingIndex] = {
+                    ...existing,
+                    ...nextRecord,
+                    assignedReviewerStage: isReviewer ? builder.assignedReviewerStage : (existing.assignedReviewerStage || ''),
+                    assignedApproverStage: isReviewer ? (existing.assignedApproverStage || existing.assignedStage || '') : builder.assignedApproverStage,
+                    assignedStage: isReviewer ? (existing.assignedApproverStage || existing.assignedStage || '') : builder.assignedApproverStage
+                };
+            } else {
+                configuredGroups.push(nextRecord);
+            }
+
+            persistConfiguredGroups();
+            renderConfiguredGroups();
+            renderTeamKpis();
+            renderStageAssignments();
+            setAssignmentStatus(section, `${builder.name} is now assigned to ${isReviewer ? builder.assignedReviewerStage : builder.assignedApproverStage}.`);
+        }
+
         function resetTeamBuilder() {
             document.getElementById('group-name').value = '';
-            document.getElementById('group-type').value = 'Primary Approver Group';
-            document.getElementById('group-stage').value = 'Stage 1 Approver';
-            document.getElementById('group-members').value = '';
+            document.getElementById('group-type').value = 'Primary Reviewer Group';
+            document.getElementById('group-reviewer-stage').value = 'Stage 1 Reviewer';
+            document.getElementById('group-approver-stage').value = '';
+            document.getElementById('group-member-search').value = '';
+            setSelectedGroupMembers([]);
+            syncStageUsageFields('reviewer');
             document.getElementById('group-notes').value = '';
         }
 
         function saveTeamGroup() {
-            const name = document.getElementById('group-name').value.trim();
-            const type = document.getElementById('group-type').value;
-            const assignedStage = document.getElementById('group-stage').value;
-            const notes = document.getElementById('group-notes').value.trim();
-            const members = document.getElementById('group-members').value
-                .split(/\r?\n/)
-                .map(member => member.trim())
-                .filter(Boolean);
+            const builder = getTeamBuilderValues();
+            const name = builder.name;
+            const type = builder.type;
+            const assignedReviewerStage = builder.assignedReviewerStage;
+            const assignedApproverStage = builder.assignedApproverStage;
+            const notes = builder.notes;
+            const members = builder.members;
 
             if (!name || !members.length) {
                 return;
@@ -606,10 +1233,13 @@ Marcus Johnson</textarea>
             configuredGroups.push({
                 name,
                 type,
-                summary: `${type} for ${assignedStage.toLowerCase()}.`,
-                purpose: notes || `Configured group assigned to ${assignedStage}.`,
+                summary: `${type} supporting ${type.includes('Reviewer') ? assignedReviewerStage.toLowerCase() : assignedApproverStage.toLowerCase()}.`,
+                purpose: notes || `Configured group assigned to ${type.includes('Reviewer') ? assignedReviewerStage : assignedApproverStage}.`,
                 members,
-                assignedStage
+                memberDetails: builder.memberDetails,
+                assignedReviewerStage: type.includes('Reviewer') ? assignedReviewerStage : '',
+                assignedApproverStage: type.includes('Approver') ? assignedApproverStage : '',
+                assignedStage: type.includes('Approver') ? assignedApproverStage : ''
             });
 
             persistConfiguredGroups();
@@ -619,7 +1249,26 @@ Marcus Johnson</textarea>
             resetTeamBuilder();
         }
 
+        document.getElementById('group-type').addEventListener('change', event => {
+            syncStageUsageFields(event.target.value.includes('Approver') ? 'approver' : 'reviewer');
+        });
+        document.getElementById('group-reviewer-stage').addEventListener('change', () => {
+            if (document.getElementById('group-reviewer-stage').value) {
+                syncStageUsageFields('reviewer');
+            }
+        });
+        document.getElementById('group-approver-stage').addEventListener('change', () => {
+            if (document.getElementById('group-approver-stage').value) {
+                syncStageUsageFields('approver');
+            }
+        });
         document.getElementById('save-team-group').addEventListener('click', saveTeamGroup);
+        document.getElementById('reviewer-load-template').addEventListener('click', () => loadGroupTemplate('reviewer'));
+        document.getElementById('reviewer-update-assignments').addEventListener('click', () => updateStageAssignments('reviewer'));
+        document.getElementById('approver-load-template').addEventListener('click', () => loadGroupTemplate('approver'));
+        document.getElementById('approver-update-assignments').addEventListener('click', () => updateStageAssignments('approver'));
+        initializeGroupMemberPicker();
+        syncStageUsageFields('reviewer');
         renderConfiguredGroups();
         renderTeamKpis();
         renderStageAssignments();

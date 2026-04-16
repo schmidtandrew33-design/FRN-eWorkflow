@@ -399,6 +399,79 @@
             resize: vertical;
         }
 
+        .form-input[readonly] {
+            background: var(--parchment);
+            color: var(--navy);
+            cursor: not-allowed;
+        }
+
+        .field-note {
+            font-size: 0.82rem;
+            color: var(--gray);
+            line-height: 1.4;
+        }
+
+        .owner-picker {
+            position: relative;
+        }
+
+        .owner-picker-results {
+            position: absolute;
+            top: calc(100% + 0.3rem);
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: white;
+            border: 2px solid var(--navy);
+            box-shadow: 0 14px 28px rgba(0, 33, 71, 0.18);
+            max-height: 280px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .owner-picker-results.is-open {
+            display: block;
+        }
+
+        .owner-picker-option {
+            width: 100%;
+            border: 0;
+            border-bottom: 1px solid rgba(0, 33, 71, 0.12);
+            background: white;
+            color: var(--navy);
+            text-align: left;
+            padding: 0.75rem 0.9rem;
+            cursor: pointer;
+            font-family: 'Source Serif 4', serif;
+        }
+
+        .owner-picker-option:last-child {
+            border-bottom: 0;
+        }
+
+        .owner-picker-option:hover,
+        .owner-picker-option:focus {
+            background: var(--cream);
+            outline: none;
+        }
+
+        .owner-picker-name {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .owner-picker-meta {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--gray);
+            line-height: 1.35;
+        }
+
+        .picker-field-note {
+            min-height: 1.1rem;
+        }
+
         .file-upload {
             border: 3px dashed var(--navy);
             background: var(--parchment);
@@ -408,9 +481,17 @@
             transition: all 0.3s ease;
         }
 
+        .file-upload.is-dragover,
         .file-upload:hover {
             border-color: var(--gold);
             background: var(--cream);
+        }
+
+        .file-upload:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: var(--cream);
+            box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.2);
         }
 
         .file-upload-icon {
@@ -429,6 +510,50 @@
             font-size: 0.96rem;
             color: var(--gray);
             font-style: italic;
+        }
+
+        .visually-hidden-file-input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .upload-selection-note {
+            min-height: 1.2rem;
+        }
+
+        .upload-file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            margin-top: 0.6rem;
+        }
+
+        .upload-file-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.45rem 0.6rem;
+            background: white;
+            border: 1px solid rgba(0, 33, 71, 0.18);
+            font-size: 0.84rem;
+            color: var(--navy);
+        }
+
+        .upload-file-name {
+            font-weight: 700;
+            word-break: break-word;
+        }
+
+        .upload-file-size {
+            color: var(--gray);
+            white-space: nowrap;
         }
 
         .document-upload-section {
@@ -505,15 +630,16 @@
 
         .stage-reviewer-row {
             display: grid;
-            grid-template-columns: 1.35fr 0.9fr;
+            grid-template-columns: minmax(0, 1.35fr) minmax(180px, 0.9fr);
             gap: 0.6rem;
-            align-items: end;
+            align-items: start;
         }
 
         .stage-reviewer-field {
             display: flex;
             flex-direction: column;
             gap: 0.22rem;
+            min-width: 0;
         }
 
         .stage-reviewer-field-label {
@@ -736,7 +862,11 @@
                     <div class="form-grid">
                         <div class="form-field">
                             <label class="form-label">Document Owner</label>
-                            <input id="notice-stage-owner" type="text" class="form-input" placeholder="e.g., Dr. Sarah Chen">
+                            <div class="owner-picker">
+                                <input id="notice-stage-owner" type="text" class="form-input" autocomplete="off" placeholder="Search by person..." data-person-picker="true" data-picker-label="Document Owner">
+                                <div id="notice-stage-owner-results" class="owner-picker-results" role="listbox" aria-label="Document owner search results"></div>
+                            </div>
+                            <div id="notice-stage-owner-note" class="field-note picker-field-note">Search by person and select the correct organization user for this notice.</div>
                         </div>
                     </div>
 
@@ -802,11 +932,19 @@
                     <div class="form-grid">
                         <div class="form-field">
                             <label class="form-label">Legal Point of Contact</label>
-                            <input id="notice-legal-poc" type="text" class="form-input" placeholder="e.g., Jane Smith (OGC)">
+                            <div class="owner-picker">
+                                <input id="notice-legal-poc" type="text" class="form-input" autocomplete="off" placeholder="Search by person..." data-person-picker="true" data-picker-label="Legal Point of Contact">
+                                <div id="notice-legal-poc-results" class="owner-picker-results" role="listbox" aria-label="Legal point of contact search results"></div>
+                            </div>
+                            <div id="notice-legal-poc-note" class="field-note picker-field-note">Optional. Search by person to assign the legal point of contact.</div>
                         </div>
                         <div class="form-field">
                             <label class="form-label">Policy Lead</label>
-                            <input id="notice-policy-lead" type="text" class="form-input" placeholder="e.g., Marcus Johnson">
+                            <div class="owner-picker">
+                                <input id="notice-policy-lead" type="text" class="form-input" autocomplete="off" placeholder="Search by person..." data-person-picker="true" data-picker-label="Policy Lead">
+                                <div id="notice-policy-lead-results" class="owner-picker-results" role="listbox" aria-label="Policy lead search results"></div>
+                            </div>
+                            <div id="notice-policy-lead-note" class="field-note picker-field-note">Optional. Search by person to assign the policy lead.</div>
                         </div>
                     </div>
 
@@ -824,20 +962,26 @@
                     
                     <div class="form-field">
                         <label class="form-label">Primary Document</label>
-                        <div id="notice-primary-upload" class="file-upload">
+                        <input id="notice-primary-upload-input" type="file" class="visually-hidden-file-input" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                        <div id="notice-primary-upload" class="file-upload" role="button" tabindex="0" aria-controls="notice-primary-upload-input" aria-label="Upload primary document">
                             <div class="file-upload-icon">📄</div>
                             <div class="file-upload-text">Click to upload or drag and drop</div>
                             <div class="file-upload-hint">PDF, DOCX, or DOC (Max 25MB)</div>
                         </div>
+                        <div id="notice-primary-upload-note" class="field-note upload-selection-note">No primary document selected yet.</div>
+                        <div id="notice-primary-upload-files" class="upload-file-list" aria-live="polite"></div>
                     </div>
 
                     <div class="form-field" style="margin-top: 1.5rem;">
                         <label class="form-label">Supporting Documents</label>
-                        <div id="notice-supporting-upload" class="file-upload">
+                        <input id="notice-supporting-upload-input" type="file" class="visually-hidden-file-input" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.zip,.png,.jpg,.jpeg,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,text/plain,application/zip,image/png,image/jpeg">
+                        <div id="notice-supporting-upload" class="file-upload" role="button" tabindex="0" aria-controls="notice-supporting-upload-input" aria-label="Upload supporting documents">
                             <div class="file-upload-icon">📎</div>
-                            <div class="file-upload-text">Upload supporting materials</div>
+                            <div class="file-upload-text">Click to upload or drag and drop</div>
                             <div class="file-upload-hint">Multiple files accepted (Max 10MB each)</div>
                         </div>
+                        <div id="notice-supporting-upload-note" class="field-note upload-selection-note">No supporting documents selected yet.</div>
+                        <div id="notice-supporting-upload-files" class="upload-file-list" aria-live="polite"></div>
                     </div>
                 </section>
 
@@ -859,7 +1003,11 @@
                             <div class="stage-reviewer-row">
                                 <div class="stage-reviewer-field">
                                     <div class="stage-reviewer-field-label">Reviewer</div>
-                                    <input id="stage-1-reviewer" type="text" class="form-input" list="reviewer-name-options" placeholder="Enter reviewer name">
+                                    <div class="owner-picker">
+                                        <input id="stage-1-reviewer" type="text" class="form-input" autocomplete="off" placeholder="Search by person..." data-person-picker="true" data-picker-label="Stage 1 Reviewer">
+                                        <div id="stage-1-reviewer-results" class="owner-picker-results" role="listbox" aria-label="Stage 1 reviewer search results"></div>
+                                    </div>
+                                    <div id="stage-1-reviewer-note" class="field-note picker-field-note">Optional reviewer override.</div>
                                 </div>
                                 <div class="stage-reviewer-field">
                                     <div class="stage-reviewer-field-label">Due Date</div>
@@ -872,7 +1020,11 @@
                             <div class="stage-reviewer-row">
                                 <div class="stage-reviewer-field">
                                     <div class="stage-reviewer-field-label">Reviewer</div>
-                                    <input id="stage-2-reviewer" type="text" class="form-input" list="reviewer-name-options" placeholder="Enter reviewer name">
+                                    <div class="owner-picker">
+                                        <input id="stage-2-reviewer" type="text" class="form-input" autocomplete="off" placeholder="Search by person..." data-person-picker="true" data-picker-label="Stage 2 Reviewer">
+                                        <div id="stage-2-reviewer-results" class="owner-picker-results" role="listbox" aria-label="Stage 2 reviewer search results"></div>
+                                    </div>
+                                    <div id="stage-2-reviewer-note" class="field-note picker-field-note">Optional reviewer override.</div>
                                 </div>
                                 <div class="stage-reviewer-field">
                                     <div class="stage-reviewer-field-label">Due Date</div>
@@ -885,7 +1037,11 @@
                             <div class="stage-reviewer-row">
                                 <div class="stage-reviewer-field">
                                     <div class="stage-reviewer-field-label">Reviewer</div>
-                                    <input id="stage-3-reviewer" type="text" class="form-input" list="reviewer-name-options" placeholder="Enter reviewer name">
+                                    <div class="owner-picker">
+                                        <input id="stage-3-reviewer" type="text" class="form-input" autocomplete="off" placeholder="Search by person..." data-person-picker="true" data-picker-label="Stage 3 Reviewer">
+                                        <div id="stage-3-reviewer-results" class="owner-picker-results" role="listbox" aria-label="Stage 3 reviewer search results"></div>
+                                    </div>
+                                    <div id="stage-3-reviewer-note" class="field-note picker-field-note">Optional reviewer override.</div>
                                 </div>
                                 <div class="stage-reviewer-field">
                                     <div class="stage-reviewer-field-label">Due Date</div>
@@ -898,7 +1054,11 @@
                             <div class="stage-reviewer-row">
                                 <div class="stage-reviewer-field">
                                     <div class="stage-reviewer-field-label">Reviewer</div>
-                                    <input id="stage-4-reviewer" type="text" class="form-input" list="reviewer-name-options" placeholder="Enter reviewer name">
+                                    <div class="owner-picker">
+                                        <input id="stage-4-reviewer" type="text" class="form-input" autocomplete="off" placeholder="Search by person..." data-person-picker="true" data-picker-label="Stage 4 Reviewer">
+                                        <div id="stage-4-reviewer-results" class="owner-picker-results" role="listbox" aria-label="Stage 4 reviewer search results"></div>
+                                    </div>
+                                    <div id="stage-4-reviewer-note" class="field-note picker-field-note">Optional reviewer override.</div>
                                 </div>
                                 <div class="stage-reviewer-field">
                                     <div class="stage-reviewer-field-label">Due Date</div>
@@ -911,7 +1071,11 @@
                             <div class="stage-reviewer-row">
                                 <div class="stage-reviewer-field">
                                     <div class="stage-reviewer-field-label">Reviewer</div>
-                                    <input id="stage-5-reviewer" type="text" class="form-input" list="reviewer-name-options" placeholder="Enter reviewer name">
+                                    <div class="owner-picker">
+                                        <input id="stage-5-reviewer" type="text" class="form-input" autocomplete="off" placeholder="Search by person..." data-person-picker="true" data-picker-label="Stage 5 Reviewer">
+                                        <div id="stage-5-reviewer-results" class="owner-picker-results" role="listbox" aria-label="Stage 5 reviewer search results"></div>
+                                    </div>
+                                    <div id="stage-5-reviewer-note" class="field-note picker-field-note">Optional reviewer override.</div>
                                 </div>
                                 <div class="stage-reviewer-field">
                                     <div class="stage-reviewer-field-label">Due Date</div>
@@ -924,7 +1088,11 @@
                             <div class="stage-reviewer-row">
                                 <div class="stage-reviewer-field">
                                     <div class="stage-reviewer-field-label">Reviewer</div>
-                                    <input id="stage-6-reviewer" type="text" class="form-input" list="reviewer-name-options" placeholder="Enter reviewer name">
+                                    <div class="owner-picker">
+                                        <input id="stage-6-reviewer" type="text" class="form-input" autocomplete="off" placeholder="Search by person..." data-person-picker="true" data-picker-label="Stage 6 Reviewer">
+                                        <div id="stage-6-reviewer-results" class="owner-picker-results" role="listbox" aria-label="Stage 6 reviewer search results"></div>
+                                    </div>
+                                    <div id="stage-6-reviewer-note" class="field-note picker-field-note">Optional reviewer override.</div>
                                 </div>
                                 <div class="stage-reviewer-field">
                                     <div class="stage-reviewer-field-label">Due Date</div>
@@ -937,11 +1105,147 @@
                             <div class="stage-reviewer-row">
                                 <div class="stage-reviewer-field">
                                     <div class="stage-reviewer-field-label">Reviewer</div>
-                                    <input id="stage-7-reviewer" type="text" class="form-input" list="reviewer-name-options" placeholder="Enter reviewer name">
+                                    <div class="owner-picker">
+                                        <input id="stage-7-reviewer" type="text" class="form-input" autocomplete="off" placeholder="Search by person..." data-person-picker="true" data-picker-label="Stage 7 Reviewer">
+                                        <div id="stage-7-reviewer-results" class="owner-picker-results" role="listbox" aria-label="Stage 7 reviewer search results"></div>
+                                    </div>
+                                    <div id="stage-7-reviewer-note" class="field-note picker-field-note">Optional reviewer override.</div>
                                 </div>
                                 <div class="stage-reviewer-field">
                                     <div class="stage-reviewer-field-label">Due Date</div>
                                     <input id="stage-7-due" type="date" class="form-input" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 style="margin-top: 1.2rem;">Stage Approval Overrides</h2>
+                    <div class="info-box" style="margin-bottom: 1.5rem;">
+                        <h3>Optional Approval Overrides</h3>
+                        <ul>
+                            <li>Each stage has a separate approval assignment in addition to the review assignment.</li>
+                            <li>Search by person only when this notice needs a stage-specific approval override.</li>
+                            <li>Any person entered here will override the default approver assignment for that stage for this notice only.</li>
+                        </ul>
+                    </div>
+
+                    <div class="stage-reviewer-grid">
+                        <div class="form-field stage-reviewer-item">
+                            <label class="form-label">Stage 1 - Initial Review</label>
+                            <div class="stage-reviewer-row">
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Approver</div>
+                                    <div class="owner-picker">
+                                        <input id="stage-1-approver" type="text" class="form-input" autocomplete="off" placeholder="Search by person..." data-person-picker="true" data-picker-label="Stage 1 Approver">
+                                        <div id="stage-1-approver-results" class="owner-picker-results" role="listbox" aria-label="Stage 1 approver search results"></div>
+                                    </div>
+                                    <div id="stage-1-approver-note" class="field-note picker-field-note">Optional approval override.</div>
+                                </div>
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Due Date</div>
+                                    <input id="stage-1-approval-due" type="date" class="form-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-field stage-reviewer-item">
+                            <label class="form-label">Stage 2 - Legal Review</label>
+                            <div class="stage-reviewer-row">
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Approver</div>
+                                    <div class="owner-picker">
+                                        <input id="stage-2-approver" type="text" class="form-input" autocomplete="off" placeholder="Search by person..." data-person-picker="true" data-picker-label="Stage 2 Approver">
+                                        <div id="stage-2-approver-results" class="owner-picker-results" role="listbox" aria-label="Stage 2 approver search results"></div>
+                                    </div>
+                                    <div id="stage-2-approver-note" class="field-note picker-field-note">Optional approval override.</div>
+                                </div>
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Due Date</div>
+                                    <input id="stage-2-approval-due" type="date" class="form-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-field stage-reviewer-item">
+                            <label class="form-label">Stage 3 - Technical Review</label>
+                            <div class="stage-reviewer-row">
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Approver</div>
+                                    <div class="owner-picker">
+                                        <input id="stage-3-approver" type="text" class="form-input" autocomplete="off" placeholder="Search by person..." data-person-picker="true" data-picker-label="Stage 3 Approver">
+                                        <div id="stage-3-approver-results" class="owner-picker-results" role="listbox" aria-label="Stage 3 approver search results"></div>
+                                    </div>
+                                    <div id="stage-3-approver-note" class="field-note picker-field-note">Optional approval override.</div>
+                                </div>
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Due Date</div>
+                                    <input id="stage-3-approval-due" type="date" class="form-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-field stage-reviewer-item">
+                            <label class="form-label">Stage 4 - Policy Review</label>
+                            <div class="stage-reviewer-row">
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Approver</div>
+                                    <div class="owner-picker">
+                                        <input id="stage-4-approver" type="text" class="form-input" autocomplete="off" placeholder="Search by person..." data-person-picker="true" data-picker-label="Stage 4 Approver">
+                                        <div id="stage-4-approver-results" class="owner-picker-results" role="listbox" aria-label="Stage 4 approver search results"></div>
+                                    </div>
+                                    <div id="stage-4-approver-note" class="field-note picker-field-note">Optional approval override.</div>
+                                </div>
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Due Date</div>
+                                    <input id="stage-4-approval-due" type="date" class="form-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-field stage-reviewer-item">
+                            <label class="form-label">Stage 5 - Final QA</label>
+                            <div class="stage-reviewer-row">
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Approver</div>
+                                    <div class="owner-picker">
+                                        <input id="stage-5-approver" type="text" class="form-input" autocomplete="off" placeholder="Search by person..." data-person-picker="true" data-picker-label="Stage 5 Approver">
+                                        <div id="stage-5-approver-results" class="owner-picker-results" role="listbox" aria-label="Stage 5 approver search results"></div>
+                                    </div>
+                                    <div id="stage-5-approver-note" class="field-note picker-field-note">Optional approval override.</div>
+                                </div>
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Due Date</div>
+                                    <input id="stage-5-approval-due" type="date" class="form-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-field stage-reviewer-item">
+                            <label class="form-label">Stage 6 - Official Signer</label>
+                            <div class="stage-reviewer-row">
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Approver</div>
+                                    <div class="owner-picker">
+                                        <input id="stage-6-approver" type="text" class="form-input" autocomplete="off" placeholder="Search by person..." data-person-picker="true" data-picker-label="Stage 6 Approver">
+                                        <div id="stage-6-approver-results" class="owner-picker-results" role="listbox" aria-label="Stage 6 approver search results"></div>
+                                    </div>
+                                    <div id="stage-6-approver-note" class="field-note picker-field-note">Optional approval override.</div>
+                                </div>
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Due Date</div>
+                                    <input id="stage-6-approval-due" type="date" class="form-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-field stage-reviewer-item">
+                            <label class="form-label">Stage 7 - Final Review</label>
+                            <div class="stage-reviewer-row">
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Approver</div>
+                                    <div class="owner-picker">
+                                        <input id="stage-7-approver" type="text" class="form-input" autocomplete="off" placeholder="Search by person..." data-person-picker="true" data-picker-label="Stage 7 Approver">
+                                        <div id="stage-7-approver-results" class="owner-picker-results" role="listbox" aria-label="Stage 7 approver search results"></div>
+                                    </div>
+                                    <div id="stage-7-approver-note" class="field-note picker-field-note">Optional approval override.</div>
+                                </div>
+                                <div class="stage-reviewer-field">
+                                    <div class="stage-reviewer-field-label">Due Date</div>
+                                    <input id="stage-7-approval-due" type="date" class="form-input" />
                                 </div>
                             </div>
                         </div>
@@ -1023,6 +1327,8 @@
     <script>
         (function initNewNoticeSubmission() {
             const CUSTOM_DOCUMENTS_KEY = 'frn_custom_documents';
+            let selectedPrimaryFiles = [];
+            let selectedSupportingFiles = [];
 
             const officeNames = {
                 oppt: 'Office of Chemical Safety and Pollution Prevention',
@@ -1077,6 +1383,12 @@
                 return typeMap[normalized] || null;
             }
 
+            function getDefaultStageApprover(stageNumber) {
+                const stages = (((window.FRN_DATA || {}).processSettings || {}).stages || []);
+                const match = stages.find(stage => Number(stage.stageNumber) === Number(stageNumber));
+                return match ? (match.approver || `Stage ${stageNumber} Approver`) : `Stage ${stageNumber} Approver`;
+            }
+
             function collectStageOverrides() {
                 return Array.from({ length: 7 }, (_, index) => {
                     const stageNumber = index + 1;
@@ -1091,8 +1403,10 @@
                             'Official Signer',
                             'Final Review'
                         ][index]}`,
-                        reviewer: $(`stage-${stageNumber}-reviewer`).value.trim(),
-                        dueDate: $(`stage-${stageNumber}-due`).value
+                        reviewer: validatePersonSelection(`stage-${stageNumber}-reviewer`, `Stage ${stageNumber} Reviewer`) ?? null,
+                        dueDate: $(`stage-${stageNumber}-due`).value,
+                        approver: validatePersonSelection(`stage-${stageNumber}-approver`, `Stage ${stageNumber} Approver`) ?? null,
+                        approvalDueDate: $(`stage-${stageNumber}-approval-due`).value
                     };
                 });
             }
@@ -1119,6 +1433,289 @@
                 };
             }
 
+            function buildFallbackOwnerDirectory() {
+                const actionUser = getCurrentActionUser();
+                const defaultDomain = (((window.FRN_NOTIFICATIONS || {}).loadSettings || (() => ({ emailDomain: 'epa.gov' })))().emailDomain) || 'epa.gov';
+                const roster = new Map();
+                const addPerson = (rawName, extra = {}) => {
+                    const displayName = String(rawName || '').trim();
+                    if (!displayName) return;
+                    const key = displayName.toLowerCase();
+                    if (roster.has(key)) return;
+                    roster.set(key, {
+                        displayName,
+                        id: extra.id || '',
+                        userPrincipalName: extra.userPrincipalName || '',
+                        mail: extra.mail || (window.FRN_NOTIFICATIONS && typeof window.FRN_NOTIFICATIONS.formatPersonEmail === 'function'
+                            ? window.FRN_NOTIFICATIONS.formatPersonEmail(displayName, defaultDomain)
+                            : ''),
+                        jobTitle: extra.jobTitle || '',
+                        department: extra.department || '',
+                        source: extra.source || 'Local roster'
+                    });
+                };
+
+                addPerson(actionUser.fullName, {
+                    id: actionUser.objectId,
+                    userPrincipalName: actionUser.userPrincipalName,
+                    mail: actionUser.userPrincipalName,
+                    source: 'Current session'
+                });
+
+                (((window.FRN_DATA || {}).teamGroups) || []).forEach(group => {
+                    (group.members || []).forEach(member => addPerson(member, {
+                        department: group.name || '',
+                        jobTitle: group.type || '',
+                        source: 'Configured review team'
+                    }));
+                });
+
+                (((window.FRN_DATA || {}).documents) || []).forEach(doc => {
+                    [doc.assignee, doc.stageOwner, doc.nextReviewer, doc.submittedBy, doc.documentOwner].forEach(name => addPerson(name, {
+                        department: doc.office || '',
+                        source: 'Existing workflow history'
+                    }));
+                });
+
+                return [...roster.values()].sort((left, right) => left.displayName.localeCompare(right.displayName));
+            }
+
+            function getDirectorySearchEndpoint() {
+                const fallbackBase = 'http://127.0.0.1:3001';
+                const notificationsApi = window.FRN_NOTIFICATIONS;
+                const settings = notificationsApi && typeof notificationsApi.loadSettings === 'function'
+                    ? notificationsApi.loadSettings()
+                    : null;
+                const relayEndpoint = (((settings || {}).transport) || {}).endpoint || '';
+                if (!relayEndpoint) {
+                    return `${fallbackBase}/api/entra-users`;
+                }
+
+                try {
+                    const relayUrl = new URL(relayEndpoint, window.location.href);
+                    relayUrl.pathname = '/api/entra-users';
+                    relayUrl.search = '';
+                    relayUrl.hash = '';
+                    return relayUrl.toString();
+                } catch (error) {
+                    console.warn('Unable to derive the relay base URL from notification settings. Falling back to localhost relay.', error);
+                    return `${fallbackBase}/api/entra-users`;
+                }
+            }
+
+            function clearPersonSelection(input, note, defaultNote) {
+                if (!input) return;
+                if (note && defaultNote) {
+                    note.textContent = defaultNote;
+                }
+                delete input.dataset.objectId;
+                delete input.dataset.tenantId;
+                delete input.dataset.userPrincipalName;
+                delete input.dataset.mail;
+                delete input.dataset.source;
+            }
+
+            function applyPersonSelection(input, note, defaultNote, person) {
+                const actionUser = getCurrentActionUser();
+                if (!input || !person) return;
+
+                input.value = person.displayName || '';
+                input.dataset.objectId = person.id || '';
+                input.dataset.tenantId = actionUser.tenantId || '';
+                input.dataset.userPrincipalName = person.userPrincipalName || '';
+                input.dataset.mail = person.mail || '';
+                input.dataset.source = person.source || '';
+
+                if (note) {
+                    const descriptor = [person.userPrincipalName || person.mail, person.jobTitle, person.department]
+                        .filter(Boolean)
+                        .join(' • ');
+                    note.textContent = descriptor
+                        ? `Selected person: ${descriptor}`
+                        : (defaultNote || `Selected person from ${person.source || 'directory search'}.`);
+                }
+            }
+
+            function renderPersonResults(results, input, resultsContainer, note, defaultNote) {
+                if (!resultsContainer) return;
+                resultsContainer.innerHTML = '';
+
+                if (!Array.isArray(results) || !results.length) {
+                    resultsContainer.classList.remove('is-open');
+                    return;
+                }
+
+                results.forEach(person => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'owner-picker-option';
+                    button.setAttribute('role', 'option');
+                    button.innerHTML = `
+                        <span class="owner-picker-name">${person.displayName || 'Unknown User'}</span>
+                        <span class="owner-picker-meta">${[
+                            person.userPrincipalName || person.mail || '',
+                            person.jobTitle || '',
+                            person.department || '',
+                            person.source || ''
+                        ].filter(Boolean).join(' • ')}</span>
+                    `;
+                    button.addEventListener('mousedown', event => {
+                        event.preventDefault();
+                        applyPersonSelection(input, note, defaultNote, person);
+                        resultsContainer.classList.remove('is-open');
+                    });
+                    resultsContainer.appendChild(button);
+                });
+
+                resultsContainer.classList.add('is-open');
+            }
+
+            function initializePersonPickers() {
+                const pickerInputs = Array.from(document.querySelectorAll('[data-person-picker="true"]'));
+                if (!pickerInputs.length) return;
+
+                const fallbackDirectory = buildFallbackOwnerDirectory();
+
+                function searchFallbackDirectory(searchTerm) {
+                    const normalized = String(searchTerm || '').trim().toLowerCase();
+                    if (!normalized) {
+                        return [];
+                    }
+                    return fallbackDirectory
+                        .filter(person => {
+                            const searchable = [
+                                person.displayName,
+                                person.mail,
+                                person.userPrincipalName,
+                                person.department,
+                                person.jobTitle
+                            ].join(' ').toLowerCase();
+                            return searchable.includes(normalized);
+                        })
+                        .slice(0, 12);
+                }
+
+                pickerInputs.forEach(input => {
+                    const resultsContainer = $(`${input.id}-results`);
+                    const note = $(`${input.id}-note`);
+                    const pickerLabel = input.dataset.pickerLabel || 'Person';
+                    const defaultNote = note ? note.textContent : '';
+                    let latestSearchToken = 0;
+
+                    async function searchDirectory(searchTerm) {
+                        const token = ++latestSearchToken;
+                        const trimmedSearch = String(searchTerm || '').trim();
+                        if (trimmedSearch.length < 2) {
+                            if (resultsContainer) {
+                                resultsContainer.classList.remove('is-open');
+                            }
+                            if (!input.dataset.objectId && !input.dataset.userPrincipalName && note) {
+                                note.textContent = `Type at least 2 characters to search by person for ${pickerLabel}.`;
+                            }
+                            return;
+                        }
+
+                        if (note) {
+                            note.textContent = `Searching by person for ${pickerLabel}...`;
+                        }
+
+                        const fallbackMatches = searchFallbackDirectory(trimmedSearch);
+
+                        try {
+                            const endpoint = new URL(getDirectorySearchEndpoint());
+                            endpoint.searchParams.set('search', trimmedSearch);
+                            const response = await window.fetch(endpoint.toString());
+                            const payload = await response.json().catch(() => ({}));
+                            if (token !== latestSearchToken) {
+                                return;
+                            }
+                            if (!response.ok) {
+                                throw new Error(payload.error || `Directory lookup returned HTTP ${response.status}`);
+                            }
+
+                            const remoteResults = Array.isArray(payload.users) ? payload.users.map(person => ({
+                                ...person,
+                                source: 'Microsoft Entra ID'
+                            })) : [];
+                            const merged = [...remoteResults];
+                            const seen = new Set(remoteResults.map(person => String(person.displayName || '').trim().toLowerCase()));
+                            fallbackMatches.forEach(person => {
+                                const key = String(person.displayName || '').trim().toLowerCase();
+                                if (!seen.has(key)) {
+                                    merged.push(person);
+                                    seen.add(key);
+                                }
+                            });
+                            renderPersonResults(merged, input, resultsContainer, note, defaultNote);
+                            if (note && !input.dataset.objectId && !input.dataset.userPrincipalName) {
+                                note.textContent = merged.length
+                                    ? `Select the correct person for ${pickerLabel}.`
+                                    : `No matching people were found for ${pickerLabel}.`;
+                            }
+                        } catch (error) {
+                            if (token !== latestSearchToken) {
+                                return;
+                            }
+                            console.warn('[FRN New Notice] Person search failed. Falling back to the configured roster.', error);
+                            renderPersonResults(fallbackMatches, input, resultsContainer, note, defaultNote);
+                            if (note && !input.dataset.objectId && !input.dataset.userPrincipalName) {
+                                note.textContent = fallbackMatches.length
+                                    ? `Directory search is unavailable right now. Select a person from the configured roster for ${pickerLabel}.`
+                                    : `No matching people were found for ${pickerLabel}.`;
+                            }
+                        }
+                    }
+
+                    input.addEventListener('input', () => {
+                        clearPersonSelection(input, note, defaultNote);
+                        searchDirectory(input.value);
+                    });
+
+                    input.addEventListener('focus', () => {
+                        if (input.value.trim().length >= 2) {
+                            searchDirectory(input.value);
+                        }
+                    });
+
+                    input.addEventListener('blur', () => {
+                        window.setTimeout(() => {
+                            if (resultsContainer) {
+                                resultsContainer.classList.remove('is-open');
+                            }
+                        }, 150);
+                    });
+
+                    document.addEventListener('click', event => {
+                        if (resultsContainer && !resultsContainer.contains(event.target) && event.target !== input) {
+                            resultsContainer.classList.remove('is-open');
+                        }
+                    });
+                });
+            }
+
+            function validatePersonSelection(inputId, fieldLabel, required = false) {
+                const input = $(inputId);
+                if (!input) {
+                    return '';
+                }
+
+                const selectedValue = input.value.trim();
+                if (!selectedValue) {
+                    if (required) {
+                        alert(`${fieldLabel} is required. Search by person and select the correct organization user.`);
+                        return null;
+                    }
+                    return '';
+                }
+
+                if (!input.dataset.source) {
+                    alert(`Choose ${fieldLabel} from the person search results instead of typing a free-form name.`);
+                    return null;
+                }
+
+                return selectedValue;
+            }
+
             function normalizeStageNumber(stageLabel) {
                 const match = (stageLabel || '').match(/Stage\s+(\d+)/i);
                 return match ? Number(match[1]) : 1;
@@ -1139,23 +1736,169 @@
                 localStorage.setItem(CUSTOM_DOCUMENTS_KEY, JSON.stringify(documents));
             }
 
+            async function sendWorkflowNotification(eventType, payload) {
+                if (!window.FRN_NOTIFICATIONS || typeof window.FRN_NOTIFICATIONS.notify !== 'function') {
+                    console.warn('[FRN Workflow] Notification service unavailable.', {
+                        eventType,
+                        documentId: (payload && payload.doc && payload.doc.id) || ''
+                    });
+                    return { skipped: true, reason: 'service-unavailable' };
+                }
+                console.groupCollapsed(`[FRN Workflow] Triggering ${eventType}`);
+                console.log({
+                    documentId: (payload && payload.doc && payload.doc.id) || '',
+                    documentTitle: (payload && payload.doc && payload.doc.title) || '',
+                    currentStage: payload && payload.currentStage,
+                    nextStage: payload && payload.nextStage,
+                    route: payload && payload.route,
+                    actionUser: payload && payload.actionUser
+                });
+                console.log('Payload:', payload);
+                console.groupEnd();
+                try {
+                    return await window.FRN_NOTIFICATIONS.notify(eventType, payload);
+                } catch (error) {
+                    console.warn(`Unable to dispatch ${eventType} notification.`, error);
+                    return { skipped: true, reason: error.message || 'dispatch-failed' };
+                }
+            }
+
+            function formatBytes(byteCount) {
+                const bytes = Number(byteCount || 0);
+                if (!bytes) return '0 KB';
+                const units = ['bytes', 'KB', 'MB', 'GB'];
+                let value = bytes;
+                let unitIndex = 0;
+                while (value >= 1024 && unitIndex < units.length - 1) {
+                    value /= 1024;
+                    unitIndex += 1;
+                }
+                const rounded = unitIndex === 0 ? Math.round(value) : value.toFixed(value >= 10 ? 0 : 1);
+                return `${rounded} ${units[unitIndex]}`;
+            }
+
+            function getFileIcon(fileName) {
+                const normalized = String(fileName || '').toLowerCase();
+                if (normalized.endsWith('.pdf')) return '📄';
+                if (normalized.match(/\.(doc|docx|txt)$/)) return '📝';
+                if (normalized.match(/\.(xls|xlsx|csv)$/)) return '📊';
+                if (normalized.match(/\.(png|jpg|jpeg)$/)) return '🖼️';
+                if (normalized.endsWith('.zip')) return '🗜️';
+                return '📎';
+            }
+
+            function renderSelectedFiles(listId, files) {
+                const list = $(listId);
+                if (!list) return;
+                list.innerHTML = (files || []).map(file => `
+                    <div class="upload-file-item">
+                        <span class="upload-file-name">${file.name}</span>
+                        <span class="upload-file-size">${formatBytes(file.size)}</span>
+                    </div>
+                `).join('');
+            }
+
+            function updateUploadWidget(config, files) {
+                const note = $(config.noteId);
+                const normalizedFiles = Array.from(files || []);
+                if (config.kind === 'primary') {
+                    selectedPrimaryFiles = normalizedFiles.slice(0, 1);
+                    renderSelectedFiles(config.listId, selectedPrimaryFiles);
+                    if (note) {
+                        note.textContent = selectedPrimaryFiles.length
+                            ? `Selected primary document: ${selectedPrimaryFiles[0].name}`
+                            : 'No primary document selected yet.';
+                    }
+                    return;
+                }
+
+                selectedSupportingFiles = normalizedFiles;
+                renderSelectedFiles(config.listId, selectedSupportingFiles);
+                if (note) {
+                    note.textContent = selectedSupportingFiles.length
+                        ? `${selectedSupportingFiles.length} supporting document${selectedSupportingFiles.length === 1 ? '' : 's'} selected.`
+                        : 'No supporting documents selected yet.';
+                }
+            }
+
+            function initializeUploadWidget(config) {
+                const dropZone = $(config.dropZoneId);
+                const input = $(config.inputId);
+                if (!dropZone || !input) return;
+
+                const openPicker = () => input.click();
+
+                dropZone.addEventListener('click', openPicker);
+                dropZone.addEventListener('keydown', event => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        openPicker();
+                    }
+                });
+
+                input.addEventListener('change', () => {
+                    updateUploadWidget(config, input.files);
+                });
+
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    dropZone.addEventListener(eventName, event => {
+                        event.preventDefault();
+                        dropZone.classList.add('is-dragover');
+                    });
+                });
+
+                ['dragleave', 'dragend', 'drop'].forEach(eventName => {
+                    dropZone.addEventListener(eventName, event => {
+                        event.preventDefault();
+                        if (eventName !== 'drop') {
+                            dropZone.classList.remove('is-dragover');
+                        }
+                    });
+                });
+
+                dropZone.addEventListener('drop', event => {
+                    dropZone.classList.remove('is-dragover');
+                    const droppedFiles = Array.from((event.dataTransfer && event.dataTransfer.files) || []);
+                    const nextFiles = config.kind === 'primary' ? droppedFiles.slice(0, 1) : droppedFiles;
+                    updateUploadWidget(config, nextFiles);
+                });
+            }
+
             function buildDocumentRecord(statusValue) {
                 const title = $('notice-title').value.trim();
                 const id = $('notice-frn-id').value.trim();
                 const actionUser = getCurrentActionUser();
+                const documentOwnerInput = $('notice-stage-owner');
+                const selectedOwner = validatePersonSelection('notice-stage-owner', 'Document Owner', true);
+                const legalPointOfContact = validatePersonSelection('notice-legal-poc', 'Legal Point of Contact');
+                const policyLead = validatePersonSelection('notice-policy-lead', 'Policy Lead');
                 const typeSelection = normalizeTypeInput($('notice-type').value) || { type: 'notice', label: ($('notice-type').value || 'Notice').trim() || 'Notice' };
                 const officeSelection = normalizeOfficeInput($('notice-office').value || 'Unassigned Office');
                 const stageLabel = 'Stage 1 - Initial Review';
                 const stageNumber = 1;
                 const stageOverrides = collectStageOverrides();
-                const stageOneReviewer = stageOverrides[0].reviewer || $('notice-stage-owner').value.trim() || 'Unassigned';
+                if (selectedOwner === null || legalPointOfContact === null || policyLead === null || stageOverrides.some(stage => stage.reviewer === null || stage.approver === null)) {
+                    return null;
+                }
+                const stageOneReviewer = stageOverrides[0].reviewer || selectedOwner || 'Unassigned';
+                const stageOneApprover = stageOverrides[0].approver || getDefaultStageApprover(1);
                 const stageTwoReviewer = stageOverrides[1].reviewer || 'Pending Assignment';
                 const submittedDate = formatIso(new Date());
                 const dueDate = stageOverrides[0].dueDate || ($('notice-stage-deadline').value || '').slice(0, 10) || formatDateOffset(submittedDate, 5);
                 const frTarget = $('notice-fr-target').value || formatDateOffset(dueDate, 2);
-                const primaryFileName = `${title.replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g, '') || 'FRN_Document'}_v1.0.pdf`;
+                const primaryFileName = selectedPrimaryFiles[0]
+                    ? selectedPrimaryFiles[0].name
+                    : `${title.replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g, '') || 'FRN_Document'}_v1.0.pdf`;
+                const supportingAttachmentRecords = selectedSupportingFiles.length
+                    ? selectedSupportingFiles.map(file => ({
+                        icon: getFileIcon(file.name),
+                        name: file.name,
+                        size: formatBytes(file.size)
+                    }))
+                    : [{ icon: '📎', name: 'Supporting_Materials_Placeholder.pdf', size: '640 KB' }];
 
                 if (!title || !id) {
+                    alert('Document Title and FRN ID are required.');
                     return null;
                 }
 
@@ -1171,6 +1914,10 @@
                     currentStage: stageLabel,
                     stageNumber,
                     assignee: stageOneReviewer,
+                    documentOwner: stageOneReviewer,
+                    documentOwnerObjectId: documentOwnerInput.dataset.objectId || '',
+                    documentOwnerTenantId: documentOwnerInput.dataset.tenantId || actionUser.tenantId,
+                    documentOwnerUPN: documentOwnerInput.dataset.userPrincipalName || documentOwnerInput.dataset.mail || '',
                     submittedBy: actionUser.fullName,
                     submittedByObjectId: actionUser.objectId,
                     submittedByTenantId: actionUser.tenantId,
@@ -1182,15 +1929,21 @@
                     completedDate: null,
                     reviewCompletionDays: null,
                     attachments: [
-                        { icon: '📄', name: primaryFileName, size: '2.0 MB' },
-                        { icon: '📎', name: 'Supporting_Materials_Placeholder.pdf', size: '640 KB' }
+                        {
+                            icon: getFileIcon(primaryFileName),
+                            name: primaryFileName,
+                            size: selectedPrimaryFiles[0] ? formatBytes(selectedPrimaryFiles[0].size) : '2.0 MB'
+                        },
+                        ...supportingAttachmentRecords
                     ],
                     versions: [
                         { number: 'Version 1.0', meta: `Submitted ${new Date(submittedDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} • ${stageLabel}` }
                     ],
                     priorityLevel: 'Standard',
                     stageOwner: stageOneReviewer,
-                    nextReviewer: stageTwoReviewer,
+                    currentApprover: stageOneApprover,
+                    nextReviewer: stageOneApprover,
+                    nextStageReviewer: stageTwoReviewer,
                     stageDeadline: dueDate,
                     federalRegisterTarget: frTarget,
                     documentClassification: 'Agency Document',
@@ -1205,8 +1958,8 @@
                     praBurdenHours: Number($('notice-pra-hours').value || 0),
                     foiaSensitivity: 'Public',
                     privacyPII: 'None',
-                    legalPointOfContact: $('notice-legal-poc').value.trim() || 'Not Assigned',
-                    policyLead: $('notice-policy-lead').value.trim() || 'Not Assigned',
+                    legalPointOfContact: legalPointOfContact || 'Not Assigned',
+                    policyLead: policyLead || 'Not Assigned',
                     commentWindowOpens: submittedDate,
                     commentWindowCloses: frTarget,
                     riskCategory: 'Moderate',
@@ -1225,7 +1978,7 @@
                         }
                     ],
                     primaryDocument: primaryFileName,
-                    supportingDocuments: ['Supporting_Materials_Placeholder.pdf'],
+                    supportingDocuments: supportingAttachmentRecords.map(file => file.name),
                     stageAssignments: stageOverrides.map((stage, index) => ({
                         stage: stage.stageLabel,
                         owner: index + 1 === stageNumber
@@ -1233,17 +1986,19 @@
                             : index + 1 < stageNumber
                                 ? 'Completed'
                                 : (stage.reviewer || 'Pending Assignment'),
-                        dueDate: stage.dueDate || formatDateOffset(submittedDate, 3 + (index * 4))
+                        approver: stage.approver || getDefaultStageApprover(index + 1),
+                        dueDate: stage.dueDate || formatDateOffset(submittedDate, 3 + (index * 4)),
+                        approvalDueDate: stage.approvalDueDate || stage.dueDate || formatDateOffset(submittedDate, 4 + (index * 4))
                     }))
                 };
             }
 
-            function persistDocument(statusValue) {
+            async function persistDocument(statusValue) {
                 const record = buildDocumentRecord(statusValue);
                 if (!record) {
-                    alert('Document Title and FRN ID are required.');
                     return;
                 }
+                const actionUser = getCurrentActionUser();
 
                 const existingBase = ((window.FRN_DATA && window.FRN_DATA.documents) || []).map(doc => doc.id);
                 const customDocuments = loadCustomDocuments();
@@ -1261,6 +2016,17 @@
                     window.FRN_DATA.documents.push(record);
                 }
 
+                await sendWorkflowNotification('stage_start', {
+                    doc: record,
+                    actionUser,
+                    currentStage: '',
+                    nextStage: record.currentStage,
+                    currentStageNumber: 0,
+                    nextStageNumber: record.stageNumber || 1,
+                    nextAssignee: record.assignee,
+                    route: 'active-reviews'
+                });
+
                 const targetHref = 'DocumentLibrary.html';
                 if (typeof window.navigateFRN === 'function') {
                     window.navigateFRN('document-library', targetHref);
@@ -1271,7 +2037,24 @@
 
             const submitButton = $('submit-review-btn');
             if (submitButton) {
-                submitButton.addEventListener('click', () => persistDocument('active'));
+                submitButton.addEventListener('click', async () => {
+                    if (submitButton.disabled) {
+                        return;
+                    }
+
+                    const originalLabel = submitButton.textContent;
+                    submitButton.disabled = true;
+                    submitButton.textContent = 'Submitting...';
+
+                    try {
+                        await persistDocument('active');
+                    } finally {
+                        if (document.body.contains(submitButton)) {
+                            submitButton.disabled = false;
+                            submitButton.textContent = originalLabel;
+                        }
+                    }
+                });
             }
 
             const sourceDocuments = ((window.FRN_DATA && window.FRN_DATA.documents) || []);
@@ -1292,6 +2075,22 @@
                 ...sourceDocuments.flatMap(doc => [doc.assignee, doc.stageOwner, doc.nextReviewer, doc.submittedBy]),
                 ...(((window.FRN_DATA && window.FRN_DATA.teamGroups) || []).flatMap(group => group.members || []))
             ]);
+
+            initializePersonPickers();
+            initializeUploadWidget({
+                kind: 'primary',
+                dropZoneId: 'notice-primary-upload',
+                inputId: 'notice-primary-upload-input',
+                noteId: 'notice-primary-upload-note',
+                listId: 'notice-primary-upload-files'
+            });
+            initializeUploadWidget({
+                kind: 'supporting',
+                dropZoneId: 'notice-supporting-upload',
+                inputId: 'notice-supporting-upload-input',
+                noteId: 'notice-supporting-upload-note',
+                listId: 'notice-supporting-upload-files'
+            });
         })();
     </script>
 </body>

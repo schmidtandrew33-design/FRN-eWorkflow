@@ -10,6 +10,7 @@
     
     <link rel="stylesheet" href="src/shared.css">
     <script src="src/frn-data.js"></script>
+    <script src="src/notifications.js"></script>
     <style>
         /* === COPY ALL CSS FROM Active Reviews.html === */
         /* This ensures exact same styling */
@@ -2845,6 +2846,30 @@ let currentDeadlines = [];
             setApprovalStatusMessage(successMessage, 'success');
         }
 
+        function sendWorkflowNotification(eventType, payload) {
+            if (!window.FRN_NOTIFICATIONS || typeof window.FRN_NOTIFICATIONS.notify !== 'function') {
+                console.warn('[FRN Workflow] Notification service unavailable.', {
+                    eventType,
+                    documentId: (payload && payload.doc && payload.doc.id) || ''
+                });
+                return;
+            }
+            console.groupCollapsed(`[FRN Workflow] Triggering ${eventType}`);
+            console.log({
+                documentId: (payload && payload.doc && payload.doc.id) || '',
+                documentTitle: (payload && payload.doc && payload.doc.title) || '',
+                currentStage: payload && payload.currentStage,
+                nextStage: payload && payload.nextStage,
+                route: payload && payload.route,
+                actionUser: payload && payload.actionUser
+            });
+            console.log('Payload:', payload);
+            console.groupEnd();
+            window.FRN_NOTIFICATIONS.notify(eventType, payload).catch(error => {
+                console.warn(`Unable to dispatch ${eventType} notification.`, error);
+            });
+        }
+
         function recordDocumentSignature() {
             if (!selectedDocument) return;
             const sharedDoc = getSharedDocumentRecord(selectedDocument.id);
@@ -2878,6 +2903,7 @@ let currentDeadlines = [];
             if (!selectedDocument) return;
             const sharedDoc = getSharedDocumentRecord(selectedDocument.id);
             if (!sharedDoc) return;
+            const actionUser = getCurrentActionUser();
             const reviewPhase = sharedDoc.reviewPhase || (sharedDoc.status === 'pending' ? 'approval' : 'review');
             if (reviewPhase !== 'approval') {
                 setApprovalStatusMessage('Submit the review from Active Reviews before sending this document through approval.', 'error');
@@ -2938,6 +2964,30 @@ let currentDeadlines = [];
             persistWorkflowUpdate(updatedRecord, nextStage > 7
                 ? 'Document accepted and published.'
                 : `Document accepted and advanced to ${updatedRecord.currentStage}.`);
+
+            sendWorkflowNotification('document_approved', {
+                doc: updatedRecord,
+                actionUser,
+                currentStage: sharedDoc.currentStage,
+                nextStage: nextStage > 7 ? 'Published' : updatedRecord.currentStage,
+                currentStageNumber: currentStage,
+                nextStageNumber: nextStage > 7 ? 7 : nextStage,
+                nextAssignee: updatedRecord.assignee,
+                route: nextStage > 7 ? 'document-library' : 'active-reviews'
+            });
+
+            if (nextStage <= 7) {
+                sendWorkflowNotification('stage_start', {
+                    doc: updatedRecord,
+                    actionUser,
+                    currentStage: sharedDoc.currentStage,
+                    nextStage: updatedRecord.currentStage,
+                    currentStageNumber: currentStage,
+                    nextStageNumber: nextStage,
+                    nextAssignee: updatedRecord.assignee,
+                    route: 'active-reviews'
+                });
+            }
         }
 
         function rejectPendingDocument() {
@@ -2993,6 +3043,14 @@ let currentDeadlines = [];
             saveStoredPendingApprovalComments();
 
             persistWorkflowUpdate(updatedRecord, `Document rejected and reset to the beginning of ${updatedRecord.currentStage}.`);
+            sendWorkflowNotification('document_rejected', {
+                doc: updatedRecord,
+                actionUser,
+                currentStage: updatedRecord.currentStage,
+                currentStageNumber: currentStage,
+                rejectionNotes,
+                route: 'active-reviews'
+            });
             if (notesField) {
                 notesField.value = '';
             }

@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/shared.css">
+    <script src="src/notifications.js"></script>
     <style>
         :root {
             --navy: #002147;
@@ -403,6 +404,58 @@
             color: var(--navy);
         }
 
+        .status-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 0.95rem;
+            padding: 0.9rem 1rem;
+            border: 2px solid var(--navy);
+            background: white;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .status-copy {
+            font-size: 0.88rem;
+            line-height: 1.45;
+            color: var(--gray);
+        }
+
+        .status-badges {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            flex-wrap: wrap;
+        }
+
+        .pill.good {
+            background: rgba(46, 125, 50, 0.12);
+            color: #1d5f26;
+        }
+
+        .pill.alert {
+            background: rgba(128, 0, 32, 0.1);
+            color: var(--burgundy);
+        }
+
+        .field-help {
+            font-size: 0.8rem;
+            color: var(--gray);
+            line-height: 1.45;
+        }
+
+        .relay-actions {
+            justify-content: flex-start;
+            margin-top: 0.85rem;
+        }
+
         .disclaimer-pane {
             background: var(--navy);
             border-top: 8px solid var(--gold);
@@ -643,6 +696,36 @@
                         </div>
 
                         <div class="settings-card">
+                            <h3>Email Routing Defaults</h3>
+                            <div class="field-grid">
+                                <div class="field">
+                                    <label for="notification-transport-mode">Delivery Mode</label>
+                                    <select id="notification-transport-mode">
+                                        <option value="outbox">Local Outbox Only</option>
+                                        <option value="power_automate">Power Automate HTTP Flow</option>
+                                        <option value="relay">Outlook Relay Endpoint</option>
+                                    </select>
+                                </div>
+                                <div class="field">
+                                    <label for="notification-email-domain">Default Email Domain</label>
+                                    <input id="notification-email-domain" type="text" value="epa.gov">
+                                </div>
+                                <div class="field">
+                                    <label for="notification-reply-to">Reply-To Address</label>
+                                    <input id="notification-reply-to" type="text" value="">
+                                </div>
+                                <div class="field full-width">
+                                    <label for="notification-default-cc">Default CC Recipients</label>
+                                    <textarea id="notification-default-cc">workflow.coordinator@epa.gov</textarea>
+                                </div>
+                                <div class="field full-width">
+                                    <label>Routing Behavior</label>
+                                    <textarea readonly>Recipient email addresses are resolved from workflow participants and stage owners using the default email domain unless a user already has a full email address or UPN value. Power Automate mode posts a notification payload to an HTTP-triggered cloud flow. Outlook relay mode posts workflow emails to a server-side endpoint that authenticates with Microsoft 365.</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
                             <h3>Default Timing Rules</h3>
                             <div class="field-grid">
                                 <div class="field">
@@ -682,6 +765,41 @@
                                     <textarea>Use immediate delivery for escalations and signer-related workflow events. All other operational reminders may follow the morning digest schedule.</textarea>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <h3>Runtime Delivery Diagnostics</h3>
+                            <div class="field-grid">
+                                <div class="field">
+                                    <label for="diagnostic-transport-mode">Current Saved Delivery Mode</label>
+                                    <input id="diagnostic-transport-mode" type="text" value="" readonly>
+                                </div>
+                                <div class="field">
+                                    <label for="diagnostic-stage-start-enabled">Stage Start Enabled</label>
+                                    <input id="diagnostic-stage-start-enabled" type="text" value="" readonly>
+                                </div>
+                                <div class="field full-width">
+                                    <label for="diagnostic-endpoint">Current Saved Delivery Endpoint</label>
+                                    <input id="diagnostic-endpoint" type="text" value="" readonly>
+                                </div>
+                                <div class="field">
+                                    <label for="diagnostic-mailbox">Saved Service Mailbox</label>
+                                    <input id="diagnostic-mailbox" type="text" value="" readonly>
+                                </div>
+                                <div class="field">
+                                    <label for="diagnostic-outbox-count">Queued Outbox Messages</label>
+                                    <input id="diagnostic-outbox-count" type="text" value="" readonly>
+                                </div>
+                                <div class="field full-width">
+                                    <label for="diagnostic-last-result">Latest Test Result</label>
+                                    <textarea id="diagnostic-last-result" readonly>No runtime diagnostic has been run yet.</textarea>
+                                </div>
+                            </div>
+                            <div class="actions relay-actions">
+                                <button class="btn btn-secondary" id="refresh-delivery-diagnostics" type="button">Refresh Diagnostics</button>
+                                <button class="btn btn-primary" id="run-delivery-diagnostic" type="button">Send Test Notification</button>
+                            </div>
+                            <div class="field-help" style="margin-top:0.85rem;">The test notification uses the current signed-in user as both the action user and the recipient so you can verify the saved delivery mode and endpoint from inside the published app.</div>
                         </div>
                     </div>
                 </section>
@@ -756,8 +874,9 @@
 
                     <div class="actions">
                         <a class="btn btn-secondary" href="settings.html">Back to Settings</a>
-                        <button class="btn btn-primary" type="button">Save Notification Rules</button>
+                        <button class="btn btn-primary" id="save-notification-rules" type="button">Save Notification Rules</button>
                     </div>
+                    <div id="notification-save-status" class="section-intro" style="margin-top:0.8rem; margin-bottom:0;">Saved notification rules are used for approval, rejection, and stage advancement emails.</div>
                 </section>
 
                 <div class="disclaimer-pane">
@@ -793,6 +912,138 @@
     </div>
     <script>
         (function () {
+            const notificationsApi = window.FRN_NOTIFICATIONS;
+            const channelFieldMap = {
+                stage_start: {
+                    checkbox: '.toggle-row:nth-of-type(1) .toggle-switch input',
+                    body: '#channel-body-stage-start'
+                },
+                ready_for_approval: {
+                    checkbox: '.toggle-row:nth-of-type(2) .toggle-switch input',
+                    body: '#channel-body-ready-approval'
+                },
+                document_approved: {
+                    checkbox: '.toggle-row:nth-of-type(3) .toggle-switch input',
+                    body: '#channel-body-approved'
+                },
+                document_rejected: {
+                    checkbox: '.toggle-row:nth-of-type(4) .toggle-switch input',
+                    body: '#channel-body-rejected'
+                }
+            };
+
+            function setButtonBusy(button, isBusy, label) {
+                if (!button) return;
+                if (!button.dataset.defaultLabel) {
+                    button.dataset.defaultLabel = button.textContent;
+                }
+                button.disabled = isBusy;
+                button.textContent = isBusy ? label : button.dataset.defaultLabel;
+            }
+
+            function setStatus(message, isError) {
+                const status = document.getElementById('notification-save-status');
+                if (!status) return;
+                status.textContent = message;
+                status.style.color = isError ? '#800020' : '#666';
+            }
+
+            function populateNotificationForm() {
+                if (!notificationsApi) {
+                    setStatus('Notification service is unavailable on this page.', true);
+                    return;
+                }
+                const settings = notificationsApi.loadSettings();
+                document.getElementById('notification-transport-mode').value = (settings.transport && settings.transport.mode) || 'outbox';
+                document.getElementById('notification-email-domain').value = settings.emailDomain || '';
+                document.getElementById('notification-default-cc').value = settings.defaultCc || '';
+                document.getElementById('notification-reply-to').value = settings.replyTo || '';
+
+                Object.entries(channelFieldMap).forEach(([eventType, selectors]) => {
+                    const channel = settings.channels[eventType] || {};
+                    const checkbox = document.querySelector(selectors.checkbox);
+                    const body = document.querySelector(selectors.body);
+                    if (checkbox) checkbox.checked = Boolean(channel.enabled);
+                    if (body) body.value = channel.body || '';
+                });
+            }
+
+            function setDiagnosticFieldValue(id, value) {
+                const field = document.getElementById(id);
+                if (field) {
+                    field.value = value;
+                }
+            }
+
+            function formatDiagnosticResult(result) {
+                if (!result) {
+                    return 'No result returned.';
+                }
+                if (result.skipped) {
+                    return `Skipped: ${result.reason || 'unspecified'}`;
+                }
+                const message = result.message || {};
+                return [
+                    `Status: ${message.status || 'unknown'}`,
+                    `Event: ${message.eventType || ''}`,
+                    `Subject: ${message.subject || ''}`,
+                    `Recipients: ${(message.to || []).join(', ') || '(none)'}`,
+                    `CC: ${(message.cc || []).join(', ') || '(none)'}`,
+                    `Message ID: ${message.id || ''}`
+                ].join('\n');
+            }
+
+            function refreshDeliveryDiagnostics(lastResultText) {
+                if (!notificationsApi) {
+                    setDiagnosticFieldValue('diagnostic-transport-mode', 'Notification service unavailable');
+                    setDiagnosticFieldValue('diagnostic-stage-start-enabled', 'Unknown');
+                    setDiagnosticFieldValue('diagnostic-endpoint', '');
+                    setDiagnosticFieldValue('diagnostic-mailbox', '');
+                    setDiagnosticFieldValue('diagnostic-outbox-count', '0');
+                    if (typeof lastResultText === 'string') {
+                        setDiagnosticFieldValue('diagnostic-last-result', lastResultText);
+                    }
+                    return;
+                }
+
+                const settings = notificationsApi.loadSettings();
+                const outbox = notificationsApi.loadOutbox();
+                const transport = settings.transport || {};
+                const stageStart = (settings.channels || {}).stage_start || {};
+                setDiagnosticFieldValue('diagnostic-transport-mode', transport.mode || 'outbox');
+                setDiagnosticFieldValue('diagnostic-stage-start-enabled', stageStart.enabled ? 'Yes' : 'No');
+                setDiagnosticFieldValue('diagnostic-endpoint', transport.endpoint || '(blank)');
+                setDiagnosticFieldValue('diagnostic-mailbox', transport.mailbox || '(blank)');
+                setDiagnosticFieldValue('diagnostic-outbox-count', String(Array.isArray(outbox) ? outbox.length : 0));
+                if (typeof lastResultText === 'string') {
+                    setDiagnosticFieldValue('diagnostic-last-result', lastResultText);
+                }
+            }
+
+            function readNotificationForm() {
+                const settings = notificationsApi ? notificationsApi.loadSettings() : {};
+                return {
+                    ...settings,
+                    emailDomain: document.getElementById('notification-email-domain').value.trim() || 'epa.gov',
+                    defaultCc: document.getElementById('notification-default-cc').value.trim(),
+                    replyTo: document.getElementById('notification-reply-to').value.trim(),
+                    transport: {
+                        mode: document.getElementById('notification-transport-mode').value,
+                        endpoint: ((settings.transport || {}).endpoint) || '',
+                        mailbox: ((settings.transport || {}).mailbox) || ''
+                    },
+                    channels: Object.entries(channelFieldMap).reduce((channels, [eventType, selectors]) => {
+                        const checkbox = document.querySelector(selectors.checkbox);
+                        const body = document.querySelector(selectors.body);
+                        channels[eventType] = {
+                            enabled: checkbox ? checkbox.checked : true,
+                            body: body ? body.value.trim() : ''
+                        };
+                        return channels;
+                    }, {})
+                };
+            }
+
             document.querySelectorAll('.toggle-expand-btn').forEach(button => {
                 button.addEventListener('click', () => {
                     const targetId = button.getAttribute('aria-controls');
@@ -803,6 +1054,85 @@
                     button.textContent = isOpen ? '−' : '+';
                 });
             });
+
+            const saveButton = document.getElementById('save-notification-rules');
+            if (saveButton) {
+                saveButton.addEventListener('click', async () => {
+                    if (!notificationsApi) {
+                        setStatus('Notification service is unavailable on this page.', true);
+                        return;
+                    }
+                    try {
+                        setButtonBusy(saveButton, true, 'Saving...');
+                        notificationsApi.saveSettings(readNotificationForm());
+                        setStatus('Notification routing rules saved. New workflow transitions will use these email settings.', false);
+                    } finally {
+                        setButtonBusy(saveButton, false);
+                    }
+                });
+            }
+
+            const refreshDiagnosticButton = document.getElementById('refresh-delivery-diagnostics');
+            if (refreshDiagnosticButton) {
+                refreshDiagnosticButton.addEventListener('click', () => {
+                    refreshDeliveryDiagnostics('Diagnostics refreshed from saved notification settings.');
+                });
+            }
+
+            const runDiagnosticButton = document.getElementById('run-delivery-diagnostic');
+            if (runDiagnosticButton) {
+                runDiagnosticButton.addEventListener('click', async () => {
+                    if (!notificationsApi) {
+                        setStatus('Notification service is unavailable on this page.', true);
+                        refreshDeliveryDiagnostics('Notification service is unavailable on this page.');
+                        return;
+                    }
+
+                    try {
+                        setButtonBusy(runDiagnosticButton, true, 'Testing...');
+                        const currentUser = typeof window.getFRNCurrentUser === 'function'
+                            ? (window.getFRNCurrentUser() || {})
+                            : (window.FRN_CURRENT_USER || {});
+                        const displayName = currentUser.fullName || 'FRN Diagnostic User';
+                        const result = await notificationsApi.notify('stage_start', {
+                            doc: {
+                                id: 'FRN-DIAGNOSTIC',
+                                title: 'Notification delivery diagnostic',
+                                currentStage: 'Diagnostic Preparation',
+                                assignee: displayName,
+                                stageOwner: displayName,
+                                nextReviewer: displayName,
+                                submittedBy: displayName,
+                                submittedByUPN: currentUser.userPrincipalName || ''
+                            },
+                            actionUser: {
+                                fullName: displayName,
+                                userPrincipalName: currentUser.userPrincipalName || '',
+                                objectId: currentUser.objectId || '',
+                                tenantId: currentUser.tenantId || ''
+                            },
+                            currentStage: 'Diagnostic Preparation',
+                            nextStage: 'Diagnostic Delivery Test',
+                            currentStageNumber: 0,
+                            nextStageNumber: 1,
+                            nextAssignee: displayName,
+                            route: 'notifications-escalations'
+                        });
+                        const diagnosticText = formatDiagnosticResult(result);
+                        refreshDeliveryDiagnostics(diagnosticText);
+                        setStatus(`Notification diagnostic completed. ${diagnosticText.split('\n')[0]}`, false);
+                    } catch (error) {
+                        const errorText = `Diagnostic failed: ${error.message || error}`;
+                        refreshDeliveryDiagnostics(errorText);
+                        setStatus(errorText, true);
+                    } finally {
+                        setButtonBusy(runDiagnosticButton, false);
+                    }
+                });
+            }
+
+            populateNotificationForm();
+            refreshDeliveryDiagnostics();
         })();
     </script>
 </body>

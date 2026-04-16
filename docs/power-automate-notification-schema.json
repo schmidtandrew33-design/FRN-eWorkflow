@@ -1,0 +1,146 @@
+{
+  "type": "object",
+  "properties": {
+    "eventType": {
+      "type": "string"
+    },
+    "notificationId": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "transportMode": {
+      "type": "string"
+    },
+    "mailbox": {
+      "type": "string"
+    },
+    "recipients": {
+      "type": "object",
+      "properties": {
+        "to": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "cc": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "replyTo": {
+          "type": "string"
+        }
+      }
+    },
+    "message": {
+      "type": "object",
+      "properties": {
+        "subject": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        }
+      }
+    },
+    "document": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "currentStage": {
+          "type": "string"
+        },
+        "nextStage": {
+          "type": "string"
+        },
+        "submittedBy": {
+          "type": "string"
+        },
+        "stageOwner": {
+          "type": "string"
+        },
+        "nextReviewer": {
+          "type": "string"
+        },
+        "link": {
+          "type": "string"
+        }
+      }
+    },
+    "actionUser": {
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "type": "string"
+        },
+        "userPrincipalName": {
+          "type": "string"
+        },
+        "objectId": {
+          "type": "string"
+        },
+        "tenantId": {
+          "type": "string"
+        }
+      }
+    },
+    "templateContext": {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "type": "string"
+        },
+        "documentId": {
+          "type": "string"
+        },
+        "documentTitle": {
+          "type": "string"
+        },
+        "currentStage": {
+          "type": "string"
+        },
+        "nextStage": {
+          "type": "string"
+        },
+        "stageOwner": {
+          "type": "string"
+        },
+        "nextReviewer": {
+          "type": "string"
+        },
+        "submittedBy": {
+          "type": "string"
+        },
+        "actionUser": {
+          "type": "string"
+        },
+        "rejectionNotes": {
+          "type": "string"
+        },
+        "approvalSubmittedBy": {
+          "type": "string"
+        },
+        "documentLink": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "eventType",
+    "notificationId",
+    "createdAt",
+    "recipients",
+    "message",
+    "document"
+  ]
+}

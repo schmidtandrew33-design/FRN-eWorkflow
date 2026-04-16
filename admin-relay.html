@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Relay - EPA FRN Approval System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/shared.css">
+    <script src="src/notifications.js"></script>
+    <style>
+        :root {
+            --navy: #002147;
+            --gold: #b8860b;
+            --burgundy: #800020;
+            --cream: #faf8f3;
+            --parchment: #f4f1e8;
+            --light-gray: #e0e0e0;
+            --gray: #666;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Source Serif 4', serif; background: var(--cream); color: var(--navy); overflow-x: hidden; }
+
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+            margin-left: 285px;
+            width: calc(100vw - 285px);
+            min-height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .main-content {
+            flex: 1;
+            min-height: 100vh;
+            padding: 0 0.25rem;
+            background: var(--cream);
+        }
+
+        .container {
+            margin: 0;
+            max-width: none;
+            padding: 0.3rem 1rem 2.5rem;
+        }
+
+        header {
+            background: white;
+            border: 3px solid var(--navy);
+            border-top: 8px solid var(--gold);
+            padding: 1.2rem 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .header-seal {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 4px solid var(--gold);
+            background: linear-gradient(135deg, var(--navy), var(--burgundy));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            flex-shrink: 0;
+        }
+
+        .department {
+            font-size: 1.3rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2.35rem;
+            color: var(--navy);
+            margin-bottom: 0.35rem;
+        }
+
+        .tagline {
+            font-size: 1.05rem;
+            color: var(--burgundy);
+            font-weight: 800;
+        }
+
+        .section {
+            background: white;
+            border: 2px solid var(--navy);
+            border-left: 6px solid var(--gold);
+            margin-bottom: 1rem;
+            padding: 1.15rem 1.2rem 1.25rem;
+        }
+
+        .section h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.35rem;
+            color: var(--navy);
+            margin-bottom: 1rem;
+        }
+
+        .section-intro {
+            font-size: 0.95rem;
+            color: var(--gray);
+            line-height: 1.55;
+            margin-bottom: 1rem;
+        }
+
+        .settings-card {
+            background: var(--parchment);
+            border: 2px solid var(--navy);
+            padding: 1rem;
+        }
+
+        .settings-card h3 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1rem;
+            margin-bottom: 0.85rem;
+            color: var(--navy);
+        }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.85rem 1rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .field label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--gray);
+            font-weight: 700;
+        }
+
+        .field input,
+        .field textarea {
+            width: 100%;
+            padding: 0.72rem 0.8rem;
+            border: 2px solid var(--navy);
+            background: white;
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.92rem;
+            color: var(--navy);
+        }
+
+        .field textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .field-help {
+            font-size: 0.8rem;
+            color: var(--gray);
+            line-height: 1.45;
+        }
+
+        .status-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 0.95rem;
+            padding: 0.9rem 1rem;
+            border: 2px solid var(--navy);
+            background: white;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .status-copy {
+            font-size: 0.88rem;
+            line-height: 1.45;
+            color: var(--gray);
+        }
+
+        .status-badges {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 0.28rem 0.6rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border: 1px solid var(--navy);
+            background: white;
+        }
+
+        .pill.good {
+            background: rgba(46, 125, 50, 0.12);
+            color: #1d5f26;
+        }
+
+        .pill.alert {
+            background: rgba(128, 0, 32, 0.1);
+            color: var(--burgundy);
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.85rem;
+            margin-top: 1rem;
+        }
+
+        .relay-actions {
+            justify-content: flex-start;
+            margin-top: 0.85rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.2rem;
+            border: 2px solid var(--navy);
+            font-family: 'Source Serif 4', serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.25s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--navy);
+        }
+
+        .btn-secondary:hover {
+            background: var(--parchment);
+        }
+
+        .btn-primary {
+            background: var(--navy);
+            color: var(--gold);
+            border-color: var(--gold);
+        }
+
+        .btn-primary:hover {
+            background: var(--gold);
+            color: var(--navy);
+        }
+    </style>
+</head>
+<body>
+    <nav class="left-sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-seal">
+                <img src="Images/EPA Seal.png" alt="EPA Seal" style="width:100%; height:100%; object-fit:cover; object-position:0% center; border-radius:50%;">
+            </div>
+            <div class="logo-text">Environmental<br>Protection<br>Agency</div>
+        </div>
+    </nav>
+
+    <div class="content-wrapper">
+        <div class="main-content">
+            <div class="container">
+                <header>
+                    <div class="header-seal">🛡️</div>
+                    <div class="header-content">
+                        <div class="department">Environmental Protection Agency</div>
+                        <h1>Federal Register Notice (FRN) Approval Workflow</h1>
+                        <div class="tagline">Microsoft 365 Relay Administration</div>
+                    </div>
+                </header>
+
+                <section class="section">
+                    <h2>Relay Administration</h2>
+                    <div class="section-intro">This page manages workstation-level Microsoft 365 relay credentials and the service mailbox used for FRN workflow notifications and Entra directory lookups. Access is restricted to the relay administrator account.</div>
+
+                    <div class="settings-card">
+                        <h3>Microsoft 365 Relay Administration</h3>
+                        <div class="field-grid">
+                            <div class="field">
+                                <label for="relay-tenant-id">Tenant ID</label>
+                                <input id="relay-tenant-id" type="text" value="" autocomplete="off">
+                            </div>
+                            <div class="field">
+                                <label for="relay-client-id">Client ID</label>
+                                <input id="relay-client-id" type="text" value="" autocomplete="off">
+                            </div>
+                            <div class="field full-width">
+                                <label for="relay-endpoint">Delivery Endpoint URL</label>
+                                <input id="relay-endpoint" type="text" value="" autocomplete="off">
+                                <div class="field-help">Set the HTTP endpoint used by workflow notifications. Use the local relay URL for Outlook relay mode or the Power Automate trigger URL for Power Automate mode.</div>
+                            </div>
+                            <div class="field full-width">
+                                <label for="relay-mailbox">Service Mailbox Address</label>
+                                <input id="relay-mailbox" type="text" value="" autocomplete="off">
+                            </div>
+                            <div class="field full-width">
+                                <label for="relay-client-secret">Client Secret</label>
+                                <input id="relay-client-secret" type="password" value="" autocomplete="new-password" placeholder="Enter a new secret to store on this workstation">
+                                <div class="field-help">The saved secret is stored server-side in the local relay configuration file and is never read back into the browser.</div>
+                            </div>
+                            <div class="field full-width">
+                                <label>Relay Ownership</label>
+                                <textarea readonly>The relay configuration is written to the workstation running the local Node relay. Use this page when handing off the application so tenant, app registration, and mailbox details can be updated without editing environment variables. The app registration should have Microsoft Graph application permissions such as Mail.Send and User.Read.All with admin consent.</textarea>
+                            </div>
+                        </div>
+
+                        <div class="status-panel">
+                            <div class="status-row">
+                                <div class="status-copy" id="relay-config-summary">Relay configuration has not been loaded from the local relay yet.</div>
+                                <div class="status-badges">
+                                    <span class="pill" id="relay-health-pill">Unavailable</span>
+                                    <span class="pill" id="relay-secret-pill">Secret Unknown</span>
+                                </div>
+                            </div>
+                            <div class="status-copy" id="relay-config-path">Configuration file path will appear here after the relay responds.</div>
+                        </div>
+
+                        <div class="actions relay-actions">
+                            <button class="btn btn-secondary" id="refresh-relay-config" type="button">Refresh Relay Status</button>
+                            <button class="btn btn-secondary" id="test-relay-config" type="button">Validate Microsoft 365 Auth</button>
+                            <button class="btn btn-primary" id="save-relay-config" type="button">Save Relay Configuration</button>
+                        </div>
+                    </div>
+                    <div id="relay-save-status" class="section-intro" style="margin-top:0.8rem; margin-bottom:0;">Relay administration changes are saved to the local workstation and the shared notification settings.</div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function () {
+            const notificationsApi = window.FRN_NOTIFICATIONS;
+            const relayConfigEndpoint = 'http://127.0.0.1:3001/api/relay-config';
+            const relayTestEndpoint = 'http://127.0.0.1:3001/api/relay-config/test';
+            const ADMIN_RELAY_CACHE_KEY = 'frn_admin_relay_cache';
+
+            function setButtonBusy(button, isBusy, label) {
+                if (!button) return;
+                if (!button.dataset.defaultLabel) {
+                    button.dataset.defaultLabel = button.textContent;
+                }
+                button.disabled = isBusy;
+                button.textContent = isBusy ? label : button.dataset.defaultLabel;
+            }
+
+            function setStatus(message, isError) {
+                const status = document.getElementById('relay-save-status');
+                if (!status) return;
+                status.textContent = message;
+                status.style.color = isError ? '#800020' : '#666';
+            }
+
+            function loadAdminRelayCache() {
+                try {
+                    const stored = window.localStorage.getItem(ADMIN_RELAY_CACHE_KEY);
+                    const parsed = stored ? JSON.parse(stored) : {};
+                    return parsed && typeof parsed === 'object' ? parsed : {};
+                } catch (error) {
+                    console.warn('Unable to load admin relay cache.', error);
+                    return {};
+                }
+            }
+
+            function saveAdminRelayCache(nextCache) {
+                try {
+                    window.localStorage.setItem(ADMIN_RELAY_CACHE_KEY, JSON.stringify(nextCache));
+                } catch (error) {
+                    console.warn('Unable to persist admin relay cache.', error);
+                }
+            }
+
+            function updateSecretFieldState(hasSavedSecret) {
+                const secretField = document.getElementById('relay-client-secret');
+                if (!secretField) return;
+                if (hasSavedSecret) {
+                    secretField.placeholder = 'Secret saved. Enter a new value only if you want to replace it.';
+                } else {
+                    secretField.placeholder = 'Enter a new secret to store on this workstation';
+                }
+            }
+
+            function setRelaySummary(config, overrideMessage) {
+                const summary = document.getElementById('relay-config-summary');
+                const path = document.getElementById('relay-config-path');
+                const healthPill = document.getElementById('relay-health-pill');
+                const secretPill = document.getElementById('relay-secret-pill');
+                if (!summary || !path || !healthPill || !secretPill) return;
+
+                if (!config) {
+                    summary.textContent = overrideMessage || 'Relay configuration is unavailable.';
+                    path.textContent = 'The local relay did not return a configuration payload.';
+                    healthPill.textContent = 'Unavailable';
+                    healthPill.className = 'pill alert';
+                    secretPill.textContent = 'Secret Unknown';
+                    secretPill.className = 'pill';
+                    return;
+                }
+
+                summary.textContent = overrideMessage || (config.relayConfigured
+                    ? 'The local relay has the Microsoft 365 values required to authenticate and send workflow email.'
+                    : 'The local relay is reachable, but one or more Microsoft 365 values are still missing.');
+                path.textContent = config.configPath
+                    ? `Local configuration file: ${config.configPath}`
+                    : 'The relay did not report a configuration file path.';
+                healthPill.textContent = config.relayConfigured ? 'Configured' : 'Needs Setup';
+                healthPill.className = `pill ${config.relayConfigured ? 'good' : 'alert'}`;
+                secretPill.textContent = config.hasClientSecret ? 'Secret Saved' : 'Secret Missing';
+                secretPill.className = `pill ${config.hasClientSecret ? 'good' : 'alert'}`;
+            }
+
+            function populateRelayForm(config) {
+                if (!config) {
+                    return;
+                }
+                document.getElementById('relay-tenant-id').value = config.tenantId || '';
+                document.getElementById('relay-client-id').value = config.clientId || '';
+                document.getElementById('relay-mailbox').value = config.defaultMailbox || '';
+                populateAdminSettingsFromNotifications();
+                saveAdminRelayCache({
+                    tenantId: config.tenantId || '',
+                    clientId: config.clientId || '',
+                    defaultMailbox: config.defaultMailbox || '',
+                    endpoint: document.getElementById('relay-endpoint').value.trim(),
+                    hasClientSecret: Boolean(config.hasClientSecret)
+                });
+                updateSecretFieldState(Boolean(config.hasClientSecret));
+                setRelaySummary(config);
+            }
+
+            async function fetchRelayConfig() {
+                const response = await window.fetch(relayConfigEndpoint, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error(`Relay returned HTTP ${response.status}`);
+                }
+                return response.json();
+            }
+
+            function readRelayForm(includeSecret) {
+                const payload = {
+                    tenantId: document.getElementById('relay-tenant-id').value.trim(),
+                    clientId: document.getElementById('relay-client-id').value.trim(),
+                    defaultMailbox: document.getElementById('relay-mailbox').value.trim()
+                };
+                if (includeSecret) {
+                    payload.clientSecret = document.getElementById('relay-client-secret').value;
+                }
+                return payload;
+            }
+
+            function saveAdminNotificationSettings() {
+                if (!notificationsApi) {
+                    return;
+                }
+                const settings = notificationsApi.loadSettings();
+                notificationsApi.saveSettings({
+                    ...settings,
+                    transport: {
+                        ...(settings.transport || {}),
+                        endpoint: document.getElementById('relay-endpoint').value.trim(),
+                        mailbox: document.getElementById('relay-mailbox').value.trim()
+                    }
+                });
+            }
+
+            function populateAdminFieldsFromCache() {
+                const cache = loadAdminRelayCache();
+                const tenantField = document.getElementById('relay-tenant-id');
+                const clientField = document.getElementById('relay-client-id');
+                const endpointField = document.getElementById('relay-endpoint');
+                const mailboxField = document.getElementById('relay-mailbox');
+                if (tenantField) {
+                    tenantField.value = cache.tenantId || '';
+                }
+                if (clientField) {
+                    clientField.value = cache.clientId || '';
+                }
+                if (endpointField && cache.endpoint) {
+                    endpointField.value = cache.endpoint;
+                }
+                if (mailboxField && cache.defaultMailbox) {
+                    mailboxField.value = cache.defaultMailbox;
+                }
+                updateSecretFieldState(Boolean(cache.hasClientSecret));
+            }
+
+            function populateAdminSettingsFromNotifications() {
+                if (!notificationsApi) {
+                    return;
+                }
+                const settings = notificationsApi.loadSettings();
+                const transport = settings.transport || {};
+                const endpointField = document.getElementById('relay-endpoint');
+                const mailboxField = document.getElementById('relay-mailbox');
+                if (endpointField) {
+                    endpointField.value = transport.endpoint || 'http://127.0.0.1:3001/api/send-mail';
+                }
+                if (mailboxField && !mailboxField.value.trim()) {
+                    mailboxField.value = transport.mailbox || '';
+                }
+            }
+
+            function persistCurrentAdminFields(hasClientSecret = null) {
+                const currentCache = loadAdminRelayCache();
+                saveAdminRelayCache({
+                    ...currentCache,
+                    tenantId: document.getElementById('relay-tenant-id').value.trim(),
+                    clientId: document.getElementById('relay-client-id').value.trim(),
+                    defaultMailbox: document.getElementById('relay-mailbox').value.trim(),
+                    endpoint: document.getElementById('relay-endpoint').value.trim(),
+                    hasClientSecret: hasClientSecret == null ? Boolean(currentCache.hasClientSecret) : Boolean(hasClientSecret)
+                });
+                updateSecretFieldState(hasClientSecret == null ? Boolean(currentCache.hasClientSecret) : Boolean(hasClientSecret));
+            }
+
+            async function refreshRelayConfig(showStatusMessage) {
+                const refreshButton = document.getElementById('refresh-relay-config');
+                try {
+                    setButtonBusy(refreshButton, true, 'Refreshing...');
+                    const relayConfig = await fetchRelayConfig();
+                    populateRelayForm(relayConfig);
+                    if (showStatusMessage) {
+                        setStatus('Loaded relay settings from the local Outlook relay.', false);
+                    }
+                } catch (error) {
+                    setRelaySummary(null, 'The local Outlook relay could not be reached. Start the relay on port 3001 to manage server-side credentials.');
+                    if (showStatusMessage) {
+                        setStatus(`Unable to load relay configuration: ${error.message}`, true);
+                    }
+                } finally {
+                    setButtonBusy(refreshButton, false);
+                }
+            }
+
+            async function saveRelayConfig() {
+                const response = await window.fetch(relayConfigEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(readRelayForm(true))
+                });
+                const payload = await response.json();
+                if (!response.ok) {
+                    throw new Error(payload.error || `Relay returned HTTP ${response.status}`);
+                }
+                document.getElementById('relay-client-secret').value = '';
+                if (payload.config) {
+                    populateRelayForm(payload.config);
+                } else {
+                    persistCurrentAdminFields();
+                }
+                return payload;
+            }
+
+            async function validateRelayConfig() {
+                const testButton = document.getElementById('test-relay-config');
+                try {
+                    setButtonBusy(testButton, true, 'Validating...');
+                    const response = await window.fetch(relayTestEndpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(readRelayForm(true))
+                    });
+                    const payload = await response.json();
+                    if (!response.ok) {
+                        throw new Error(payload.error || `Relay returned HTTP ${response.status}`);
+                    }
+                    setStatus(`Microsoft 365 authentication succeeded for tenant ${payload.authenticatedTenant}.`, false);
+                    setRelaySummary({
+                        ...readRelayForm(false),
+                        hasClientSecret: true,
+                        relayConfigured: true,
+                        configPath: document.getElementById('relay-config-path').textContent.replace('Local configuration file: ', '')
+                    }, 'The relay authenticated successfully with Microsoft 365 using the values shown on this page.');
+                } catch (error) {
+                    setStatus(`Microsoft 365 authentication failed: ${error.message}`, true);
+                } finally {
+                    setButtonBusy(testButton, false);
+                    document.getElementById('relay-client-secret').value = '';
+                }
+            }
+
+                const saveButton = document.getElementById('save-relay-config');
+            if (saveButton) {
+                saveButton.addEventListener('click', async () => {
+                    let settingsSaved = false;
+                    try {
+                        setButtonBusy(saveButton, true, 'Saving...');
+                        persistCurrentAdminFields(Boolean(document.getElementById('relay-client-secret').value.trim()) || loadAdminRelayCache().hasClientSecret);
+                        saveAdminNotificationSettings();
+                        settingsSaved = true;
+                        const relaySave = await saveRelayConfig();
+                        if (relaySave && relaySave.config && relaySave.config.relayConfigured) {
+                            setStatus('Delivery endpoint, service mailbox, and relay configuration were saved successfully.', false);
+                        } else {
+                            setStatus('Delivery endpoint and relay settings were saved, but one or more required Microsoft 365 values are still missing.', true);
+                        }
+                    } catch (error) {
+                        if (settingsSaved) {
+                            setStatus(`Delivery endpoint and service mailbox were saved, but relay settings were not updated: ${error.message}`, true);
+                        } else {
+                            setStatus(`Relay settings were not updated: ${error.message}`, true);
+                        }
+                    } finally {
+                        setButtonBusy(saveButton, false);
+                    }
+                });
+            }
+
+            const refreshRelayButton = document.getElementById('refresh-relay-config');
+            if (refreshRelayButton) {
+                refreshRelayButton.addEventListener('click', () => {
+                    refreshRelayConfig(true);
+                });
+            }
+
+            const testRelayButton = document.getElementById('test-relay-config');
+            if (testRelayButton) {
+                testRelayButton.addEventListener('click', () => {
+                    validateRelayConfig();
+                });
+            }
+
+            populateAdminFieldsFromCache();
+            populateAdminSettingsFromNotifications();
+            refreshRelayConfig(false);
+        })();
+    </script>
+</body>
+</html>

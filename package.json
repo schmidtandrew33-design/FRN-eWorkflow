@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "start": "http-server . -p 3000 -o",
+    "start:relay": "node scripts/outlook-relay.js",
     "bundle:powerapps": "node scripts/build-powerapps-bundle.js",
     "config:personal": "node scripts/use-power-config.js personal",
     "config:gcc": "node scripts/use-power-config.js gcc",
@@ -19,5 +20,8 @@
   },
   "dependencies": {
     "@microsoft/power-apps": "^1.0.4"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
   }
 }
